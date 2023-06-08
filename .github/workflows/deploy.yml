@@ -46,7 +46,7 @@ jobs:
           cp -r .ebextensions deploy/.ebextensions
           cd deploy && zip -r deploy.zip .
 
-      - name: Beanstalk Deploy
+      - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v21
         with:
           aws_access_key: ${{secrets.AWS_ACCESS_KEY}}
