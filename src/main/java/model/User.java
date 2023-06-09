@@ -1,13 +1,11 @@
 package model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @Setter // DTO 만들면 삭제해야됨
@@ -19,7 +17,12 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String username;
+
+    private String email;
+
+    private Long publishId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
