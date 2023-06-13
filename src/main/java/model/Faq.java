@@ -1,5 +1,6 @@
 package model;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,4 +17,11 @@ public class Faq {
 
     private String question;
     private String answer;
+
+    @Builder
+    public Faq(Long id, String question, String answer) {
+        this.id = id;
+        this.question = question;
+        this.answer = answer;
+    }
 }

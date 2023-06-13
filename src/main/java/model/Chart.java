@@ -1,6 +1,7 @@
 package model;
 
 import core.util.StringListConverter;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,5 +24,13 @@ public class Chart {
     private String feature;
 
     @Convert(converter = StringListConverter.class)
-    private ArrayList<String> desc;
+    private List<String> desc;
+
+    @Builder
+    public Chart(Long id, Integer index, String feature, List<String> desc) {
+        this.id = id;
+        this.index = index;
+        this.feature = feature;
+        this.desc = desc;
+    }
 }

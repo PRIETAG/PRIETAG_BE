@@ -1,5 +1,6 @@
 package model;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,4 +25,10 @@ public class Field {
         TITLE,SUBTITLE,TEXT,PADDING
     }
 
+    @Builder
+    public Field(Long id, Role role, String desc) {
+        this.id = id;
+        this.role = role;
+        this.desc = desc;
+    }
 }

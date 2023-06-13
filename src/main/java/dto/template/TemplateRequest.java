@@ -4,15 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import model.Field;
-import model.Template;
-import model.TemplateVersion;
-import model.User;
+import model.*;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TemplateRequest {
 
@@ -23,9 +19,9 @@ public class TemplateRequest {
         private List<AreaRequest> faqArea;
 
         @NotNull
-        private List<PriceCard> priceCard;
-        private List<Chart> chart;
-        private List<Faq> faq;
+        private List<PriceCardRequest> priceCard;
+        private List<ChartRequest> chart;
+        private List<FaqRequest> faq;
 
         private String mainColor;
         private List<String> subColor;
@@ -49,6 +45,85 @@ public class TemplateRequest {
                     .build();
         }
 
+        public TemplateVersion toTemplateVersionEntity(Integer version){
+            return TemplateVersion.builder()
+                    .version(version)
+                    .versionTitle(this.templateName)
+                    .priceCardField(toCardAreaEntity())
+                    .chartField(toChartAreaEntity())
+                    .faqField(toFaqAreaEntity())
+                    .priceCard(toPriceCardEntity())
+                    .chart(toChartEntity())
+                    .faq(toFaqEntity())
+                    .mainColor(this.mainColor)
+                    .subColor(this.subColor)
+                    .font(this.font)
+                    .logoImageUrl(this.logoImageUrl)
+                    .padding(this.padding)
+                    .isCheckPerPerson(this.isCheckPerPerson)
+                    .headCount(this.headDiscount.stream().map(headCount -> headCount.getHeadCount()).collect(Collectors.toList()))
+                    .headDiscountRate(this.headDiscount.stream().map(headDiscount -> headDiscount.getDiscountRate()).collect(Collectors.toList()))
+                    .isCheckPerYear(this.isCheckPerYear)
+                    .yearDiscountRate(this.yearDiscountRate)
+                    .build();
+        }
+        public List<PriceCard> toPriceCardEntity(){
+            return priceCard.stream()
+                    .map(card -> PriceCard.builder()
+                            .cardTitle(card.getTitle())
+                            .price(card.getPrice())
+                            .discountRate(card.getDiscountRate())
+                            .detail(card.getDetail())
+                            .feature(card.getFeature())
+                            .content(card.getContent())
+                            .build())
+                    .collect(Collectors.toList());
+        }
+
+        public List<Chart> toChartEntity(){
+            return chart.stream()
+                    .map(chart -> Chart.builder()
+                            .index(chart.getIndex())
+                            .feature(chart.getFeature())
+                            .desc(chart.getDesc())
+                            .build())
+                    .collect(Collectors.toList());
+        }
+        public List<Faq> toFaqEntity(){
+            return faq.stream()
+                    .map(faq -> Faq.builder()
+                            .question(faq.getQuestion())
+                            .answer(faq.getDesc())
+                            .build())
+                    .collect(Collectors.toList());
+        }
+
+        public List<Field> toCardAreaEntity(){
+            return priceCardArea.stream()
+                    .map(area -> Field.builder()
+                            .role(area.getRole())
+                            .desc(area.getContent())
+                            .build())
+                    .collect(Collectors.toList());
+        }
+        public List<Field> toChartAreaEntity(){
+            return chartArea.stream()
+                    .map(area -> Field.builder()
+                            .role(area.getRole())
+                            .desc(area.getContent())
+                            .build())
+                    .collect(Collectors.toList());
+        }
+        public List<Field> toFaqAreaEntity(){
+            return faqArea.stream()
+                    .map(area -> Field.builder()
+                            .role(area.getRole())
+                            .desc(area.getContent())
+                            .build())
+                    .collect(Collectors.toList());
+        }
+
+
         @Getter @Builder
         @NoArgsConstructor
         @AllArgsConstructor
@@ -61,7 +136,7 @@ public class TemplateRequest {
         @Getter @Builder
         @NoArgsConstructor
         @AllArgsConstructor
-        public static class PriceCard{
+        public static class PriceCardRequest{
             private String title;
             private Integer price;
             private Integer discountRate;
@@ -73,7 +148,9 @@ public class TemplateRequest {
         @Getter @Builder
         @NoArgsConstructor
         @AllArgsConstructor
-        public static class Chart{
+        public static class ChartRequest{
+            @NotNull
+            private Integer index;
             @NotNull
             private String feature;
             @NotNull
@@ -83,7 +160,7 @@ public class TemplateRequest {
         @Getter @Builder
         @NoArgsConstructor
         @AllArgsConstructor
-        public static class Faq{
+        public static class FaqRequest{
             @NotNull
             private String question;
             @NotNull

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -22,13 +23,13 @@ public class Template {
 
     @Column(nullable = false)
     @OneToMany(fetch = FetchType.LAZY)
-    ArrayList<TemplateVersion> templateVersions;
+    List<TemplateVersion> templateVersions;
 
     @Column(nullable = false, length = 20, unique = true)
     String mainTitle;
 
     @Builder
-    public Template(Long id, User user, ArrayList<TemplateVersion> templateVersions, String mainTitle) {
+    public Template(Long id, User user, List<TemplateVersion> templateVersions, String mainTitle) {
         this.id = id;
         this.user = user;
         this.templateVersions = templateVersions;

@@ -1,11 +1,12 @@
 package model;
 
 import core.util.StringListConverter;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -30,5 +31,16 @@ public class PriceCard {
     private String feature;
 
     @Convert(converter = StringListConverter.class)
-    private ArrayList<String> content;
+    private List<String> content;
+
+    @Builder
+    public PriceCard(Long id, String cardTitle, Integer price, Integer discountRate, String detail, String feature, List<String> content) {
+        this.id = id;
+        this.cardTitle = cardTitle;
+        this.price = price;
+        this.discountRate = discountRate;
+        this.detail = detail;
+        this.feature = feature;
+        this.content = content;
+    }
 }

@@ -11,6 +11,7 @@ import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -26,53 +27,50 @@ public class TemplateVersion extends TimeStamped {
     private String versionTitle;
 
     @OneToMany(fetch = FetchType.LAZY)
-    private ArrayList<Field> priceCardField;
+    private List<Field> priceCardField;
 
     @OneToMany(fetch = FetchType.LAZY)
-    private ArrayList<Field> chartField;
+    private List<Field> chartField;
 
     @OneToMany(fetch = FetchType.LAZY)
-    private ArrayList<Field> faqField;
+    private List<Field> faqField;
 
     @Column(nullable = false)
     @OneToMany(fetch = FetchType.LAZY)
-    private ArrayList<PriceCard> priceCard;
+    private List<PriceCard> priceCard;
 
     @OneToMany(fetch = FetchType.LAZY)
-    private ArrayList<Chart> chart;
+    private List<Chart> chart;
 
     @OneToMany(fetch = FetchType.LAZY)
-    private ArrayList<Faq> faq;
+    private List<Faq> faq;
 
     @Column(nullable = false)
     private String mainColor;
     @Convert(converter = StringListConverter.class)
-    private ArrayList<String> subColor;
+    private List<String> subColor;
     @Column(nullable = false)
     private String font;
     @Column(nullable = false)
     private String logoImageUrl;
 
     @Convert(converter = IntegerListConverter.class)
-    private ArrayList<Integer> padding;
-
-    @Column(nullable = false)
-    private String templateName;
+    private List<Integer> padding;
 
     @Column(nullable = false)
     private boolean isCheckPerPerson;
 
     @Convert(converter = IntegerListConverter.class)
-    private ArrayList<Integer> headCount;
+    private List<Integer> headCount;
     @Convert(converter = IntegerListConverter.class)
-    private ArrayList<Integer> headDiscountRate;
+    private List<Integer> headDiscountRate;
 
     @Column(nullable = false)
     private boolean isCheckPerYear;
     private Integer yearDiscountRate;
 
     @Builder
-    public TemplateVersion(Long id, Integer version, String versionTitle, ArrayList<Field> priceCardField, ArrayList<Field> chartField, ArrayList<Field> faqField, ArrayList<PriceCard> priceCard, ArrayList<Chart> chart, ArrayList<Faq> faq, String mainColor, ArrayList<String> subColor, String font, String logoImageUrl, ArrayList<Integer> padding, String templateName, boolean isCheckPerPerson, ArrayList<Integer> headCount, ArrayList<Integer> headDiscountRate, boolean isCheckPerYear, Integer yearDiscountRate) {
+    public TemplateVersion(Long id, Integer version, String versionTitle, List<Field> priceCardField, List<Field> chartField, List<Field> faqField, List<PriceCard> priceCard, List<Chart> chart, List<Faq> faq, String mainColor, List<String> subColor, String font, String logoImageUrl, List<Integer> padding, boolean isCheckPerPerson, List<Integer> headCount, List<Integer> headDiscountRate, boolean isCheckPerYear, Integer yearDiscountRate) {
         this.id = id;
         this.version = version;
         this.versionTitle = versionTitle;
@@ -87,7 +85,6 @@ public class TemplateVersion extends TimeStamped {
         this.font = font;
         this.logoImageUrl = logoImageUrl;
         this.padding = padding;
-        this.templateName = templateName;
         this.isCheckPerPerson = isCheckPerPerson;
         this.headCount = headCount;
         this.headDiscountRate = headDiscountRate;
