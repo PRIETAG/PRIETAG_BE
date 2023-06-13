@@ -1,5 +1,6 @@
 package model;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,8 +22,18 @@ public class Template {
 
     @Column(nullable = false)
     @OneToMany(fetch = FetchType.LAZY)
-    ArrayList<TemplateVersion> templatevs;
+    ArrayList<TemplateVersion> templateVersions;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 20, unique = true)
     String mainTitle;
+
+    @Builder
+    public Template(Long id, User user, ArrayList<TemplateVersion> templateVersions, String mainTitle) {
+        this.id = id;
+        this.user = user;
+        this.templateVersions = templateVersions;
+        this.mainTitle = mainTitle;
+    }
+
+    public void addTemplateVS(TemplateVersion templateVersion) {templateVersions.add(templateVersion);}
 }

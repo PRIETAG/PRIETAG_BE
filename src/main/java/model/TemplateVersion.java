@@ -4,6 +4,7 @@ import com.vladmihalcea.hibernate.type.json.JsonType;
 import core.util.IntegerListConverter;
 import core.util.StringListConverter;
 import core.util.TimeStamped;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.TypeDef;
@@ -11,7 +12,6 @@ import org.hibernate.annotations.TypeDef;
 import javax.persistence.*;
 import java.util.ArrayList;
 
-@TypeDef(name = "json", typeClass = JsonType.class)
 @NoArgsConstructor
 @Getter
 @Table(name = "templatevs_tb")
@@ -71,4 +71,27 @@ public class TemplateVersion extends TimeStamped {
     private boolean isCheckPerYear;
     private Integer yearDiscountRate;
 
+    @Builder
+    public TemplateVersion(Long id, Integer version, String versionTitle, ArrayList<Field> priceCardField, ArrayList<Field> chartField, ArrayList<Field> faqField, ArrayList<PriceCard> priceCard, ArrayList<Chart> chart, ArrayList<Faq> faq, String mainColor, ArrayList<String> subColor, String font, String logoImageUrl, ArrayList<Integer> padding, String templateName, boolean isCheckPerPerson, ArrayList<Integer> headCount, ArrayList<Integer> headDiscountRate, boolean isCheckPerYear, Integer yearDiscountRate) {
+        this.id = id;
+        this.version = version;
+        this.versionTitle = versionTitle;
+        this.priceCardField = priceCardField;
+        this.chartField = chartField;
+        this.faqField = faqField;
+        this.priceCard = priceCard;
+        this.chart = chart;
+        this.faq = faq;
+        this.mainColor = mainColor;
+        this.subColor = subColor;
+        this.font = font;
+        this.logoImageUrl = logoImageUrl;
+        this.padding = padding;
+        this.templateName = templateName;
+        this.isCheckPerPerson = isCheckPerPerson;
+        this.headCount = headCount;
+        this.headDiscountRate = headDiscountRate;
+        this.isCheckPerYear = isCheckPerYear;
+        this.yearDiscountRate = yearDiscountRate;
+    }
 }

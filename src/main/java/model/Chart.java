@@ -1,5 +1,6 @@
 package model;
 
+import core.util.StringListConverter;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,7 +22,6 @@ public class Chart {
 
     private String feature;
 
-    @ElementCollection
-    @Column(name = "desc")
+    @Convert(converter = StringListConverter.class)
     private ArrayList<String> desc;
 }
