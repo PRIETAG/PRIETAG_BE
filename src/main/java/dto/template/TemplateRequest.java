@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 public class TemplateRequest {
 
+    // 템플릿 저장
     @Getter
     public static class SaveInDTO {
         private List<AreaRequest> priceCardArea;
@@ -124,18 +125,14 @@ public class TemplateRequest {
         }
 
 
-        @Getter @Builder
-        @NoArgsConstructor
-        @AllArgsConstructor
+        @Getter
         public static class AreaRequest{
             @NotNull
             private Field.Role role;
             private String content;
         }
 
-        @Getter @Builder
-        @NoArgsConstructor
-        @AllArgsConstructor
+        @Getter
         public static class PriceCardRequest{
             private String title;
             private Integer price;
@@ -145,9 +142,7 @@ public class TemplateRequest {
             private List<String> content;
         }
 
-        @Getter @Builder
-        @NoArgsConstructor
-        @AllArgsConstructor
+        @Getter
         public static class ChartRequest{
             @NotNull
             private Integer index;
@@ -157,9 +152,7 @@ public class TemplateRequest {
             private List<String> desc;
         }
 
-        @Getter @Builder
-        @NoArgsConstructor
-        @AllArgsConstructor
+        @Getter
         public static class FaqRequest{
             @NotNull
             private String question;
@@ -167,9 +160,7 @@ public class TemplateRequest {
             private String desc;
         }
 
-        @Getter @Builder
-        @NoArgsConstructor
-        @AllArgsConstructor
+        @Getter
         public static class HeadDiscount{
             private Integer headCount;
             private Integer discountRate;

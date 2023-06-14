@@ -2,14 +2,22 @@ package service;
 
 import core.exception.Exception400;
 import dto.template.TemplateRequest;
+import dto.template.TemplateResponse;
 import lombok.RequiredArgsConstructor;
-import model.*;
+import model.Template;
+import model.TemplateVersion;
+import model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import repository.*;
 
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,5 +42,31 @@ public class TemplateService {
         template.addTemplateVS(templateVersion);
 
         templateRepository.save(template);
+    }
+
+    public List<TemplateResponse.getTemplatesOutDTO> getTemplates(User user, Pageable pageable){
+        Page<Template> templatesPS = templateRepository.findByUserId(user.getId(), pageable);
+
+        List<TemplateResponse.getTemplatesOutDTO> getTemplatesOutDTOList = new ArrayList<>();
+        for (Template template: templatesPS){
+
+            // 최신 순으로 정렬 후 UpdateAt을 String yyyy.MM.dd HH.mm형식 으로 변경
+            List<TemplateVersion> versions = template.getTemplateVersions();
+            Collections.sort(versions, Collections.reverseOrder(Comparator.comparing(TemplateVersion::getUpdatedAt)));
+
+            boolean isMatching = versions.stream()
+                    .anyMatch(version -> version.getId().equals(user.getPublishId()));
+
+            getTemplatesOutDTOList.add(TemplateResponse.getTemplatesOutDTO.builder()
+                    .id(template.getId())
+                    .title(template.getMainTitle())
+                    .updated_at(versions.get(0).getUpdatedAt())
+                    .image(versions.get(0).getLogoImageUrl())
+                    .isPublished(isMatching)
+                    .build());
+        }
+        getTemplatesOutDTOList.sort(Comparator.comparing(TemplateResponse.getTemplatesOutDTO::getUpdated_at).reversed());
+
+        return getTemplatesOutDTOList;
     }
 }

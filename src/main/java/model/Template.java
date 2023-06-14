@@ -1,5 +1,6 @@
 package model;
 
+import core.util.TimeStamped;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ import java.util.List;
 @Getter
 @Table(name = "template_tb")
 @Entity
-public class Template {
+public class Template extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
