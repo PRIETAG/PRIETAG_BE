@@ -6,12 +6,11 @@ import com.tag.prietag.dto.template.TemplateResponse;
 import com.tag.prietag.model.*;
 import com.tag.prietag.repository.*;
 import lombok.RequiredArgsConstructor;
-import model.*;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import repository.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -88,9 +87,12 @@ public class TemplateService {
         for (Template template: templatesPS){
 
             // 최신 버전 가져온 후 UpdateAt을 String yyyy.MM.dd HH.mm형식 으로 변경
-            TemplateVersion templateVersion = templateVersionRepository.findByTemplateIdLimitOne(template.getId()).orElseThrow(
-                    () -> new Exception400("Template조회", "templateVersion이 존재하지 않습니다.")
-            );
+            Pageable pageableLimitOne = PageRequest.of(0, 1);
+            Page<TemplateVersion> templateVersions = templateVersionRepository.findByTemplateIdLimitOne(template.getId(), pageableLimitOne);
+            if(!templateVersions.hasContent()){
+                throw new Exception400("templateVersion", "version이 존재하지 않습니다");
+            }
+            TemplateVersion templateVersion = templateVersions.getContent().get(0);
 
             // 퍼블리싱된 templateVersion 있는지 확인
             boolean isMatching = templateVersionRepository.findByPublishTemplateId(user.getPublishId(), template.getId()).isPresent();

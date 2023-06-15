@@ -17,11 +17,9 @@ public class PublishLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @Column(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private TemplateVersion templatevs;
 

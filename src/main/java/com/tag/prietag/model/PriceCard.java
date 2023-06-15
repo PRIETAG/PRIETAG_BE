@@ -20,7 +20,6 @@ public class PriceCard {
     @Column(nullable = false)
     private Integer index;
 
-    @Column(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     TemplateVersion templateVersion;
 
