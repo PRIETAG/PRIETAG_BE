@@ -45,4 +45,14 @@ public class TemplateController {
         List<TemplateResponse.getTemplatesVSOutDTO> getTemplatesVSOutDTOList = templateService.getTemplatesVS(id, pageable);
         return ResponseEntity.ok().body(new ResponseDTO<>(getTemplatesVSOutDTOList));
     }
+
+
+    // 템플릿 저장 -> 히스토리(버전) 생성 (모든 카드, 차트, FAQ 새로 생성)
+    @PostMapping("/template/{templateId}")
+    public ResponseEntity<?> createTemplateVS(@PathVariable Long templateId,
+                                            @RequestBody @Valid TemplateRequest.SaveInDTO saveInDTO,
+                                            @AuthenticationPrincipal MyUserDetails myUserDetails){
+        templateService.createTemplateVS(templateId, saveInDTO, myUserDetails.getUser());
+        return ResponseEntity.ok().body(new ResponseDTO<>());
+    }
 }

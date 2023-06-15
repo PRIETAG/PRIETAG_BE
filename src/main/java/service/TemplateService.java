@@ -126,4 +126,40 @@ public class TemplateService {
 
         return getTemplatesVSOutDTOList;
     }
+
+    // 템플릿 버전 생성
+    public void createTemplateVS(Long templateId, TemplateRequest.SaveInDTO saveInDTO, User user) {
+        Template template = templateRepository.findById(templateId).orElseThrow(
+                () -> new Exception400("template", "존재하지 않는 Template입니다"));
+
+        if(!template.getUser().getId().equals(user.getId())){
+            throw new Exception400("template", "해당 Template에 대한 권한이 없습니다");
+        }
+
+        // TemplateVersion 엔티티 생성 및 저장
+        int versionId = templateVersionRepository.findMaxVersionByTemplateId(templateId) + 1;
+        TemplateVersion templateVersion = saveInDTO.toTemplateVersionEntity(versionId);
+        templateVersion.setTemplate(template);
+        templateVersionRepository.save(templateVersion);
+
+        List<PriceCard> priceCards = mapAndSetTemplateVersion(saveInDTO.toPriceCardEntity(), templateVersion);
+        priceCardRepository.saveAll(priceCards);
+
+        List<Chart> charts = mapAndSetTemplateVersion(saveInDTO.toChartEntity(), templateVersion);
+        chartRepository.saveAll(charts);
+
+        List<Faq> faqs = mapAndSetTemplateVersion(saveInDTO.toFaqEntity(), templateVersion);
+        faqRepository.saveAll(faqs);
+
+        // Card Area, Chart Area, Faq Area 엔티티 등 생성 및 저장
+        List<Field> cardAreas = mapAndSetTemplateVersion(saveInDTO.toCardAreaEntity(), templateVersion);
+        fieldRepository.saveAll(cardAreas);
+
+        List<Field> chartAreas = mapAndSetTemplateVersion(saveInDTO.toChartAreaEntity(), templateVersion);
+        fieldRepository.saveAll(chartAreas);
+
+        List<Field> faqAreas = mapAndSetTemplateVersion(saveInDTO.toFaqAreaEntity(), templateVersion);
+        fieldRepository.saveAll(faqAreas);
+
+    }
 }
