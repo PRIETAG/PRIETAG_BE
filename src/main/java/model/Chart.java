@@ -22,6 +22,10 @@ public class Chart {
     @ManyToOne(fetch = FetchType.LAZY)
     TemplateVersion templateVersion;
 
+    @Column(nullable = false)
+    private boolean haveHeader;
+    @Column(nullable = false)
+    private String featureName;
     // 몇번째 차트인지
     @Column(nullable = false)
     private Integer chartNum;
@@ -35,9 +39,11 @@ public class Chart {
     private List<String> desc;
 
     @Builder
-    public Chart(Long id, TemplateVersion templateVersion, Integer chartNum, Integer index, String feature, List<String> desc) {
+    public Chart(Long id, TemplateVersion templateVersion, boolean haveHeader, String featureName, Integer chartNum, Integer index, String feature, List<String> desc) {
         this.id = id;
         this.templateVersion = templateVersion;
+        this.haveHeader = haveHeader;
+        this.featureName= featureName;
         this.chartNum = chartNum;
         this.index = index;
         this.feature = feature;

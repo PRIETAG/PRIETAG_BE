@@ -42,7 +42,7 @@ public class TemplateController {
                                             @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
                                             @AuthenticationPrincipal MyUserDetails myUserDetails){
         Pageable pageable = PageRequest.of(page, pageSize);
-        List<TemplateResponse.getTemplatesVSOutDTO> getTemplatesVSOutDTOList;
+        List<TemplateResponse.getTemplatesVSOutDTO> getTemplatesVSOutDTOList = templateService.getTemplatesVS(id, pageable);
         return ResponseEntity.ok().body(new ResponseDTO<>(getTemplatesVSOutDTOList));
     }
 }

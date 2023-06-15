@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
 import java.util.List;
 
 @NoArgsConstructor
@@ -16,6 +17,9 @@ public class PriceCard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
+    private Integer index;
 
     @Column(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
@@ -38,8 +42,9 @@ public class PriceCard {
     private List<String> content;
 
     @Builder
-    public PriceCard(Long id, TemplateVersion templateVersion, String cardTitle, Integer price, Integer discountRate, String detail, String feature, List<String> content) {
+    public PriceCard(Long id, Integer index, TemplateVersion templateVersion, String cardTitle, Integer price, Integer discountRate, String detail, String feature, List<String> content) {
         this.id = id;
+        this.index= index;
         this.templateVersion = templateVersion;
         this.cardTitle = cardTitle;
         this.price = price;

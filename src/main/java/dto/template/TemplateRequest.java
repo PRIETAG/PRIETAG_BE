@@ -1,15 +1,14 @@
 package dto.template;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import model.*;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class TemplateRequest {
 
@@ -40,14 +39,16 @@ public class TemplateRequest {
         private boolean isCheckPerYear;
         private Integer yearDiscountRate;
 
-        public Template toEntity(User user){
+        private boolean isCardSet;
+
+        public Template toEntity(User user) {
             return Template.builder()
                     .user(user)
                     .mainTitle(this.templateName)
                     .build();
         }
 
-        public TemplateVersion toTemplateVersionEntity(Integer version){
+        public TemplateVersion toTemplateVersionEntity(Integer version) {
             return TemplateVersion.builder()
                     .version(version)
                     .versionTitle(this.templateName)
@@ -61,9 +62,11 @@ public class TemplateRequest {
                     .headDiscountRate(this.headDiscount.stream().map(headDiscount -> headDiscount.getDiscountRate()).collect(Collectors.toList()))
                     .isCheckPerYear(this.isCheckPerYear)
                     .yearDiscountRate(this.yearDiscountRate)
+                    .isCardSet(this.isCardSet)
                     .build();
         }
-        public List<PriceCard> toPriceCardEntity(){
+
+        public List<PriceCard> toPriceCardEntity() {
             return priceCard.stream()
                     .map(card -> PriceCard.builder()
                             .cardTitle(card.getTitle())
@@ -76,16 +79,24 @@ public class TemplateRequest {
                     .collect(Collectors.toList());
         }
 
-        public List<Chart> toChartEntity(){
-            return chart.stream()
-                    .map(chart -> Chart.builder()
-                            .chartNum(chart.getChartNum())
-                            .feature(chart.getFeature())
-                            .desc(chart.getDesc())
-                            .build())
-                    .collect(Collectors.toList());
+        public List<Chart> toChartEntity() {
+            List<Chart> chartList = new ArrayList<>();
+            for (int i = 0; i < chart.size(); i++) {
+                for (int j = 0; j < chart.get(i).table.size(); j++) {
+                    chartList.add(Chart.builder()
+                            .chartNum(i)
+                            .haveHeader(chart.get(i).isHaveHeader())
+                            .featureName(chart.get(i).getFeatureName())
+                            .index(j)
+                            .feature(chart.get(i).table.get(j).getFeature())
+                            .desc(chart.get(i).table.get(j).getDesc())
+                            .build());
+                }
+            }
+            return chartList;
         }
-        public List<Faq> toFaqEntity(){
+
+        public List<Faq> toFaqEntity() {
             return faq.stream()
                     .map(faq -> Faq.builder()
                             .question(faq.getQuestion())
@@ -94,7 +105,7 @@ public class TemplateRequest {
                     .collect(Collectors.toList());
         }
 
-        public List<Field> toCardAreaEntity(){
+        public List<Field> toCardAreaEntity() {
             AtomicInteger index = new AtomicInteger(1);
             return priceCardArea.stream()
                     .map(area -> Field.builder()
@@ -105,7 +116,8 @@ public class TemplateRequest {
                             .build())
                     .collect(Collectors.toList());
         }
-        public List<Field> toChartAreaEntity(){
+
+        public List<Field> toChartAreaEntity() {
             AtomicInteger index = new AtomicInteger(1);
             return chartArea.stream()
                     .map(area -> Field.builder()
@@ -116,7 +128,8 @@ public class TemplateRequest {
                             .build())
                     .collect(Collectors.toList());
         }
-        public List<Field> toFaqAreaEntity(){
+
+        public List<Field> toFaqAreaEntity() {
             AtomicInteger index = new AtomicInteger(1);
             return faqArea.stream()
                     .map(area -> Field.builder()
@@ -128,16 +141,15 @@ public class TemplateRequest {
                     .collect(Collectors.toList());
         }
 
-
         @Getter
-        public static class AreaRequest{
+        public static class AreaRequest {
             @NotNull
             private Field.Role role;
             private String content;
         }
 
         @Getter
-        public static class PriceCardRequest{
+        public static class PriceCardRequest {
             private String title;
             private Integer price;
             private Integer discountRate;
@@ -147,9 +159,15 @@ public class TemplateRequest {
         }
 
         @Getter
-        public static class ChartRequest{
+        public static class ChartRequest {
             @NotNull
-            private Integer chartNum;
+            private boolean haveHeader;
+            private String featureName;
+            private List<TableRequest> table;
+        }
+
+        @Getter
+        public static class TableRequest {
             @NotNull
             private String feature;
             @NotNull
@@ -157,7 +175,7 @@ public class TemplateRequest {
         }
 
         @Getter
-        public static class FaqRequest{
+        public static class FaqRequest {
             @NotNull
             private String question;
             @NotNull
@@ -165,7 +183,7 @@ public class TemplateRequest {
         }
 
         @Getter
-        public static class HeadDiscount{
+        public static class HeadDiscount {
             private Integer headCount;
             private Integer discountRate;
         }
