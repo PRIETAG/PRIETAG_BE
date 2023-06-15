@@ -221,5 +221,12 @@ public class TemplateService {
         }
         fieldRepository.saveAll(faqAreas);
     }
+
+    // 템플릿 퍼블리싱 (최신)
+    public void publishTemplate(Long templateId, User user) {
+    }
+
+    // 템플릿 퍼블리싱 (선택)
+    public void publishTemplateVS(Long versionId, User user) {
     }
 }

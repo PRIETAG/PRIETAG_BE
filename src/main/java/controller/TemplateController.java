@@ -64,4 +64,32 @@ public class TemplateController {
         templateService.copyTemplate(templateId, myUserDetails.getUser());
         return ResponseEntity.ok().body(new ResponseDTO<>());
     }
+
+    // 템플릿 퍼블리싱 (최신 버전)
+    @PatchMapping("/template/publish")
+    public ResponseEntity<?> publishTemplate(@RequestParam Long templateId,
+                                             @AuthenticationPrincipal MyUserDetails myUserDetails){
+        templateService.publishTemplate(templateId, myUserDetails.getUser());
+        return ResponseEntity.ok().body(new ResponseDTO<>());
+    }
+
+    // 템플릿 퍼블리싱 (버전 선택)
+    @PatchMapping("/template/publish")
+    public ResponseEntity<?> publishTemplateVS(@RequestParam Long versionId,
+                                               @AuthenticationPrincipal MyUserDetails myUserDetails){
+        templateService.publishTemplateVS(versionId, myUserDetails.getUser());
+        return ResponseEntity.ok().body(new ResponseDTO<>());
+    }
+
+    // 템플릿 불러오기 (퍼블리싱)
+
+
+    // 템플릿 불러오기 (버전 선택)
+
+
+    // 템플릿 히스토리(버전) 삭제 (여러개 선택 가능)
+
+
+    // 템플릿 삭제 (템플릿 및 포함 버전 전부 삭제)
+
 }
