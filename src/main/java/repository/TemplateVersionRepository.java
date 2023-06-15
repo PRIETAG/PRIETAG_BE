@@ -19,6 +19,9 @@ public interface TemplateVersionRepository extends JpaRepository<TemplateVersion
     @Query("select t from TemplateVersion t where t.template.id=:templateId and t.id=:versionId and t.isDeleted=false")
     Optional<TemplateVersion> findByPublishTemplateId(@Param("versionId") Long versionId, @Param("templateId") Long templateId);
 
+    // template에 대한 Version들 조회
     @Query("select t from TemplateVersion t where t.template.id=:id and t.isDeleted=false order by t.updatedAt desc")
     Page<TemplateVersion> findByTemplateId(@Param("id") Long id, Pageable pageable);
+
+
 }

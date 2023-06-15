@@ -1,5 +1,6 @@
 package model.log;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import model.TemplateVersion;
@@ -34,5 +35,12 @@ public class CustomerLog {
     }
     public enum Type{
         VIEWER,SUBSCRIPTER
+    }
+
+    @Builder
+    public CustomerLog(Long id, Type type, TemplateVersion templatevs) {
+        this.id = id;
+        this.type = type;
+        this.templatevs = templatevs;
     }
 }
