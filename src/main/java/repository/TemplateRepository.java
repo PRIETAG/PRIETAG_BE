@@ -15,4 +15,7 @@ public interface TemplateRepository extends JpaRepository<Template, Long> {
 
     @Query("select t from Template t join fetch TemplateVersion tv where t.user.id=:id order by t.updatedAt desc")
     Page<Template> findByUserId(@Param("id") Long id, Pageable pageable);
+
+    @Query("select t from Template t where t.id=:id")
+    Optional<Template> findById(@Param("id") Long id);
 }

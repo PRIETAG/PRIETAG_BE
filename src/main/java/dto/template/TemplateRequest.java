@@ -8,6 +8,7 @@ import model.*;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class TemplateRequest {
@@ -50,12 +51,6 @@ public class TemplateRequest {
             return TemplateVersion.builder()
                     .version(version)
                     .versionTitle(this.templateName)
-                    .priceCardField(toCardAreaEntity())
-                    .chartField(toChartAreaEntity())
-                    .faqField(toFaqAreaEntity())
-                    .priceCard(toPriceCardEntity())
-                    .chart(toChartEntity())
-                    .faq(toFaqEntity())
                     .mainColor(this.mainColor)
                     .subColor(this.subColor)
                     .font(this.font)
@@ -84,7 +79,7 @@ public class TemplateRequest {
         public List<Chart> toChartEntity(){
             return chart.stream()
                     .map(chart -> Chart.builder()
-                            .index(chart.getIndex())
+                            .chartNum(chart.getChartNum())
                             .feature(chart.getFeature())
                             .desc(chart.getDesc())
                             .build())
@@ -100,24 +95,33 @@ public class TemplateRequest {
         }
 
         public List<Field> toCardAreaEntity(){
+            AtomicInteger index = new AtomicInteger(1);
             return priceCardArea.stream()
                     .map(area -> Field.builder()
+                            .index(index.getAndIncrement())
+                            .areaNum(1)
                             .role(area.getRole())
                             .desc(area.getContent())
                             .build())
                     .collect(Collectors.toList());
         }
         public List<Field> toChartAreaEntity(){
+            AtomicInteger index = new AtomicInteger(1);
             return chartArea.stream()
                     .map(area -> Field.builder()
+                            .index(index.getAndIncrement())
+                            .areaNum(2)
                             .role(area.getRole())
                             .desc(area.getContent())
                             .build())
                     .collect(Collectors.toList());
         }
         public List<Field> toFaqAreaEntity(){
+            AtomicInteger index = new AtomicInteger(1);
             return faqArea.stream()
                     .map(area -> Field.builder()
+                            .index(index.getAndIncrement())
+                            .areaNum(3)
                             .role(area.getRole())
                             .desc(area.getContent())
                             .build())
@@ -145,7 +149,7 @@ public class TemplateRequest {
         @Getter
         public static class ChartRequest{
             @NotNull
-            private Integer index;
+            private Integer chartNum;
             @NotNull
             private String feature;
             @NotNull

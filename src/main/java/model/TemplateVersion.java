@@ -26,36 +26,26 @@ public class TemplateVersion extends TimeStamped {
     private Integer version;
     private String versionTitle;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<Field> priceCardField;
-
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<Field> chartField;
-
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<Field> faqField;
-
-    @Column(nullable = false)
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<PriceCard> priceCard;
-
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<Chart> chart;
-
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<Faq> faq;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Template template;
 
     @Column(nullable = false)
     private String mainColor;
-    @Convert(converter = StringListConverter.class)
-    private List<String> subColor;
+    @Column(nullable = false)
+    private String subColor1;
+    @Column(nullable = false)
+    private String subColor2;
     @Column(nullable = false)
     private String font;
     @Column(nullable = false)
     private String logoImageUrl;
+    @Column(nullable = false)
+    private String previewUrl;
 
-    @Convert(converter = IntegerListConverter.class)
-    private List<Integer> padding;
+    @Column(nullable = false)
+    private Integer padding1;
+    @Column(nullable = false)
+    private Integer padding2;
 
     @Column(nullable = false)
     private boolean isCheckPerPerson;
@@ -70,25 +60,26 @@ public class TemplateVersion extends TimeStamped {
     private Integer yearDiscountRate;
 
     @Builder
-    public TemplateVersion(Long id, Integer version, String versionTitle, List<Field> priceCardField, List<Field> chartField, List<Field> faqField, List<PriceCard> priceCard, List<Chart> chart, List<Faq> faq, String mainColor, List<String> subColor, String font, String logoImageUrl, List<Integer> padding, boolean isCheckPerPerson, List<Integer> headCount, List<Integer> headDiscountRate, boolean isCheckPerYear, Integer yearDiscountRate) {
+    public TemplateVersion(Long id, Integer version, String versionTitle, String mainColor, List<String> subColor, String font, String logoImageUrl, String previewUrl, List<Integer> padding, boolean isCheckPerPerson, List<Integer> headCount, List<Integer> headDiscountRate, boolean isCheckPerYear, Integer yearDiscountRate) {
         this.id = id;
         this.version = version;
         this.versionTitle = versionTitle;
-        this.priceCardField = priceCardField;
-        this.chartField = chartField;
-        this.faqField = faqField;
-        this.priceCard = priceCard;
-        this.chart = chart;
-        this.faq = faq;
         this.mainColor = mainColor;
-        this.subColor = subColor;
+        this.subColor1 = subColor.get(0);
+        this.subColor2 = subColor.get(1);
         this.font = font;
         this.logoImageUrl = logoImageUrl;
-        this.padding = padding;
+        this.previewUrl = previewUrl;
+        this.padding1 = padding.get(0);
+        this.padding2 = padding.get(1);
         this.isCheckPerPerson = isCheckPerPerson;
         this.headCount = headCount;
         this.headDiscountRate = headDiscountRate;
         this.isCheckPerYear = isCheckPerYear;
         this.yearDiscountRate = yearDiscountRate;
+    }
+
+    public void setTemplate(Template template){
+        this.template = template;
     }
 }

@@ -17,6 +17,10 @@ public class PriceCard {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    TemplateVersion templateVersion;
+
     @Column(name = "card_title")
     private String cardTitle;
 
@@ -34,13 +38,18 @@ public class PriceCard {
     private List<String> content;
 
     @Builder
-    public PriceCard(Long id, String cardTitle, Integer price, Integer discountRate, String detail, String feature, List<String> content) {
+    public PriceCard(Long id, TemplateVersion templateVersion, String cardTitle, Integer price, Integer discountRate, String detail, String feature, List<String> content) {
         this.id = id;
+        this.templateVersion = templateVersion;
         this.cardTitle = cardTitle;
         this.price = price;
         this.discountRate = discountRate;
         this.detail = detail;
         this.feature = feature;
         this.content = content;
+    }
+
+    public void setTemplateVersion(TemplateVersion templateVersion){
+        this.templateVersion = templateVersion;
     }
 }

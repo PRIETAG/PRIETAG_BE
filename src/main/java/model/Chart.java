@@ -19,6 +19,14 @@ public class Chart {
     private Long id;
 
     @Column(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    TemplateVersion templateVersion;
+
+    // 몇번째 차트인지
+    @Column(nullable = false)
+    private Integer chartNum;
+    //순서 저장
+    @Column(nullable = false)
     private Integer index;
 
     private String feature;
@@ -27,10 +35,16 @@ public class Chart {
     private List<String> desc;
 
     @Builder
-    public Chart(Long id, Integer index, String feature, List<String> desc) {
+    public Chart(Long id, TemplateVersion templateVersion, Integer chartNum, Integer index, String feature, List<String> desc) {
         this.id = id;
+        this.templateVersion = templateVersion;
+        this.chartNum = chartNum;
         this.index = index;
         this.feature = feature;
         this.desc = desc;
+    }
+
+    public void setTemplateVersion(TemplateVersion templateVersion){
+        this.templateVersion = templateVersion;
     }
 }

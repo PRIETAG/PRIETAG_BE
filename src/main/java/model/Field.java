@@ -15,6 +15,15 @@ public class Field {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    TemplateVersion templateVersion;
+
+    @Column(nullable = false)
+    private Integer index;
+    @Column(nullable = false)
+    private Integer areaNum;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
@@ -26,9 +35,16 @@ public class Field {
     }
 
     @Builder
-    public Field(Long id, Role role, String desc) {
+    public Field(Long id, TemplateVersion templateVersion, Integer index,Integer areaNum, Role role, String desc) {
         this.id = id;
+        this.templateVersion = templateVersion;
+        this.index = index;
+        this.areaNum = areaNum;
         this.role = role;
         this.desc = desc;
+    }
+
+    public void setTemplateVersion(TemplateVersion templateVersion){
+        this.templateVersion = templateVersion;
     }
 }

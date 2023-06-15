@@ -15,13 +15,22 @@ public class Faq {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    TemplateVersion templateVersion;
+
     private String question;
     private String answer;
 
     @Builder
-    public Faq(Long id, String question, String answer) {
+    public Faq(Long id, TemplateVersion templateVersion, String question, String answer) {
         this.id = id;
+        this.templateVersion = templateVersion;
         this.question = question;
         this.answer = answer;
+    }
+
+    public void setTemplateVersion(TemplateVersion templateVersion){
+        this.templateVersion = templateVersion;
     }
 }
