@@ -25,11 +25,15 @@ public class Template extends TimeStamped {
     @Column(nullable = false, length = 20, unique = true)
     String mainTitle;
 
+    @Column(nullable = false)
+    private boolean isDeleted;
+
     @Builder
     public Template(Long id, User user, String mainTitle) {
         this.id = id;
         this.user = user;
         this.mainTitle = mainTitle;
+        this.isDeleted = false;
     }
 
     //    @Builder

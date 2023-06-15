@@ -36,13 +36,13 @@ public class TemplateController {
         return ResponseEntity.ok().body(new ResponseDTO<>(getTemplatesOutDTOList));
     }
 
-//    @GetMapping("/templates/{id}")
-//    public ResponseEntity<?> getTemplatesVS(@PathVariable Long id,
-//                                            @RequestParam(value = "page") int page,
-//                                            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
-//                                            @AuthenticationPrincipal MyUserDetails myUserDetails){
-//        Pageable pageable = PageRequest.of(page, pageSize);
-//        List<TemplateResponse.getTemplatesVSOutDTO> getTemplatesVSOutDTOList;
-//        return ResponseEntity.ok().body(new ResponseDTO<>(getTemplatesVSOutDTOList));
-//    }
+    @GetMapping("/templates/{id}")
+    public ResponseEntity<?> getTemplatesVS(@PathVariable Long id,
+                                            @RequestParam(value = "page") int page,
+                                            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+                                            @AuthenticationPrincipal MyUserDetails myUserDetails){
+        Pageable pageable = PageRequest.of(page, pageSize);
+        List<TemplateResponse.getTemplatesVSOutDTO> getTemplatesVSOutDTOList;
+        return ResponseEntity.ok().body(new ResponseDTO<>(getTemplatesVSOutDTOList));
+    }
 }

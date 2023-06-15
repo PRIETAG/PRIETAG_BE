@@ -59,6 +59,8 @@ public class TemplateVersion extends TimeStamped {
     private boolean isCheckPerYear;
     private Integer yearDiscountRate;
 
+    @Column(nullable = false)
+    private boolean isDeleted;
     @Builder
     public TemplateVersion(Long id, Integer version, String versionTitle, String mainColor, List<String> subColor, String font, String logoImageUrl, String previewUrl, List<Integer> padding, boolean isCheckPerPerson, List<Integer> headCount, List<Integer> headDiscountRate, boolean isCheckPerYear, Integer yearDiscountRate) {
         this.id = id;
@@ -77,6 +79,7 @@ public class TemplateVersion extends TimeStamped {
         this.headDiscountRate = headDiscountRate;
         this.isCheckPerYear = isCheckPerYear;
         this.yearDiscountRate = yearDiscountRate;
+        this.isDeleted = false;
     }
 
     public void setTemplate(Template template){

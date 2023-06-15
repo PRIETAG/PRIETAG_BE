@@ -91,7 +91,7 @@ public class TemplateService {
         for (Template template: templatesPS){
 
             // 최신 버전 가져온 후 UpdateAt을 String yyyy.MM.dd HH.mm형식 으로 변경
-            TemplateVersion templateVersion = templateVersionRepository.findByTemplateId(template.getId()).orElseThrow(
+            TemplateVersion templateVersion = templateVersionRepository.findByTemplateIdLimitOne(template.getId()).orElseThrow(
                     () -> new Exception400("Template조회", "templateVersion이 존재하지 않습니다.")
             );
 
@@ -110,10 +110,20 @@ public class TemplateService {
         return getTemplatesOutDTOList;
     }
 
-//    public List<TemplateResponse.getTemplatesVSOutDTO> getTemplatesVS(Long id, Pageable pageable){
-//        Template template = templateRepository.findById(id).orElseThrow(
-//                () -> new Exception400("template", "존재하지 않는 Template입니다"));
-//
-//
-//    }
+    public List<TemplateResponse.getTemplatesVSOutDTO> getTemplatesVS(Long id, Pageable pageable){
+        Template template = templateRepository.findById(id).orElseThrow(
+                () -> new Exception400("template", "존재하지 않는 Template입니다"));
+
+        List<TemplateResponse.getTemplatesVSOutDTO> getTemplatesVSOutDTOList = new ArrayList<>();
+        Page<TemplateVersion> templateVersionPage = templateVersionRepository.findByTemplateId(id, pageable);
+        for(TemplateVersion templateVersion: templateVersionPage){
+            getTemplatesVSOutDTOList.add(TemplateResponse.getTemplatesVSOutDTO.builder()
+                            .id(templateVersion.getId())
+                            .title(templateVersion.getVersionTitle()+"v_"+templateVersion.getVersion())
+                            .updated_at(templateVersion.getUpdatedAt())
+                    .build());
+        }
+
+        return getTemplatesVSOutDTOList;
+    }
 }
