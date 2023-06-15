@@ -55,4 +55,13 @@ public class TemplateController {
         templateService.createTemplateVS(templateId, saveInDTO, myUserDetails.getUser());
         return ResponseEntity.ok().body(new ResponseDTO<>());
     }
+
+    // 템플릿 복제 -> 최신 버전 1개만 복사
+    // TODO: 새로운 템플릿 이름 받아야 함
+    @PostMapping("/template/copy/{templateId}")
+    public ResponseEntity<?> copyTemplate(@PathVariable Long templateId,
+                                          @AuthenticationPrincipal MyUserDetails myUserDetails){
+        templateService.copyTemplate(templateId, myUserDetails.getUser());
+        return ResponseEntity.ok().body(new ResponseDTO<>());
+    }
 }
