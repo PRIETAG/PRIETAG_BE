@@ -5,7 +5,6 @@ import com.tag.prietag.core.util.TimeStamped;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 import java.util.List;
 
@@ -31,6 +30,7 @@ public class TemplateVersion extends TimeStamped {
     private String subColor1;
     @Column(nullable = false)
     private String subColor2;
+
     @Column(nullable = false)
     private String font;
     @Column(nullable = false)
