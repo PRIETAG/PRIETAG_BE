@@ -2,7 +2,6 @@ package com.tag.prietag.core.advice;
 
 import com.tag.prietag.core.annotation.MyErrorLog;
 import com.tag.prietag.core.exception.*;
-import core.exception.*;
 import com.tag.prietag.dto.ResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -12,8 +12,8 @@ import java.util.Optional;
 public interface TemplateVersionRepository extends JpaRepository<TemplateVersion, Long> {
 
     // template중 가장 최신 Version
-    @Query("select t from TemplateVersion t where t.template.id=:id and t.isDeleted=false order by t.updatedAt desc limit 1")
-    Optional<TemplateVersion> findByTemplateIdLimitOne(@Param("id") Long id);
+    @Query("select t from TemplateVersion t where t.template.id=:id and t.isDeleted=false order by t.updatedAt desc")
+    Page<TemplateVersion> findByTemplateIdLimitOne(@Param("id") Long id, Pageable pageable);
 
     // 지정 template에 publish된 version찾기
     @Query("select t from TemplateVersion t where t.template.id=:templateId and t.id=:versionId and t.isDeleted=false")

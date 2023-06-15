@@ -16,7 +16,6 @@ public class Template extends TimeStamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     User user;
 

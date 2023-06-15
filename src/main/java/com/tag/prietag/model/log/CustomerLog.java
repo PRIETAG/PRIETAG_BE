@@ -22,7 +22,6 @@ public class CustomerLog {
     @Column(nullable = false)
     private Type type;
 
-    @Column(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private TemplateVersion templatevs;
 

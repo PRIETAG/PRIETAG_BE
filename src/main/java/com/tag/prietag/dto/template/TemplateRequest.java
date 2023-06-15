@@ -2,7 +2,6 @@ package com.tag.prietag.dto.template;
 
 import com.tag.prietag.model.*;
 import lombok.Getter;
-import model.*;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
