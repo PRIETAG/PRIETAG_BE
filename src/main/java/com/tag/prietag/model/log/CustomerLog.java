@@ -1,9 +1,9 @@
 package com.tag.prietag.model.log;
 
-import com.tag.prietag.model.TemplateVersion;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
+import com.tag.prietag.model.TemplateVersion;
 import javax.persistence.*;
 import java.time.ZonedDateTime;
 
@@ -21,7 +21,6 @@ public class CustomerLog {
     @Column(nullable = false)
     private Type type;
 
-    @Column(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private TemplateVersion templatevs;
 
@@ -34,5 +33,12 @@ public class CustomerLog {
     }
     public enum Type{
         VIEWER,SUBSCRIPTER
+    }
+
+    @Builder
+    public CustomerLog(Long id, Type type, TemplateVersion templatevs) {
+        this.id = id;
+        this.type = type;
+        this.templatevs = templatevs;
     }
 }

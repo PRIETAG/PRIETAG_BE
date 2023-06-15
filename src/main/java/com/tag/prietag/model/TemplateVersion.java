@@ -1,17 +1,13 @@
 package com.tag.prietag.model;
 
 import com.tag.prietag.core.util.IntegerListConverter;
-import com.tag.prietag.core.util.StringListConverter;
 import com.tag.prietag.core.util.TimeStamped;
-import com.vladmihalcea.hibernate.type.json.JsonType;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.TypeDef;
-
 import javax.persistence.*;
-import java.util.ArrayList;
+import java.util.List;
 
-@TypeDef(name = "json", typeClass = JsonType.class)
 @NoArgsConstructor
 @Getter
 @Table(name = "templatevs_tb")
@@ -25,50 +21,73 @@ public class TemplateVersion extends TimeStamped {
     private Integer version;
     private String versionTitle;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private ArrayList<Field> priceCardField;
-
-    @OneToMany(fetch = FetchType.LAZY)
-    private ArrayList<Field> chartField;
-
-    @OneToMany(fetch = FetchType.LAZY)
-    private ArrayList<Field> faqField;
-
-    @Column(nullable = false)
-    @OneToMany(fetch = FetchType.LAZY)
-    private ArrayList<PriceCard> priceCard;
-
-    @OneToMany(fetch = FetchType.LAZY)
-    private ArrayList<Chart> chart;
-
-    @OneToMany(fetch = FetchType.LAZY)
-    private ArrayList<Faq> faq;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Template template;
 
     @Column(nullable = false)
     private String mainColor;
-    @Convert(converter = StringListConverter.class)
-    private ArrayList<String> subColor;
+    @Column(nullable = false)
+    private String subColor1;
+    @Column(nullable = false)
+    private String subColor2;
+
     @Column(nullable = false)
     private String font;
     @Column(nullable = false)
     private String logoImageUrl;
-
-    @Convert(converter = IntegerListConverter.class)
-    private ArrayList<Integer> padding;
+    @Column(nullable = false)
+    private String previewUrl;
 
     @Column(nullable = false)
-    private String templateName;
+    private Integer padding1;
+    @Column(nullable = false)
+    private Integer padding2;
 
     @Column(nullable = false)
     private boolean isCheckPerPerson;
 
     @Convert(converter = IntegerListConverter.class)
-    private ArrayList<Integer> headCount;
+    private List<Integer> headCount;
     @Convert(converter = IntegerListConverter.class)
-    private ArrayList<Integer> headDiscountRate;
+    private List<Integer> headDiscountRate;
 
     @Column(nullable = false)
     private boolean isCheckPerYear;
     private Integer yearDiscountRate;
 
+    @Column(nullable = false)
+    private boolean isCardSet;
+
+    @Column(nullable = false)
+    private Integer priceCardAreaPadding;
+
+    @Column(nullable = false)
+    private boolean isDeleted;
+
+    @Builder
+    public TemplateVersion(Long id, Integer version, String versionTitle, String mainColor, List<String> subColor, String font, String logoImageUrl, String previewUrl, List<Integer> padding, boolean isCheckPerPerson, List<Integer> headCount, List<Integer> headDiscountRate, boolean isCheckPerYear, Integer yearDiscountRate, boolean isCardSet, Integer priceCardAreaPadding) {
+        this.id = id;
+        this.version = version;
+        this.versionTitle = versionTitle;
+        this.mainColor = mainColor;
+        this.subColor1 = subColor.get(0);
+        this.subColor2 = subColor.get(1);
+        this.font = font;
+        this.logoImageUrl = logoImageUrl;
+        this.previewUrl = previewUrl;
+        this.padding1 = padding.get(0);
+        this.padding2 = padding.get(1);
+        this.isCheckPerPerson = isCheckPerPerson;
+        this.headCount = headCount;
+        this.headDiscountRate = headDiscountRate;
+        this.isCheckPerYear = isCheckPerYear;
+        this.yearDiscountRate = yearDiscountRate;
+        this.isCardSet = isCardSet;
+        this.priceCardAreaPadding = priceCardAreaPadding;
+        this.isDeleted = false;
+    }
+
+    public void setTemplate(Template template){
+        this.template = template;
+    }
 }

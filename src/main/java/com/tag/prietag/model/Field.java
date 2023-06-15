@@ -1,5 +1,6 @@
 package com.tag.prietag.model;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +15,14 @@ public class Field {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    TemplateVersion templateVersion;
+
+    @Column(nullable = false)
+    private Integer index;
+    @Column(nullable = false)
+    private Integer areaNum;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
@@ -24,4 +33,17 @@ public class Field {
         TITLE,SUBTITLE,TEXT,PADDING
     }
 
+    @Builder
+    public Field(Long id, TemplateVersion templateVersion, Integer index,Integer areaNum, Role role, String desc) {
+        this.id = id;
+        this.templateVersion = templateVersion;
+        this.index = index;
+        this.areaNum = areaNum;
+        this.role = role;
+        this.desc = desc;
+    }
+
+    public void setTemplateVersion(TemplateVersion templateVersion){
+        this.templateVersion = templateVersion;
+    }
 }
