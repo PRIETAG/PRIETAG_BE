@@ -32,6 +32,7 @@ public class User {
         this.role = role;
     }
 
+    public void setPublishId(Long vid) {this.publishId = vid;}
     @Builder
     public User(Long id, String username, String email, Long publishId, Role role) {
         this.id = id;

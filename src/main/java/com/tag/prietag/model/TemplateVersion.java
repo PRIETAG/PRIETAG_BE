@@ -33,7 +33,7 @@ public class TemplateVersion extends TimeStamped {
     private String subColor2;
     @Column(nullable = false)
     private String font;
-    @Column(nullable = false)
+
     private String logoImageUrl;
     @Column(nullable = false)
     private String previewUrl;
@@ -65,8 +65,9 @@ public class TemplateVersion extends TimeStamped {
     private boolean isDeleted;
 
     @Builder
-    public TemplateVersion(Long id, Integer version, String versionTitle, String mainColor, List<String> subColor, String font, String logoImageUrl, String previewUrl, List<Integer> padding, boolean isCheckPerPerson, List<Integer> headCount, List<Integer> headDiscountRate, boolean isCheckPerYear, Integer yearDiscountRate, boolean isCardSet, Integer priceCardAreaPadding) {
+    public TemplateVersion(Long id, Template template, Integer version, String versionTitle, String mainColor, List<String> subColor, String font, String logoImageUrl, String previewUrl, List<Integer> padding, boolean isCheckPerPerson, List<Integer> headCount, List<Integer> headDiscountRate, boolean isCheckPerYear, Integer yearDiscountRate, boolean isCardSet, Integer priceCardAreaPadding) {
         this.id = id;
+        this.template = template;
         this.version = version;
         this.versionTitle = versionTitle;
         this.mainColor = mainColor;
@@ -89,5 +90,31 @@ public class TemplateVersion extends TimeStamped {
 
     public void setTemplate(Template template){
         this.template = template;
+    }
+
+    @Override
+    public String toString() {
+        return "TemplateVersion{" +
+                "id=" + id +
+                ", version=" + version +
+                ", versionTitle='" + versionTitle + '\'' +
+                ", template=" + template +
+                ", mainColor='" + mainColor + '\'' +
+                ", subColor1='" + subColor1 + '\'' +
+                ", subColor2='" + subColor2 + '\'' +
+                ", font='" + font + '\'' +
+                ", logoImageUrl='" + logoImageUrl + '\'' +
+                ", previewUrl='" + previewUrl + '\'' +
+                ", padding1=" + padding1 +
+                ", padding2=" + padding2 +
+                ", isCheckPerPerson=" + isCheckPerPerson +
+                ", headCount=" + headCount +
+                ", headDiscountRate=" + headDiscountRate +
+                ", isCheckPerYear=" + isCheckPerYear +
+                ", yearDiscountRate=" + yearDiscountRate +
+                ", isCardSet=" + isCardSet +
+                ", priceCardAreaPadding=" + priceCardAreaPadding +
+                ", isDeleted=" + isDeleted +
+                '}';
     }
 }
