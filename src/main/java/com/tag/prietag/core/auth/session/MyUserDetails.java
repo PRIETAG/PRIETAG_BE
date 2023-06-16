@@ -4,10 +4,12 @@ import lombok.Getter;
 import lombok.Setter;
 import com.tag.prietag.model.User;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @Setter
 @Getter
@@ -20,9 +22,8 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<GrantedAuthority> collector = new ArrayList<>();
-        collector.add(() -> user.getRole().toString());
-        return collector;
+        String role = "ROLE_"+user.getRole().toString();
+        return List.of(new SimpleGrantedAuthority(role));
     }
 
     @Override

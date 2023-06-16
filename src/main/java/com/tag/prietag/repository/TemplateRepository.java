@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface TemplateRepository extends JpaRepository<Template, Long> {
 
     // templateName 있는지
-    @Query("select t from Template t where t.mainTitle=:name")
+    @Query("select t from Template t where t.mainTitle=:name and t.isDeleted=false")
     Optional<Template> findByTemplateName(@Param("name") String name);
 
     // 해당 유저의 template 조회
