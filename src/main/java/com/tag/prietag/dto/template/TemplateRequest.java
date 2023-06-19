@@ -51,6 +51,8 @@ public class TemplateRequest {
         private boolean isCardSet;
         @NotNull
         private Integer priceCardAreaPadding;
+        @NotNull
+        private Integer priceCardDetailMaxHeight;
 
         public Template toEntity(User user) {
             return Template.builder()
@@ -75,6 +77,7 @@ public class TemplateRequest {
                     .yearDiscountRate(this.yearDiscountRate)
                     .isCardSet(this.isCardSet)
                     .priceCardAreaPadding(this.priceCardAreaPadding)
+                    .priceCardDetailMaxHeight(this.priceCardDetailMaxHeight)
                     .build();
         }
 

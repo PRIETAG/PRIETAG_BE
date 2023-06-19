@@ -65,10 +65,13 @@ public class TemplateVersion extends TimeStamped {
     private Integer priceCardAreaPadding;
 
     @Column(nullable = false)
+    private Integer priceCardDetailMaxHeight;
+
+    @Column(nullable = false)
     private boolean isDeleted;
 
     @Builder
-    public TemplateVersion(Long id, Template template, ZonedDateTime updateAt, Integer version, String versionTitle, String mainColor, List<String> subColor, String font, String logoImageUrl, String previewUrl, List<Integer> padding, boolean isCheckPerPerson, List<Integer> headCount, List<Integer> headDiscountRate, boolean isCheckPerYear, Integer yearDiscountRate, boolean isCardSet, Integer priceCardAreaPadding) {
+    public TemplateVersion(Long id, Template template, ZonedDateTime updateAt, Integer version, String versionTitle, String mainColor, List<String> subColor, String font, String logoImageUrl, String previewUrl, List<Integer> padding, boolean isCheckPerPerson, List<Integer> headCount, List<Integer> headDiscountRate, boolean isCheckPerYear, Integer yearDiscountRate, boolean isCardSet, Integer priceCardAreaPadding, Integer priceCardDetailMaxHeight) {
         this.id = id;
         this.template = template;
         this.version = version;
@@ -88,6 +91,7 @@ public class TemplateVersion extends TimeStamped {
         this.yearDiscountRate = yearDiscountRate;
         this.isCardSet = isCardSet;
         this.priceCardAreaPadding = priceCardAreaPadding;
+        this.priceCardDetailMaxHeight = priceCardDetailMaxHeight;
         this.isDeleted = false;
         this.setUpdatedAt(updateAt);
     }
