@@ -83,6 +83,7 @@ public class TemplateServiceTest {
                 .headDiscountRate(List.of(10, 20, 30))
                 .template(template)
                 .updateAt(ZonedDateTime.now())
+                .priceCardDetailMaxHeight(400)
                 .build();
     }
 
