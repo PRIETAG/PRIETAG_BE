@@ -1,6 +1,8 @@
 package com.tag.prietag.dto.template;
 
 import com.tag.prietag.model.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 import javax.validation.constraints.NotNull;
@@ -23,22 +25,31 @@ public class TemplateRequest {
         private List<ChartRequest> chart;
         private List<FaqRequest> faq;
 
+        @NotNull
         private String mainColor;
+        @NotNull
         private List<String> subColor;
+        @NotNull
         private String font;
 
         private String logoImageUrl;
 
+        @NotNull
         private List<Integer> padding;
+        @NotNull
         private String templateName;
 
+        @NotNull
         private boolean isCheckPerPerson;
         private List<HeadDiscount> headDiscount;
 
+        @NotNull
         private boolean isCheckPerYear;
         private Integer yearDiscountRate;
 
+        @NotNull
         private boolean isCardSet;
+        @NotNull
         private Integer priceCardAreaPadding;
 
         public Template toEntity(User user) {
@@ -58,8 +69,8 @@ public class TemplateRequest {
                     .logoImageUrl(this.logoImageUrl)
                     .padding(this.padding)
                     .isCheckPerPerson(this.isCheckPerPerson)
-                    .headCount(this.headDiscount.stream().map(headCount -> headCount.getHeadCount()).collect(Collectors.toList()))
-                    .headDiscountRate(this.headDiscount.stream().map(headDiscount -> headDiscount.getDiscountRate()).collect(Collectors.toList()))
+                    .headCount(this.headDiscount.isEmpty()?null:this.headDiscount.stream().map(headCount -> headCount.getHeadCount()).collect(Collectors.toList()))
+                    .headDiscountRate(this.headDiscount.isEmpty()?null:this.headDiscount.stream().map(headDiscount -> headDiscount.getDiscountRate()).collect(Collectors.toList()))
                     .isCheckPerYear(this.isCheckPerYear)
                     .yearDiscountRate(this.yearDiscountRate)
                     .isCardSet(this.isCardSet)
@@ -68,7 +79,10 @@ public class TemplateRequest {
         }
 
         public List<PriceCard> toPriceCardEntity() {
-            return priceCard.stream()
+            if (this.priceCard == null || this.priceCard.isEmpty()) {
+                return new ArrayList<>();
+            }
+            return this.priceCard.stream()
                     .map(card -> PriceCard.builder()
                             .cardTitle(card.getTitle())
                             .price(card.getPrice())
@@ -81,6 +95,9 @@ public class TemplateRequest {
         }
 
         public List<Chart> toChartEntity() {
+            if (this.chart == null || this.chart.isEmpty()) {
+                return new ArrayList<>();
+            }
             List<Chart> chartList = new ArrayList<>();
             for (int i = 0; i < chart.size(); i++) {
                 for (int j = 0; j < chart.get(i).table.size(); j++) {
@@ -98,6 +115,9 @@ public class TemplateRequest {
         }
 
         public List<Faq> toFaqEntity() {
+            if (this.faq == null || this.faq.isEmpty()) {
+                return new ArrayList<>();
+            }
             return faq.stream()
                     .map(faq -> Faq.builder()
                             .question(faq.getQuestion())
@@ -107,6 +127,9 @@ public class TemplateRequest {
         }
 
         public List<Field> toCardAreaEntity() {
+            if (this.priceCardArea == null || this.priceCardArea.isEmpty()) {
+                return new ArrayList<>();
+            }
             AtomicInteger index = new AtomicInteger(1);
             return priceCardArea.stream()
                     .map(area -> Field.builder()
@@ -119,6 +142,9 @@ public class TemplateRequest {
         }
 
         public List<Field> toChartAreaEntity() {
+            if (this.chartArea == null || this.chartArea.isEmpty()) {
+                return new ArrayList<>();
+            }
             AtomicInteger index = new AtomicInteger(1);
             return chartArea.stream()
                     .map(area -> Field.builder()
@@ -131,6 +157,9 @@ public class TemplateRequest {
         }
 
         public List<Field> toFaqAreaEntity() {
+            if (this.faqArea == null || this.faqArea.isEmpty()) {
+                return new ArrayList<>();
+            }
             AtomicInteger index = new AtomicInteger(1);
             return faqArea.stream()
                     .map(area -> Field.builder()
@@ -143,6 +172,8 @@ public class TemplateRequest {
         }
 
         @Getter
+        @AllArgsConstructor
+        @Builder
         public static class AreaRequest {
             @NotNull
             private Field.Role role;
@@ -150,6 +181,8 @@ public class TemplateRequest {
         }
 
         @Getter
+        @AllArgsConstructor
+        @Builder
         public static class PriceCardRequest {
             private String title;
             private Integer price;
@@ -160,6 +193,8 @@ public class TemplateRequest {
         }
 
         @Getter
+        @AllArgsConstructor
+        @Builder
         public static class ChartRequest {
             @NotNull
             private boolean haveHeader;
@@ -168,6 +203,8 @@ public class TemplateRequest {
         }
 
         @Getter
+        @AllArgsConstructor
+        @Builder
         public static class TableRequest {
             @NotNull
             private String feature;
@@ -176,6 +213,8 @@ public class TemplateRequest {
         }
 
         @Getter
+        @AllArgsConstructor
+        @Builder
         public static class FaqRequest {
             @NotNull
             private String question;
@@ -184,9 +223,33 @@ public class TemplateRequest {
         }
 
         @Getter
+        @AllArgsConstructor
+        @Builder
         public static class HeadDiscount {
             private Integer headCount;
             private Integer discountRate;
+        }
+
+        @Builder
+        public SaveInDTO(List<AreaRequest> priceCardArea, List<AreaRequest> chartArea, List<AreaRequest> faqArea, List<PriceCardRequest> priceCard, List<ChartRequest> chart, List<FaqRequest> faq, String mainColor, List<String> subColor, String font, String logoImageUrl, List<Integer> padding, String templateName, boolean isCheckPerPerson, List<HeadDiscount> headDiscount, boolean isCheckPerYear, Integer yearDiscountRate, boolean isCardSet, Integer priceCardAreaPadding) {
+            this.priceCardArea = priceCardArea;
+            this.chartArea = chartArea;
+            this.faqArea = faqArea;
+            this.priceCard = priceCard;
+            this.chart = chart;
+            this.faq = faq;
+            this.mainColor = mainColor;
+            this.subColor = subColor;
+            this.font = font;
+            this.logoImageUrl = logoImageUrl;
+            this.padding = padding;
+            this.templateName = templateName;
+            this.isCheckPerPerson = isCheckPerPerson;
+            this.headDiscount = headDiscount;
+            this.isCheckPerYear = isCheckPerYear;
+            this.yearDiscountRate = yearDiscountRate;
+            this.isCardSet = isCardSet;
+            this.priceCardAreaPadding = priceCardAreaPadding;
         }
     }
 

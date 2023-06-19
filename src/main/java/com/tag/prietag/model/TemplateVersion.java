@@ -2,12 +2,15 @@ package com.tag.prietag.model;
 
 import com.tag.prietag.core.util.IntegerListConverter;
 import com.tag.prietag.core.util.TimeStamped;
+import com.tag.prietag.dto.template.TemplateRequest;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @Getter
@@ -65,7 +68,7 @@ public class TemplateVersion extends TimeStamped {
     private boolean isDeleted;
 
     @Builder
-    public TemplateVersion(Long id, Template template, Integer version, String versionTitle, String mainColor, List<String> subColor, String font, String logoImageUrl, String previewUrl, List<Integer> padding, boolean isCheckPerPerson, List<Integer> headCount, List<Integer> headDiscountRate, boolean isCheckPerYear, Integer yearDiscountRate, boolean isCardSet, Integer priceCardAreaPadding) {
+    public TemplateVersion(Long id, Template template, ZonedDateTime updateAt, Integer version, String versionTitle, String mainColor, List<String> subColor, String font, String logoImageUrl, String previewUrl, List<Integer> padding, boolean isCheckPerPerson, List<Integer> headCount, List<Integer> headDiscountRate, boolean isCheckPerYear, Integer yearDiscountRate, boolean isCardSet, Integer priceCardAreaPadding) {
         this.id = id;
         this.template = template;
         this.version = version;
@@ -86,12 +89,19 @@ public class TemplateVersion extends TimeStamped {
         this.isCardSet = isCardSet;
         this.priceCardAreaPadding = priceCardAreaPadding;
         this.isDeleted = false;
+        this.setUpdatedAt(updateAt);
     }
 
     public void setTemplate(Template template){
         this.template = template;
     }
 
+    public void setHeadDiscount(List<TemplateRequest.SaveInDTO.HeadDiscount> headDiscount){
+        this.headCount = headDiscount.stream().map(headCount -> headCount.getHeadCount()).collect(Collectors.toList());
+        this.headDiscountRate = headDiscount.stream().map(discount -> discount.getDiscountRate()).collect(Collectors.toList());
+    }
+
+    public void setYearDiscountRate(Integer discountRate){ this.yearDiscountRate = discountRate;}
     @Override
     public String toString() {
         return "TemplateVersion{" +
