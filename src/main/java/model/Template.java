@@ -36,6 +36,13 @@ public class Template extends TimeStamped {
         this.isDeleted = false;
     }
 
+    @Builder
+    public Template(User user, String mainTitle) {
+        this.user = user;
+        this.mainTitle = mainTitle;
+        this.isDeleted = false;
+    }
+
     //    @Builder
 //    public Template(Long id, User user, List<TemplateVersion> templateVersions, String mainTitle) {
 //        this.id = id;

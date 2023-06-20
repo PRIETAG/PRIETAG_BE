@@ -87,6 +87,29 @@ public class TemplateVersion extends TimeStamped {
         this.isDeleted = false;
     }
 
+    // 버전 복제
+    @Builder
+    public TemplateVersion(Template newTemplate, TemplateVersion originVS) {
+        this.version = 1;
+        this.versionTitle = originVS.getVersionTitle();
+        this.template = newTemplate;
+        this.mainColor = originVS.getMainColor();
+        this.subColor1 = originVS.getSubColor1();
+        this.subColor2 = originVS.getSubColor2();
+        this.font = originVS.getFont();
+        this.logoImageUrl = originVS.getLogoImageUrl();
+        this.previewUrl = originVS.getPreviewUrl();
+        this.padding1 = originVS.getPadding1();
+        this.padding2 = originVS.getPadding2();
+        this.isCheckPerPerson = originVS.isCheckPerPerson();
+        this.headCount = originVS.getHeadCount();
+        this.headDiscountRate = originVS.getHeadDiscountRate();
+        this.isCheckPerYear = originVS.isCheckPerYear();
+        this.yearDiscountRate = originVS.getYearDiscountRate();
+        this.isCardSet = originVS.isCardSet();
+        this.isDeleted = false;
+    }
+
     public void setTemplate(Template template){
         this.template = template;
     }
