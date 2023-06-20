@@ -1,5 +1,6 @@
 package com.tag.prietag.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,30 +17,32 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
+    private Long kakaoId;
+    @Column(name = "nickname",nullable = false)
     private String username;
-
+    @JsonIgnore
+    private String Password;
     private String email;
-
     private Long publishId;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role;
+    private RoleEnum role;
+    private Boolean status;
 
-    public void updateRole(Role role){
+
+    public void updateRole(RoleEnum role){
         this.role = role;
     }
+
+
     @Builder
-    public User(Long id, Role role) {
+    public User(Long id, Long kakaoId, String username, String password, String email, RoleEnum role, Boolean status) {
         this.id = id;
+        this.kakaoId = kakaoId;
+        this.username = username;
+        this.Password = password;
+        this.email = email;
         this.role = role;
+        this.status = status;
     }
-
-    public enum Role {
-        USER,
-        ADMIN,
-    }
-
 }

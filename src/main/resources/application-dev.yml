@@ -35,5 +35,5 @@ logging:
     '[org.hibernate.type]': TRACE # 콘솔 쿼리에 ? 에 주입된 값 보기
 
 jwt:
-  secret: fdsafdaf
+  secret: ${SECRET}
 

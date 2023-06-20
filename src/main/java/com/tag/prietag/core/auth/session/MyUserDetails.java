@@ -9,9 +9,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 
-@Setter
 @Getter
 public class MyUserDetails implements UserDetails {
+
     private User user;
 
     public MyUserDetails(User user) {
@@ -20,19 +20,19 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<GrantedAuthority> collector = new ArrayList<>();
-        collector.add(() -> user.getRole().toString());
-        return collector;
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(()-> "ROLE_"+user.getRole());
+        return authorities;
     }
 
     @Override
     public String getPassword() {
-        return "dsad";
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return "dsaf";
+        return user.getUsername();
     }
 
     @Override
@@ -52,6 +52,8 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return user.getStatus();
     }
+
+
 }
