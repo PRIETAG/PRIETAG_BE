@@ -61,4 +61,17 @@ public class TemplateController {
         templateService.publishTemplateVS(versionId, myUserDetails.getUser());
         return ResponseEntity.ok(new ResponseDTO<>());
     }
+
+    // 템플릿 불러오기 (퍼블리싱)
+    @GetMapping("/template/user/{userId}")
+    public ResponseEntity<?> getTemplate(@PathVariable Long userId, @AuthenticationPrincipal MyUserDetails myUserDetails){
+        return ResponseEntity.ok().body(new ResponseDTO<>(templateService.getPublishedTemplateVS(userId, myUserDetails.getUser())));
+    }
+
+    // 템플릿 불러오기 (버전 선택)
+    @GetMapping("/template/version/{versionId}")
+    public ResponseEntity<?> getTemplateVS(@PathVariable Long versionId, @AuthenticationPrincipal MyUserDetails myUserDetails){
+        return ResponseEntity.ok().body(new ResponseDTO<>(templateService.getTemplateVS(versionId, myUserDetails.getUser())));
+    }
+
 }

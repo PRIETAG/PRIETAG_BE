@@ -145,3 +145,17 @@ public class TemplateService {
         // 퍼블리싱된 templateVersion의 id 수정
         user.setPublishId(versionId);
     }
+
+    // TODO: 로그인된 유저 정보를 사용할지?
+    public TemplateVersion getPublishedTemplateVS(Long userId, User user) {
+        Long publishId = user.getPublishId();
+
+        TemplateVersion templateVersion = templateVersionRepository.findById(publishId).orElseThrow(
+                () -> new Exception400("templateVersion", "존재하지 않는 TemplateVersion입니다"));
+
+        return templateVersion;
+    }
+
+    public Object getTemplateVS(Long versionId, User user) {
+    }
+}
