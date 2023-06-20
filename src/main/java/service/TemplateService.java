@@ -137,3 +137,11 @@ public class TemplateService {
         // 퍼블리싱된 templateVersion의 id 수정
         user.setPublishId(maxVersionId);
     }
+
+
+    // 템플릿 퍼블리싱 (버전 선택)
+    @Transactional
+    public void publishTemplateVS(Long versionId, User user) {
+        // 퍼블리싱된 templateVersion의 id 수정
+        user.setPublishId(versionId);
+    }

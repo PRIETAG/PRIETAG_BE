@@ -53,4 +53,12 @@ public class TemplateController {
         templateService.publishTemplate(templateId, myUserDetails.getUser());
         return ResponseEntity.ok(new ResponseDTO<>());
     }
+
+
+    // 템플릿 퍼블리싱 (버전 선택)
+    @PatchMapping("/template/publish")
+    public ResponseEntity<?> publishTemplateVS(@RequestParam Long versionId, Error errors, @AuthenticationPrincipal MyUserDetails myUserDetails){
+        templateService.publishTemplateVS(versionId, myUserDetails.getUser());
+        return ResponseEntity.ok(new ResponseDTO<>());
+    }
 }
