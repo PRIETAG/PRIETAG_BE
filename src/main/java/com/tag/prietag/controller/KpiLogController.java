@@ -5,12 +5,14 @@ import com.tag.prietag.dto.ResponseDTO;
 import com.tag.prietag.dto.log.LogRequest;
 import com.tag.prietag.dto.log.LogResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import com.tag.prietag.service.KpiLogService;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 
 @RequestMapping("/api")
 @RestController
@@ -29,5 +31,11 @@ public class KpiLogController {
         return ResponseEntity.ok().body(new ResponseDTO<>(getTodayKpiOutDTO));
     }
 
-
+    @GetMapping("/dashboard/total")
+    public ResponseEntity<?> getTotalKpi(@RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
+                                         @RequestParam(value = "period") String period,
+                                         @AuthenticationPrincipal MyUserDetails myUserDetails){
+        LogResponse.GetTotalKpiOutDTO getTotalKpiOutDTO =
+        return ResponseEntity.ok().body(new ResponseDTO<>(getTotalKpiOutDTO));
+    }
 }

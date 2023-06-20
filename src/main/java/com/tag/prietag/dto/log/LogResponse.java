@@ -21,4 +21,13 @@ public class LogResponse {
             Integer today;
         }
     }
+
+    @Getter
+    @AllArgsConstructor @Builder
+    public static class GetTotalKpiOutDTO{
+
+        private Integer viewCount;
+        private Integer leaveCount;
+        private Integer conversionRate;
+    }
 }
