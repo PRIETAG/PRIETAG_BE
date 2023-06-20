@@ -126,4 +126,14 @@ public class TemplateService {
 
         return getTemplatesVSOutDTOList;
     }
-}
+
+
+    // 템플릿 퍼블리싱 (최신)
+    @Transactional
+    public void publishTemplate(Long templateId, User user) {
+        // 버전이 가장 높은 templateVersion의 id
+        Long maxVersionId = templateVersionRepository.findIdByTemplateIdMaxVersion(templateId);
+
+        // 퍼블리싱된 templateVersion의 id 수정
+        user.setPublishId(maxVersionId);
+    }

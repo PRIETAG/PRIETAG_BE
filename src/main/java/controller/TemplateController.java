@@ -45,4 +45,12 @@ public class TemplateController {
         List<TemplateResponse.getTemplatesVSOutDTO> getTemplatesVSOutDTOList = templateService.getTemplatesVS(id, pageable);
         return ResponseEntity.ok().body(new ResponseDTO<>(getTemplatesVSOutDTOList));
     }
+
+
+    // 템플릿 퍼블리싱 (최신)
+    @PatchMapping("/template/publish")
+    public ResponseEntity<?> publishTemplate(@RequestParam Long templateId, Error errors, @AuthenticationPrincipal MyUserDetails myUserDetails){
+        templateService.publishTemplate(templateId, myUserDetails.getUser());
+        return ResponseEntity.ok(new ResponseDTO<>());
+    }
 }
