@@ -16,5 +16,7 @@ public class LogRequest {
         private CustomerLog.Type type;
         @NotNull
         private Long templateVersionId;
+        @NotNull
+        private Long userId;
     }
 }

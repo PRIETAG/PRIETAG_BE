@@ -6,7 +6,7 @@ import com.tag.prietag.model.Template;
 import com.tag.prietag.model.TemplateVersion;
 import com.tag.prietag.model.User;
 import com.tag.prietag.model.log.CustomerLog;
-import com.tag.prietag.repository.CustomerLogRepository;
+import com.tag.prietag.repository.log.CustomerLogRepository;
 import com.tag.prietag.repository.TemplateVersionRepository;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.*;
 public class LogServiceTest {
 
     @InjectMocks
-    private LogService logService;
+    private KpiLogService logService;
 
     @Mock
     private CustomerLogRepository customerLogRepository;
