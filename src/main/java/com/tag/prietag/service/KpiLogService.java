@@ -9,12 +9,15 @@ import com.tag.prietag.model.log.CustomerLog;
 import com.tag.prietag.model.log.PublishLog;
 import com.tag.prietag.repository.log.PublishLogRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.tag.prietag.repository.log.CustomerLogRepository;
 import com.tag.prietag.repository.TemplateVersionRepository;
 
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
@@ -107,12 +110,13 @@ public class KpiLogService {
                 .build();
     }
 
+    // 대시보드 TotalKpi 조회
     public List<LogResponse.GetTotalKpiOutDTO> getTotalKpi(User user, ZonedDateTime date, String period) {
         List<LogResponse.GetTotalKpiOutDTO> getTotalKpiOutDTOList;
 
         if (period.equals("WEEK")) {
-            ZonedDateTime startDate = date.truncatedTo(ChronoUnit.DAYS);
-            ZonedDateTime endDate = startDate.plusWeeks(1).minusNanos(1);
+            ZonedDateTime startDate = date.minusDays(6).truncatedTo(ChronoUnit.DAYS);
+            ZonedDateTime endDate = date.with(LocalTime.MAX);
 
             List<CustomerLog> betweenCustomerLogList = customerLogRepository.findByBetweenDateUserId(user.getId(), startDate, endDate).orElse(Collections.emptyList());
             getTotalKpiOutDTOList = countCustomerLogsByWeek(betweenCustomerLogList);
@@ -129,7 +133,7 @@ public class KpiLogService {
             List<CustomerLog> betweenCustomerLogList = customerLogRepository.findByBetweenDateUserId(user.getId(), startDate, endDate).orElse(Collections.emptyList());
             getTotalKpiOutDTOList = countCustomerLogsByYear(betweenCustomerLogList);
         } else {
-            getTotalKpiOutDTOList = new ArrayList<>();
+            throw new Exception400("period", "period 단위가 잘못되었습니다");
         }
 
         return getTotalKpiOutDTOList;
@@ -152,12 +156,14 @@ public class KpiLogService {
         // 시작일 부터 7일후로 나눠논 데이터 저장
         List<LogResponse.GetTotalKpiOutDTO> getTotalKpiOutDTOList = new ArrayList<>();
         for (Map.Entry<LocalDate, Map<CustomerLog.Type, Integer>> entry : countMap.entrySet()) {
+            int day = entry.getKey().getDayOfMonth();
             Map<CustomerLog.Type, Integer> typeCountMap = entry.getValue();
 
             int viewerCount = typeCountMap.getOrDefault(CustomerLog.Type.VIEWER, 0);
             int subscripterCount = typeCountMap.getOrDefault(CustomerLog.Type.SUBSCRIPTER, 0);
 
             getTotalKpiOutDTOList.add(LogResponse.GetTotalKpiOutDTO.builder()
+                    .label(day)
                     .viewCount(viewerCount)
                     .leaveCount(viewerCount - subscripterCount)
                     .conversionRate((subscripterCount / viewerCount) * 100)
@@ -166,6 +172,7 @@ public class KpiLogService {
 
         return getTotalKpiOutDTOList;
     }
+
     public List<LogResponse.GetTotalKpiOutDTO> countCustomerLogsByMonth(List<CustomerLog> customerLogs) {
         // TreeMap을 사용하여 순서유지
         Map<Integer, Map<CustomerLog.Type, Integer>> countMap = new TreeMap<>();
@@ -187,12 +194,14 @@ public class KpiLogService {
 
         List<LogResponse.GetTotalKpiOutDTO> getTotalKpiOutDTOList = new ArrayList<>();
         for (Map.Entry<Integer, Map<CustomerLog.Type, Integer>> entry : countMap.entrySet()) {
+            Integer week = entry.getKey() - 1;
             Map<CustomerLog.Type, Integer> typeCountMap = entry.getValue();
 
             int viewerCount = typeCountMap.getOrDefault(CustomerLog.Type.VIEWER, 0);
             int subscripterCount = typeCountMap.getOrDefault(CustomerLog.Type.SUBSCRIPTER, 0);
 
             getTotalKpiOutDTOList.add(LogResponse.GetTotalKpiOutDTO.builder()
+                    .label(week)
                     .viewCount(viewerCount)
                     .leaveCount(viewerCount - subscripterCount)
                     .conversionRate((subscripterCount / viewerCount) * 100)
@@ -201,6 +210,7 @@ public class KpiLogService {
 
         return getTotalKpiOutDTOList;
     }
+
     public List<LogResponse.GetTotalKpiOutDTO> countCustomerLogsByYear(List<CustomerLog> customerLogs) {
         Map<Month, Map<CustomerLog.Type, Integer>> countMap = new TreeMap<>(Comparator.comparingInt(Month::getValue));
 
@@ -217,12 +227,14 @@ public class KpiLogService {
 
         List<LogResponse.GetTotalKpiOutDTO> getTotalKpiOutDTOList = new ArrayList<>();
         for (Map.Entry<Month, Map<CustomerLog.Type, Integer>> entry : countMap.entrySet()) {
+            int month = entry.getKey().getValue() - 1;
             Map<CustomerLog.Type, Integer> typeCountMap = entry.getValue();
 
             int viewerCount = typeCountMap.getOrDefault(CustomerLog.Type.VIEWER, 0);
             int subscripterCount = typeCountMap.getOrDefault(CustomerLog.Type.SUBSCRIPTER, 0);
 
             getTotalKpiOutDTOList.add(LogResponse.GetTotalKpiOutDTO.builder()
+                    .label(month)
                     .viewCount(viewerCount)
                     .leaveCount(viewerCount - subscripterCount)
                     .conversionRate((subscripterCount / viewerCount) * 100)
@@ -232,4 +244,50 @@ public class KpiLogService {
         return getTotalKpiOutDTOList;
     }
 
+    // 대시보드 HistoryKpi 조회
+    public List<LogResponse.GetHistoryKpiOutDTO> getHistoryKpi(User user, ZonedDateTime date, String period, Pageable pageable) {
+        ZonedDateTime startDate;
+        ZonedDateTime endDate = date.with(LocalTime.MAX);
+        if (period.equals("WEEK")) {
+            startDate = date.minusDays(6).truncatedTo(ChronoUnit.DAYS);
+        } else if (period.equals("MONTH")) {
+            startDate = date.minusMonths(1).truncatedTo(ChronoUnit.DAYS);
+        } else if (period.equals("YEAR")) {
+            startDate = date.minusYears(1).with(TemporalAdjusters.firstDayOfMonth()).plusMonths(1).truncatedTo(ChronoUnit.DAYS);
+        } else {
+            throw new Exception400("period", "period 단위가 잘못되었습니다");
+        }
+
+        List<LogResponse.GetHistoryKpiOutDTO> getHistoryKpiOutDTOList = new ArrayList<>();
+
+        Page<PublishLog> publishLogPage = publishLogRepository.findByBetweenDateUserId(user.getId(), startDate, endDate, pageable);
+        List<CustomerLog> betweenCustomerLogList = customerLogRepository.findByBetweenDateUserId(user.getId(), startDate, endDate).orElse(Collections.emptyList());
+        for (int i = 0; i < publishLogPage.getSize(); i++) {
+            PublishLog publishLog = publishLogPage.getContent().get(i);
+            int viewCount = 0;
+            int conversionCount = 0;
+            for (CustomerLog customerLog : betweenCustomerLogList) {
+                if ((customerLog.getTemplatevs().getId() == publishLog.getTemplatevs().getId())
+                        && (customerLog.getCreatedAt().compareTo(publishLog.getCreatedAt()) >= 0)) {
+                    if (i != publishLogPage.getSize() - 1 && customerLog.getCreatedAt().compareTo(publishLogPage.getContent().get(i + 1).getCreatedAt()) < 0) {
+                        int a = customerLog.getType().equals(CustomerLog.Type.VIEWER) ? viewCount++ : conversionCount++;
+                    } else {
+                        int a = customerLog.getType().equals(CustomerLog.Type.VIEWER) ? viewCount++ : conversionCount++;
+                    }
+                }
+            }
+
+            getHistoryKpiOutDTOList.add(LogResponse.GetHistoryKpiOutDTO.builder()
+                    .id(publishLog.getTemplatevs().getId())
+                    .publishDate(publishLog.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy.M.d")))
+                    .versionName(publishLog.getTemplatevs().getVersionTitle())
+                    .isDeleted(publishLog.getTemplatevs().isDeleted())
+                    .viewCount(viewCount)
+                    .leaveCount(conversionCount - viewCount)
+                    .conversionRate((conversionCount / viewCount) * 100)
+                    .build());
+        }
+
+        return getHistoryKpiOutDTOList;
+    }
 }
