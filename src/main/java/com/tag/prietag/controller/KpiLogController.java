@@ -50,7 +50,7 @@ public class KpiLogController {
                                            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
                                          @AuthenticationPrincipal MyUserDetails myUserDetails){
         Pageable pageable = PageRequest.of(page, pageSize);
-        List<LogResponse.GetTotalKpiOutDTO> getTotalKpiOutDTOList = kpiLogService
-        return ResponseEntity.ok().body(new ResponseDTO<>(getTotalKpiOutDTOList));
+        List<LogResponse.GetHistoryKpiOutDTO> getHistoryKpiOutDTOList = kpiLogService.getHistoryKpi(myUserDetails.getUser(),date.atStartOfDay(ZoneId.systemDefault()),period,pageable);
+        return ResponseEntity.ok().body(new ResponseDTO<>(getHistoryKpiOutDTOList));
     }
 }
