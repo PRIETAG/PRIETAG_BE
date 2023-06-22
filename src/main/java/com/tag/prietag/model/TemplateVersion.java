@@ -105,6 +105,8 @@ public class TemplateVersion extends TimeStamped {
         this.headDiscountRate = headDiscount.stream().map(discount -> discount.getDiscountRate()).collect(Collectors.toList());
     }
 
+    public void setLogoImageUrl(String logoImageUrl){this.logoImageUrl = logoImageUrl;}
+    public void setPreviewUrl(String previewUrl){this.previewUrl = previewUrl;}
     public void setYearDiscountRate(Integer discountRate){ this.yearDiscountRate = discountRate;}
     @Override
     public String toString() {

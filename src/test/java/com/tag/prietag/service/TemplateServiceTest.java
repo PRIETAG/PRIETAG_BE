@@ -1,12 +1,14 @@
 package com.tag.prietag.service;
 
 import com.tag.prietag.core.exception.Exception400;
+import com.tag.prietag.core.util.S3Uploader;
 import com.tag.prietag.dto.template.TemplateRequest;
 import com.tag.prietag.model.PriceCard;
 import com.tag.prietag.model.Template;
 import com.tag.prietag.model.TemplateVersion;
 import com.tag.prietag.model.User;
 import com.tag.prietag.repository.*;
+import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,7 +17,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -47,13 +54,17 @@ public class TemplateServiceTest {
     private TemplateVersionRepository templateVersionRepository;
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private S3Uploader s3Uploader;
 
+    private final String path = "src/test/resources/images/";
+    private String originalFilename = "default.jpeg";
 
     User user;
     Template template;
     TemplateVersion templateVersion;
     @BeforeEach
-    void setUp(){
+    void setUp() throws IOException {
         user = User.builder()
                 .id(1L)
                 .email("dasfd@naver.com")
@@ -86,6 +97,13 @@ public class TemplateServiceTest {
                 .priceCardAreaPadding(300)
                 .priceCardDetailMaxHeight(400)
                 .build();
+
+        lenient().when(s3Uploader.upload(any(), anyString()))
+                .thenAnswer(invocation -> {
+                    MultipartFile img = invocation.getArgument(0);
+                    if (img.isEmpty()) throw new Exception400("profile", "이미지가 전송되지 않았습니다");
+                    return path + originalFilename;
+                });
     }
 
     TemplateRequest.SaveInDTO getSaveInDTO(String mainTilte) {
@@ -107,7 +125,6 @@ public class TemplateServiceTest {
                 .isCardSet(true)
                 .font("dsa")
                 .isCheckPerPerson(true)
-                .logoImageUrl("dafdafa.jpg")
                 .isCheckPerYear(true)
                 .mainColor("#3214214")
                 .subColor(new ArrayList<>(List.of("#312f11", "#fdas2f")))
@@ -116,6 +133,8 @@ public class TemplateServiceTest {
                 .padding(new ArrayList<>(List.of(400, 300)))
                 .headDiscount(headDiscountList)
                 .priceCard(priceCardRequests)
+                .priceCardDetailMaxHeight(300)
+                .priceCardAreaPadding(300)
                 .build();
     }
 
@@ -125,21 +144,32 @@ public class TemplateServiceTest {
     class CreateTemplate {
         @Test
         @DisplayName("중복되는 TemplateName이 있음")
-        void fail() {
+        void fail() throws IOException {
             createTemplateSetting();
             TemplateRequest.SaveInDTO saveInDTO = getSaveInDTO("내가 만듬");
+
+            originalFilename = "fail.txt";
+            String contentType = ContentType.TEXT_PLAIN.toString();
+            byte[] content = Files.readAllBytes(Paths.get(path + originalFilename));
+            MultipartFile previewImage = new MockMultipartFile(originalFilename, originalFilename, contentType, content);
+            MultipartFile logoImage = null;
             //when then
-            Assertions.assertThrows(Exception400.class, () -> templateService.createTemplate(saveInDTO, user));
+            Assertions.assertThrows(Exception400.class, () -> templateService.createTemplate(saveInDTO, user, logoImage, previewImage));
         }
 
         @Test
         @DisplayName("성공")
-        void success(){
+        void success() throws IOException {
             createTemplateSetting();
             TemplateRequest.SaveInDTO saveInDTO = getSaveInDTO("내가 안만듬");
             List<PriceCard> priceCardRequests = saveInDTO.toPriceCardEntity();
 
-            Assertions.assertDoesNotThrow(() -> templateService.createTemplate(saveInDTO, user));
+            String contentType = ContentType.IMAGE_JPEG.toString();
+            byte[] content = Files.readAllBytes(Paths.get(path + originalFilename));
+            MultipartFile previewImage = new MockMultipartFile(originalFilename, originalFilename, contentType, content);
+            MultipartFile logoImage = null;
+
+            Assertions.assertDoesNotThrow(() -> templateService.createTemplate(saveInDTO, user, logoImage, previewImage));
         }
 
         void createTemplateSetting(){
