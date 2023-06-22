@@ -1,12 +1,25 @@
 package com.tag.prietag.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.tag.prietag.core.auth.jwt.MyJwtProvider;
+import com.tag.prietag.core.util.Fetch;
+import com.tag.prietag.dto.ResponseDTO;
 import com.tag.prietag.dto.User.UserLoginDTO;
+import com.tag.prietag.dto.kakao.KakaoToken;
+import com.tag.prietag.dto.kakao.OAuthProfile;
+import com.tag.prietag.model.RoleEnum;
 import com.tag.prietag.model.User;
 import com.tag.prietag.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -23,31 +36,75 @@ public class UserServiceImpl implements UserService {
     @PersistenceContext
     private EntityManager entityManager;
 
-//    public void joinSave(UserSaveDTO userSaveDTO) {
-//        User user = User.builder()
-//                .username(userSaveDTO.getUsername())
-//                .password(userSaveDTO.getPassword())
-//                .email(userSaveDTO.getEmail())
-//                .role(userSaveDTO.getRole())
-//                .build();
-//        userRepository.joinSave(user);
-//    }
+    public ResponseEntity<?> accessTokenVerify(String code) {
 
-//    public String 로그인(UserLoginDTO userLoginDTO) {
-//        Optional<User> userOP = userRepository.findByUsername(userLoginDTO.getUsername());
-//        if(userOP.isPresent()){
-//            User userPS = userOP.get();
-//            if(passwordEncoder.matches(userLoginDTO.getPassword(), userPS.getPassword())){
-//                // matches 사용하면 디티오 로우패스워드랑 DB의 인코딩된 패스워드 비교 가능
-//                String jwt = MyJwtProvider.create(userPS);
-//                return jwt;
-//            }
-//            throw new RuntimeException("패스워드 다시 입력하세요");
-//        }else{
-//            throw new RuntimeException("존재하지 않는 유저입니다");
-//        }
-//    }
+        if (code == null || code.isEmpty()) {
+            return ResponseEntity.badRequest().body(new ResponseDTO<>(HttpStatus.BAD_REQUEST, "코드 없음", "코드가 존재 하지 않습니다."));
+        }
+        return null;
+    }
 
+    public  ResponseEntity<String> accessTokenReceiving(String code) {
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.add("grant_type", "authorization_code");
+        body.add("client_id", "87bf3594adc40498df2b327e3e60f784");
+        body.add("redirect_uri", "http://localhost:8080/callback"); // 2차 검증
+        body.add("code", code); // 핵심
+
+        ResponseEntity<String> codeEntity = Fetch.kakao("https://kauth.kakao.com/oauth/token", HttpMethod.POST, body);
+
+        return codeEntity;
+    }
+
+    public KakaoToken changeType(ResponseEntity<String> codeEntity) throws JsonProcessingException {
+
+        ObjectMapper om = new ObjectMapper();
+        om.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+        KakaoToken kakaoToken = om.readValue(codeEntity.getBody(), KakaoToken.class);
+
+        return kakaoToken;
+    }
+
+
+    public Optional<User> getKakaoId(OAuthProfile oAuthProfile) {
+
+        Optional<User> userOP = userRepository.findByUsername("kakao_" + oAuthProfile.getId());
+        return userOP;
+    }
+
+    public OAuthProfile getResource(KakaoToken kakaoToken, ObjectMapper om) throws JsonProcessingException {
+
+        ResponseEntity<String> tokenEntity = Fetch.kakao("https://kapi.kakao.com/v2/user/me", HttpMethod.POST, kakaoToken.getAccessToken());
+        OAuthProfile oAuthProfile = om.readValue(tokenEntity.getBody(), OAuthProfile.class);
+
+//        return  ResponseEntity.ok().body("email :"+oAuthProfile.getKakaoAccount().getEmail()); // 이메일 받아옴
+//        return ResponseEntity.ok().body("oAuthProfile :" + oAuthProfile); // 아이디랑 닉네임 받아옴
+//        return ResponseEntity.ok().body("id :" + oAuthProfile.getId()); // 아이디만 받음
+//        return ResponseEntity.ok().body("내용 : " + oAuthProfile.getProperties());// 이름만 받음
+//        return ResponseEntity.ok().body("내용 : " + oAuthProfile.getProperties().toString());// 이름만 String으로 받음
+
+        return oAuthProfile;
+    }
+
+    public String login(UserLoginDTO userLoginDTO, OAuthProfile oAuthProfile) {
+        userLoginDTO.setEmail(oAuthProfile.getKakaoAccount().getEmail());
+        userLoginDTO.setUsername("kakao_"+oAuthProfile.getId());
+        String jwt = 로그인(userLoginDTO);
+        return jwt;
+    }
+
+    public void userSave(OAuthProfile oAuthProfile) {
+
+        User user = User.builder()
+                .password("1234") // 실제로 로그인 하지 않아서 임의의 값 넣음
+                .username("kakao_" + oAuthProfile.getId())
+                .email(oAuthProfile.getKakaoAccount().getEmail())
+                .role(RoleEnum.USER)
+                .build();
+
+        userRepository.save(user);
+
+    }
     public String 로그인(UserLoginDTO userLoginDTO) {
         Optional<User> userOP = userRepository.findByUsername(userLoginDTO.getUsername());
         if(userOP.isPresent()){
@@ -58,9 +115,4 @@ public class UserServiceImpl implements UserService {
         }
         throw new RuntimeException("패스워드 다시 입력하세요");
     }
-//    throw new RuntimeException("존재하지 않는 유저입니다");
-//    @Override
-//    public UserSaveDTO 회원가입(UserSaveDTO userSaveDTO) {
-//        return null;
-//    }
 }
