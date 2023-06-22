@@ -3,9 +3,11 @@ package com.tag.prietag.dto.template;
 import com.tag.prietag.model.*;
 import lombok.Builder;
 import lombok.Getter;
+import org.hibernate.Hibernate;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TemplateResponse {
@@ -92,9 +94,18 @@ public class TemplateResponse {
             // 버전 타이틀이 이름 맞나?
             this.templateName = templateVersion.getVersionTitle();
             this.isCheckPerPerson = templateVersion.isCheckPerPerson();
-            List<TemplateRequest.SaveInDTO.HeadDiscount> headDiscount = null;
+
+            // Lazy loading 해제
+            Hibernate.initialize(templateVersion.getHeadCount());
+            Hibernate.initialize(templateVersion.getHeadDiscountRate());
+
+            List<TemplateRequest.SaveInDTO.HeadDiscount> headDiscount = new ArrayList<>();
             for (int i = 0; i < templateVersion.getHeadCount().size(); i++) {
-                TemplateRequest.SaveInDTO.HeadDiscount ins = new TemplateRequest.SaveInDTO.HeadDiscount(templateVersion.getHeadCount().get(i), templateVersion.getHeadDiscountRate().get(i));
+                TemplateRequest.SaveInDTO.HeadDiscount ins = TemplateRequest.SaveInDTO.HeadDiscount
+                        .builder()
+                        .headCount(templateVersion.getHeadCount().get(i))
+                        .discountRate(templateVersion.getHeadDiscountRate().get(i))
+                        .build();
                 headDiscount.add(ins);
             }
             this.headDiscount = headDiscount;

@@ -33,6 +33,7 @@ public class TemplateRequest {
         private String font;
 
         private String logoImageUrl;
+        private String previewUrl;
 
         @NotNull
         private List<Integer> padding;
@@ -69,6 +70,7 @@ public class TemplateRequest {
                     .subColor(this.subColor)
                     .font(this.font)
                     .logoImageUrl(this.logoImageUrl)
+                    .previewUrl(this.previewUrl)
                     .padding(this.padding)
                     .isCheckPerPerson(this.isCheckPerPerson)
                     .headCount(this.headDiscount.isEmpty()?null:this.headDiscount.stream().map(headCount -> headCount.getHeadCount()).collect(Collectors.toList()))
@@ -87,6 +89,7 @@ public class TemplateRequest {
             }
             return this.priceCard.stream()
                     .map(card -> PriceCard.builder()
+                            .index(this.priceCard.indexOf(card))
                             .cardTitle(card.getTitle())
                             .price(card.getPrice())
                             .discountRate(card.getDiscountRate())
@@ -123,6 +126,7 @@ public class TemplateRequest {
             }
             return faq.stream()
                     .map(faq -> Faq.builder()
+                            .index(this.faq.indexOf(faq))
                             .question(faq.getQuestion())
                             .answer(faq.getDesc())
                             .build())

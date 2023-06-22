@@ -97,7 +97,8 @@ public class TemplateController {
     @GetMapping("/template/version/{versionId}")
     public ResponseEntity<?> getTemplateVS(@PathVariable Long versionId,
                                            @AuthenticationPrincipal MyUserDetails myUserDetails){
-        return ResponseEntity.ok().body(new ResponseDTO<>(templateService.getTemplateVS(versionId, myUserDetails.getUser())));
+        TemplateResponse.TemplateVSOutDTO result = templateService.getTemplateVS(versionId, myUserDetails.getUser());
+        return ResponseEntity.ok().body(result);
     }
 
 
