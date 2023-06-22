@@ -49,4 +49,8 @@ public interface TemplateVersionRepository extends JpaRepository<TemplateVersion
 
     // 템플릿 버전들 조회
     List<TemplateVersion> findAllByTemplateId(Long templateId);
+
+    // 메인타이틀로 버전 조회
+    @Query("select t from TemplateVersion t where t.template.mainTitle=:mainTitle and t.isDeleted=false")
+    List<TemplateVersion> findAllByMainTitle(@Param("mainTitle") String mainTitle);
 }
