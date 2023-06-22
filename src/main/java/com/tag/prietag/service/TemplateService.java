@@ -287,8 +287,26 @@ public class TemplateService {
         return new TemplateResponse.TemplateVSOutDTO(cardArea, chartArea, faqArea, priceCard, chart, faq, templateVersion);
     }
 
-    public Object getTemplateVS(Long versionId, User user) {
+
+    // 템플릿 불러오기 (버전 선택)
+    public TemplateResponse.TemplateVSOutDTO getTemplateVS(Long versionId, User user) {
+        TemplateVersion templateVersion = templateVersionRepository.findById(versionId).orElseThrow(
+                () -> new Exception400("templateVersion", "존재하지 않는 TemplateVersion입니다"));
+
+        // 카드, 차트, faq area 정보 불러오기
+        List<Field> cardArea = fieldRepository.findAllByTemplateVersionIdAndAreaNumOrderByIndex(versionId, 1);
+        List<Field> chartArea = fieldRepository.findAllByTemplateVersionIdAndAreaNumOrderByIndex(versionId, 2);
+        List<Field> faqArea = fieldRepository.findAllByTemplateVersionIdAndAreaNumOrderByIndex(versionId, 3);
+
+        // 카드, 차트, faq 정보 불러오기
+        List<PriceCard> priceCard = priceCardRepository.findAllByTemplateVersionIdOrderByIndex(versionId);
+        List<Chart> chart = chartRepository.findAllByTemplateVersionIdOrderByIndex(versionId);
+        List<Faq> faq = faqRepository.findAllByTemplateVersionIdOrderByIndex(versionId);
+
+        return new TemplateResponse.TemplateVSOutDTO(cardArea, chartArea, faqArea, priceCard, chart, faq, templateVersion);
     }
+
+
     // 템플릿 버전(히스토리) 삭제
     @Transactional
     public void deleteTemplateVS(TemplateRequest.DeleteInDTO deleteInDTO, User user) {
