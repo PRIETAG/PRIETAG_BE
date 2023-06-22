@@ -6,7 +6,6 @@ import com.tag.prietag.dto.template.TemplateRequest;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -34,6 +33,7 @@ public class TemplateVersion extends TimeStamped {
     private String subColor1;
     @Column(nullable = false)
     private String subColor2;
+
     @Column(nullable = false)
     private String font;
 

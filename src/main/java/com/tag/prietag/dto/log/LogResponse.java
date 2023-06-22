@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.Date;
+
 public class LogResponse {
 
     @Getter
@@ -26,6 +28,20 @@ public class LogResponse {
     @AllArgsConstructor @Builder
     public static class GetTotalKpiOutDTO{
 
+        private Integer label;
+        private Integer viewCount;
+        private Integer leaveCount;
+        private Integer conversionRate;
+    }
+
+    @Getter
+    @AllArgsConstructor @Builder
+    public static class GetHistoryKpiOutDTO{
+
+        private Long id;
+        private String publishDate;
+        private String versionName;
+        private boolean isDeleted;
         private Integer viewCount;
         private Integer leaveCount;
         private Integer conversionRate;

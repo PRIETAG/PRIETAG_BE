@@ -5,6 +5,8 @@ import com.tag.prietag.dto.ResponseDTO;
 import com.tag.prietag.dto.log.LogRequest;
 import com.tag.prietag.dto.log.LogResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,6 +15,8 @@ import com.tag.prietag.service.KpiLogService;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.List;
 
 @RequestMapping("/api")
 @RestController
@@ -35,7 +39,18 @@ public class KpiLogController {
     public ResponseEntity<?> getTotalKpi(@RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
                                          @RequestParam(value = "period") String period,
                                          @AuthenticationPrincipal MyUserDetails myUserDetails){
-        LogResponse.GetTotalKpiOutDTO getTotalKpiOutDTO =
-        return ResponseEntity.ok().body(new ResponseDTO<>(getTotalKpiOutDTO));
+        List<LogResponse.GetTotalKpiOutDTO> getTotalKpiOutDTOList = kpiLogService.getTotalKpi(myUserDetails.getUser(), date.atStartOfDay(ZoneId.systemDefault()), period);
+        return ResponseEntity.ok().body(new ResponseDTO<>(getTotalKpiOutDTOList));
+    }
+
+    @GetMapping("/dashboard/history")
+    public ResponseEntity<?> getHistoryKpi(@RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
+                                         @RequestParam(value = "period") String period,
+                                           @RequestParam(value = "page") int page,
+                                           @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+                                         @AuthenticationPrincipal MyUserDetails myUserDetails){
+        Pageable pageable = PageRequest.of(page, pageSize);
+        List<LogResponse.GetHistoryKpiOutDTO> getHistoryKpiOutDTOList = kpiLogService.getHistoryKpi(myUserDetails.getUser(),date.atStartOfDay(ZoneId.systemDefault()),period,pageable);
+        return ResponseEntity.ok().body(new ResponseDTO<>(getHistoryKpiOutDTOList));
     }
 }
