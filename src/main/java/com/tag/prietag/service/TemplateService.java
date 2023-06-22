@@ -264,14 +264,27 @@ public class TemplateService {
         user.setPublishId(versionId);
     }
 
-    // TODO: 로그인된 유저 정보를 사용할지?
-    public TemplateVersion getPublishedTemplateVS(Long userId, User user) {
+
+    // 템플릿 불러오기 (퍼블리싱)
+    public TemplateResponse.TemplateVSOutDTO getPublishedTemplateVS(Long userId, User user) {
+        // TODO: 로그인된 유저 정보를 사용할지?
         Long publishId = user.getPublishId();
 
         TemplateVersion templateVersion = templateVersionRepository.findById(publishId).orElseThrow(
                 () -> new Exception400("templateVersion", "존재하지 않는 TemplateVersion입니다"));
+        Long versionId = templateVersion.getId();
 
-        return templateVersion;
+        // 카드, 차트, faq area 정보 불러오기
+        List<Field> cardArea = fieldRepository.findAllByTemplateVersionIdAndAreaNumOrderByIndex(versionId, 1);
+        List<Field> chartArea = fieldRepository.findAllByTemplateVersionIdAndAreaNumOrderByIndex(versionId, 2);
+        List<Field> faqArea = fieldRepository.findAllByTemplateVersionIdAndAreaNumOrderByIndex(versionId, 3);
+
+        // 카드, 차트, faq 정보 불러오기
+        List<PriceCard> priceCard = priceCardRepository.findAllByTemplateVersionIdOrderByIndex(versionId);
+        List<Chart> chart = chartRepository.findAllByTemplateVersionIdOrderByIndex(versionId);
+        List<Faq> faq = faqRepository.findAllByTemplateVersionIdOrderByIndex(versionId);
+
+        return new TemplateResponse.TemplateVSOutDTO(cardArea, chartArea, faqArea, priceCard, chart, faq, templateVersion);
     }
 
     public Object getTemplateVS(Long versionId, User user) {
