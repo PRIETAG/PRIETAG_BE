@@ -265,4 +265,19 @@ public class TemplateService {
             templateVersion.setDeleted(true);
         }
     }
+
+
+    // 템플릿 삭제 (버전 포함 템플릿 자체 삭제)
+    public void deleteTemplate(Long templateId, User user) {
+        Template template = templateRepository.findById(templateId).orElseThrow(
+                () -> new Exception400("template", "존재하지 않는 Template입니다"));
+        template.setDeleted(true);
+
+        List<TemplateVersion> templateVersions = templateVersionRepository.findAllByTemplateId(templateId);
+        for (TemplateVersion templateVersion: templateVersions){
+            templateVersion.setDeleted(true);
+        }
+    }
+
+
 }

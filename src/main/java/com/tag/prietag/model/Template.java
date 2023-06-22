@@ -33,6 +33,10 @@ public class Template extends TimeStamped {
         this.isDeleted = false;
     }
 
+    public void setDeleted(boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
     @Override
     public String toString() {
         return "Template{" +

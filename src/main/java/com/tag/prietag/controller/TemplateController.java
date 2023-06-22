@@ -111,5 +111,11 @@ public class TemplateController {
 
 
     // 템플릿 삭제 (템플릿 및 포함 버전 전부 삭제)
+    @PatchMapping("/api/template/{templateId}")
+    public ResponseEntity<?> deleteTemplate(@PathVariable Long templateId,
+                                            @AuthenticationPrincipal MyUserDetails myUserDetails){
+        templateService.deleteTemplate(templateId, myUserDetails.getUser());
+        return ResponseEntity.ok(new ResponseDTO<>());
+    }
 
 }

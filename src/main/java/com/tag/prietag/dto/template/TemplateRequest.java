@@ -256,4 +256,9 @@ public class TemplateRequest {
         }
     }
 
+    @Getter
+    public static class DeleteInDTO {
+        private List<Long> id;
+    }
+
 }
