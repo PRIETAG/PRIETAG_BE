@@ -33,13 +33,13 @@ public class Template extends TimeStamped {
         this.isDeleted = false;
     }
 
-    //    @Builder
-//    public Template(Long id, User user, List<TemplateVersion> templateVersions, String mainTitle) {
-//        this.id = id;
-//        this.user = user;
-//        this.templateVersions = templateVersions;
-//        this.mainTitle = mainTitle;
-//    }
-//
-//    public void addTemplateVS(TemplateVersion templateVersion) {templateVersions.add(templateVersion);}
+    @Override
+    public String toString() {
+        return "Template{" +
+                "id=" + id +
+                ", user=" + user.getId() +
+                ", mainTitle='" + mainTitle + '\'' +
+                ", isDeleted=" + isDeleted +
+                '}';
+    }
 }
