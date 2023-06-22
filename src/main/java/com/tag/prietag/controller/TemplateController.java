@@ -66,22 +66,25 @@ public class TemplateController {
     }
 
 
-    // 템플릿 퍼블리싱 (최신)
-    @PatchMapping("/template/publish")
-    public ResponseEntity<?> publishTemplate(@RequestParam Long templateId, Error errors,
+    // 템플릿 퍼블리싱
+    // 템플릿 아이디 -> 최신 버전
+    // 버전 아이디 -> 해당 버전
+    @PatchMapping("/template/publish/latest")
+    public ResponseEntity<?> publishTemplate(@RequestParam Long templateId,
+                                             @RequestParam Long versionId, Error errors,
                                              @AuthenticationPrincipal MyUserDetails myUserDetails){
-        templateService.publishTemplate(templateId, myUserDetails.getUser());
+        if (templateId == null && versionId == null) {
+            throw new IllegalArgumentException("templateId 또는 versionId 둘 중 하나는 필수입니다.");
+        } else if (templateId != null && versionId != null) {
+            throw new IllegalArgumentException("templateId 또는 versionId 둘 중 하나만 입력해주세요.");
+        } else if (templateId != null) {
+            templateService.publishTemplate(templateId, myUserDetails.getUser());
+        } else {
+            templateService.publishTemplateVS(versionId, myUserDetails.getUser());
+        }
         return ResponseEntity.ok(new ResponseDTO<>());
     }
 
-
-    // 템플릿 퍼블리싱 (버전 선택)
-    @PatchMapping("/template/publish")
-    public ResponseEntity<?> publishTemplateVS(@RequestParam Long versionId, Error errors,
-                                               @AuthenticationPrincipal MyUserDetails myUserDetails){
-        templateService.publishTemplateVS(versionId, myUserDetails.getUser());
-        return ResponseEntity.ok(new ResponseDTO<>());
-    }
 
     // 템플릿 불러오기 (퍼블리싱)
     @GetMapping("/template/user/{userId}")

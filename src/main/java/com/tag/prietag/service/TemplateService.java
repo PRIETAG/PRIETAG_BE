@@ -32,6 +32,7 @@ public class TemplateService {
     //템플릿 생성
     @Transactional
     public void createTemplate(TemplateRequest.SaveInDTO saveInDTO, User user) {
+        // 해당 유저의 템플릿 네임만 찾아야 하나
         if(templateRepository.findByTemplateName(saveInDTO.getTemplateName()).isPresent()){
             throw new Exception400("templateName", "이미 존재하는 템플릿 이름이 있습니다");
         }
