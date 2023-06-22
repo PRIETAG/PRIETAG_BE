@@ -79,7 +79,7 @@ public class TemplateService {
                 .collect(Collectors.toList());
     }
 
-    //템플릿 조회
+    //템플릿 목록 조회
     public List<TemplateResponse.getTemplatesOutDTO> getTemplates(User user, Pageable pageable){
         Page<Template> templatesPS = templateRepository.findByUserId(user.getId(), pageable);
 

@@ -1,5 +1,7 @@
 package com.tag.prietag.model.log;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import com.tag.prietag.model.TemplateVersion;
@@ -8,7 +10,8 @@ import javax.persistence.*;
 import java.time.ZonedDateTime;
 
 @NoArgsConstructor
-@Getter
+@AllArgsConstructor
+@Getter @Builder
 @Table(name = "publishlog_tb")
 @Entity
 public class PublishLog {

@@ -17,6 +17,9 @@ public class CustomerLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    private Long userId;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Type type;
@@ -36,9 +39,10 @@ public class CustomerLog {
     }
 
     @Builder
-    public CustomerLog(Long id, Type type, TemplateVersion templatevs) {
+    public CustomerLog(Long id, Long userId, Type type, TemplateVersion templatevs) {
         this.id = id;
         this.type = type;
         this.templatevs = templatevs;
+        this.userId = userId;
     }
 }

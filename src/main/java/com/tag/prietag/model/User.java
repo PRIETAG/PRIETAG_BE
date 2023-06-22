@@ -31,9 +31,14 @@ public class User {
     public void updateRole(Role role){
         this.role = role;
     }
+
+    public void setPublishId(Long vid) {this.publishId = vid;}
     @Builder
-    public User(Long id, Role role) {
+    public User(Long id, String username, String email, Long publishId, Role role) {
         this.id = id;
+        this.username = username;
+        this.email = email;
+        this.publishId = publishId;
         this.role = role;
     }
 
