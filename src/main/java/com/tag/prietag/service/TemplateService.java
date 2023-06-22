@@ -31,7 +31,7 @@ public class TemplateService {
 
     //템플릿 생성
     @Transactional
-    public void createTemplate(TemplateRequest.SaveInDTO saveInDTO, User user) {
+    public String createTemplate(TemplateRequest.SaveInDTO saveInDTO, User user) {
         // 해당 유저의 템플릿 네임만 찾아야 하나
         if(templateRepository.findByTemplateName(saveInDTO.getTemplateName()).isPresent()){
             throw new Exception400("templateName", "이미 존재하는 템플릿 이름이 있습니다");
@@ -64,6 +64,8 @@ public class TemplateService {
 
         List<Field> faqAreas = mapAndSetTemplateVersion(saveInDTO.toFaqAreaEntity(), templateVersion);
         fieldRepository.saveAll(faqAreas);
+
+        return "template id = " + template.getId() + ", version = " + templateVersion.getVersion() + ", version id = " + templateVersion.getId();
     }
 
     //각 PriceCard, Chart, Faq, Field 들에 templateVersion 넣는 역할
@@ -129,7 +131,7 @@ public class TemplateService {
 
 
     // 템플릿 버전 생성
-    public void createTemplateVS(Long templateId, TemplateRequest.SaveInDTO saveInDTO, User user) {
+    public String createTemplateVS(Long templateId, TemplateRequest.SaveInDTO saveInDTO, User user) {
         Template template = templateRepository.findById(templateId).orElseThrow(
                 () -> new Exception400("template", "존재하지 않는 Template입니다"));
 
@@ -162,6 +164,7 @@ public class TemplateService {
         List<Field> faqAreas = mapAndSetTemplateVersion(saveInDTO.toFaqAreaEntity(), templateVersion);
         fieldRepository.saveAll(faqAreas);
 
+        return "template id = " + templateId + ", version = " + templateVersion.getVersion() + ", version id = " + versionId;
     }
 
 

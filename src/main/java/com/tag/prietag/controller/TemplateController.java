@@ -23,8 +23,8 @@ public class TemplateController {
 
     @PostMapping("/template")
     public ResponseEntity<?> createTemplate(@RequestBody @Valid TemplateRequest.SaveInDTO saveInDTO, Error errors, @AuthenticationPrincipal MyUserDetails myUserDetails){
-        templateService.createTemplate( saveInDTO, myUserDetails.getUser());
-        return ResponseEntity.ok(new ResponseDTO<>());
+        String result = templateService.createTemplate( saveInDTO, myUserDetails.getUser());
+        return ResponseEntity.ok(new ResponseDTO<>(result));
     }
 
     @GetMapping("/templates")
@@ -52,8 +52,8 @@ public class TemplateController {
     public ResponseEntity<?> createTemplateVS(@PathVariable Long templateId,
                                               @RequestBody @Valid TemplateRequest.SaveInDTO saveInDTO,
                                               @AuthenticationPrincipal MyUserDetails myUserDetails){
-        templateService.createTemplateVS(templateId, saveInDTO, myUserDetails.getUser());
-        return ResponseEntity.ok().body(new ResponseDTO<>());
+        String result = templateService.createTemplateVS(templateId, saveInDTO, myUserDetails.getUser());
+        return ResponseEntity.ok().body(new ResponseDTO<>(result));
     }
 
     // 템플릿 복제 -> 최신 버전 1개만 복사
