@@ -102,6 +102,12 @@ public class TemplateController {
 
 
     // 템플릿 히스토리(버전) 삭제 (여러개 선택 가능)
+    @PatchMapping("/api/template/history")
+    public ResponseEntity<?> deleteTemplateVS(@RequestBody @Valid TemplateRequest.DeleteInDTO deleteInDTO,
+                                              @AuthenticationPrincipal MyUserDetails myUserDetails){
+        templateService.deleteTemplateVS(deleteInDTO, myUserDetails.getUser());
+        return ResponseEntity.ok(new ResponseDTO<>());
+    }
 
 
     // 템플릿 삭제 (템플릿 및 포함 버전 전부 삭제)

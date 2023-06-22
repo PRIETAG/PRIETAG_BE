@@ -255,4 +255,14 @@ public class TemplateService {
 
     public Object getTemplateVS(Long versionId, User user) {
     }
+    // 템플릿 버전(히스토리) 삭제
+    @Transactional
+    public void deleteTemplateVS(TemplateRequest.DeleteInDTO deleteInDTO, User user) {
+
+        for (Long id: deleteInDTO.getId()){
+            TemplateVersion templateVersion = templateVersionRepository.findById(id).orElseThrow(
+                    () -> new Exception400("templateVersion", "존재하지 않는 TemplateVersion입니다"));
+            templateVersion.setDeleted(true);
+        }
+    }
 }
