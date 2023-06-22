@@ -1,15 +1,15 @@
 package com.tag.prietag.core.auth.session;
 
-import lombok.RequiredArgsConstructor;
+import com.tag.prietag.core.auth.session.MyUserDetails;
 import com.tag.prietag.model.User;
+import com.tag.prietag.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import com.tag.prietag.repository.UserRepository;
 
 import java.util.Optional;
-
 
 @RequiredArgsConstructor
 @Service
