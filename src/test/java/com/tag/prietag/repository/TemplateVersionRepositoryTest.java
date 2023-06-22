@@ -73,6 +73,7 @@ public class TemplateVersionRepositoryTest {
                     .padding(new ArrayList<>(Arrays.asList(524, 423)))
                     .previewUrl("fadsfsaf.png")
                     .priceCardAreaPadding(250)
+                    .priceCardDetailMaxHeight(400)
                     .build();
             templateVersion.setTemplate(templatePS);
             templateVersionList.add(templateVersion);
