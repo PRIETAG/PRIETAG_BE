@@ -177,27 +177,48 @@ public class TemplateService {
         TemplateVersion originTemplateVersion = templateVersionRepository.findMaxVersionTemplate(templateId);
 
         // 새로운 Template 엔티티 생성 및 저장
-        Template newTemplate = new Template(user, originTemplate.getMainTitle());
+        Template newTemplate = Template.builder()
+                .mainTitle(originTemplate.getMainTitle())
+                .user(user)
+                .build();
         templateRepository.save(newTemplate);
 
         // 새로운 TemplateVersion 엔티티 생성 및 저장
-        TemplateVersion newTemplateVersion = new TemplateVersion(newTemplate, originTemplateVersion);
+        TemplateVersion newTemplateVersion = TemplateVersion.builder()
+                .template(newTemplate)
+                .version(1)
+                .versionTitle(originTemplateVersion.getVersionTitle())
+                .mainColor(originTemplateVersion.getMainColor())
+                .subColor(List.of(originTemplateVersion.getSubColor1(), originTemplateVersion.getSubColor2()))
+                .font(originTemplateVersion.getFont())
+                .logoImageUrl(originTemplateVersion.getLogoImageUrl())
+                .previewUrl(originTemplateVersion.getPreviewUrl())
+                .padding(List.of(originTemplateVersion.getPadding1(), originTemplateVersion.getPadding2()))
+                .isCheckPerPerson(originTemplateVersion.isCheckPerPerson())
+                .headCount(originTemplateVersion.getHeadCount())
+                .headDiscountRate(originTemplateVersion.getHeadDiscountRate())
+                .isCheckPerYear(originTemplateVersion.isCheckPerYear())
+                .yearDiscountRate(originTemplateVersion.getYearDiscountRate())
+                .isCardSet(originTemplateVersion.isCardSet())
+                .priceCardAreaPadding(originTemplateVersion.getPriceCardAreaPadding())
+                .priceCardDetailMaxHeight(originTemplateVersion.getPriceCardDetailMaxHeight())
+                .build();
         templateVersionRepository.save(newTemplateVersion);
 
         // 새로운 PriceCard, Chart, Faq 엔티티 생성 및 저장
-        List<PriceCard> priceCards = mapAndSetTemplateVersion(priceCardRepository.findAllByTemplateVersionIdOOrderByIndex(originTemplateVersion.getId()), newTemplateVersion);
+        List<PriceCard> priceCards = mapAndSetTemplateVersion(priceCardRepository.findAllByTemplateVersionIdOrderByIndex(originTemplateVersion.getId()), newTemplateVersion);
         for (PriceCard priceCard: priceCards){
             priceCard.setTemplateVersion(newTemplateVersion);
         }
         priceCardRepository.saveAll(priceCards);
 
-        List<Chart> charts = mapAndSetTemplateVersion(chartRepository.findAllByTemplateVersionIdOOrderByIndex(originTemplateVersion.getId()), newTemplateVersion);
+        List<Chart> charts = mapAndSetTemplateVersion(chartRepository.findAllByTemplateVersionIdOrderByIndex(originTemplateVersion.getId()), newTemplateVersion);
         for (Chart chart: charts){
             chart.setTemplateVersion(newTemplateVersion);
         }
         chartRepository.saveAll(charts);
 
-        List<Faq> faqs = mapAndSetTemplateVersion(faqRepository.findAllByTemplateVersionIdOOrderByIndex(originTemplateVersion.getId()), newTemplateVersion);
+        List<Faq> faqs = mapAndSetTemplateVersion(faqRepository.findAllByTemplateVersionIdOrderByIndex(originTemplateVersion.getId()), newTemplateVersion);
         for (Faq faq: faqs){
             faq.setTemplateVersion(newTemplateVersion);
         }
