@@ -24,9 +24,8 @@ import java.util.Optional;
 @RestController
 public class UserController {
 
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder passwordEncoder; //패스워드 암호화시 필요
     private final UserServiceImpl userService;
-
     private final UserRepository userRepository;
 
 

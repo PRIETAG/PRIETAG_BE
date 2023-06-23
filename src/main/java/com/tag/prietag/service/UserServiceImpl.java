@@ -36,6 +36,7 @@ public class UserServiceImpl implements UserService {
     @PersistenceContext
     private EntityManager entityManager;
 
+    // callback으로 코드 AccessCode 받음
     public ResponseEntity<?> accessTokenVerify(String code) {
 
         if (code == null || code.isEmpty()) {
@@ -44,6 +45,7 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+    // code 값으로 AccessToken 받음
     public  ResponseEntity<String> accessTokenReceiving(String code) {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
@@ -56,6 +58,7 @@ public class UserServiceImpl implements UserService {
         return codeEntity;
     }
 
+    //AccessToken의 네이밍 타입을 변경함
     public KakaoToken changeType(ResponseEntity<String> codeEntity) throws JsonProcessingException {
 
         ObjectMapper om = new ObjectMapper();
@@ -66,12 +69,14 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    // 받은 정보로 DB에서 조회함
     public Optional<User> getKakaoId(OAuthProfile oAuthProfile) {
 
         Optional<User> userOP = userRepository.findByUsername("kakao_" + oAuthProfile.getId());
         return userOP;
     }
 
+    // AccessToken으로 카카오에서 정보 받아옴
     public OAuthProfile getResource(KakaoToken kakaoToken, ObjectMapper om) throws JsonProcessingException {
 
         ResponseEntity<String> tokenEntity = Fetch.kakao("https://kapi.kakao.com/v2/user/me", HttpMethod.POST, kakaoToken.getAccessToken());
@@ -86,6 +91,7 @@ public class UserServiceImpl implements UserService {
         return oAuthProfile;
     }
 
+    // 자동 로그인 로직
     public String login(UserLoginDTO userLoginDTO, OAuthProfile oAuthProfile) {
         userLoginDTO.setEmail(oAuthProfile.getKakaoAccount().getEmail());
         userLoginDTO.setUsername("kakao_"+oAuthProfile.getId());
@@ -93,6 +99,7 @@ public class UserServiceImpl implements UserService {
         return jwt;
     }
 
+    // 강제 회원 가입 로직
     public void userSave(OAuthProfile oAuthProfile) {
 
         User user = User.builder()
@@ -105,6 +112,8 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
     }
+
+    //로그인시 jwt 토큰 생성해서 전달
     public String 로그인(UserLoginDTO userLoginDTO) {
         Optional<User> userOP = userRepository.findByUsername(userLoginDTO.getUsername());
         if(userOP.isPresent()){
