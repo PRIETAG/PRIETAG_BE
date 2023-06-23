@@ -8,6 +8,7 @@ import com.tag.prietag.model.User;
 import com.tag.prietag.model.log.CustomerLog;
 import com.tag.prietag.model.log.PublishLog;
 import com.tag.prietag.repository.log.PublishLogRepository;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -123,14 +124,14 @@ public class KpiLogService {
             List<CustomerLog> betweenCustomerLogList = customerLogRepository.findByBetweenDateUserId(user.getId(), startDate, endDate).orElse(Collections.emptyList());
             getTotalKpiOutDTOList = countCustomerLogsByWeek(betweenCustomerLogList);
         } else if (period.equals("MONTH")) {
-            ZonedDateTime startDate = date.with(TemporalAdjusters.firstDayOfMonth());
-            ZonedDateTime endDate = date.with(TemporalAdjusters.lastDayOfMonth()).with(LocalTime.MAX);
+            ZonedDateTime startDate = date.minusMonths(1).truncatedTo(ChronoUnit.DAYS);
+            ZonedDateTime endDate = date.with(LocalTime.MAX);
 
             List<CustomerLog> betweenCustomerLogList = customerLogRepository.findByBetweenDateUserId(user.getId(), startDate, endDate).orElse(Collections.emptyList());
             getTotalKpiOutDTOList = countCustomerLogsByMonth(betweenCustomerLogList);
         } else if (period.equals("YEAR")) {
-            ZonedDateTime startDate = date.with(TemporalAdjusters.firstDayOfYear()).truncatedTo(ChronoUnit.DAYS);
-            ZonedDateTime endDate = date.with(TemporalAdjusters.lastDayOfYear()).with(LocalTime.MAX);
+            ZonedDateTime startDate = date.minusYears(1).plusMonths(1).with(TemporalAdjusters.firstDayOfMonth()).truncatedTo(ChronoUnit.DAYS);
+            ZonedDateTime endDate = date.with(TemporalAdjusters.lastDayOfMonth()).with(LocalTime.MAX);
 
             List<CustomerLog> betweenCustomerLogList = customerLogRepository.findByBetweenDateUserId(user.getId(), startDate, endDate).orElse(Collections.emptyList());
             getTotalKpiOutDTOList = countCustomerLogsByYear(betweenCustomerLogList);
@@ -175,27 +176,53 @@ public class KpiLogService {
         return getTotalKpiOutDTOList;
     }
 
+    @AllArgsConstructor
+    private class WeekOfMonthYear implements Comparable<WeekOfMonthYear> {
+        int year;
+        int month;
+        int weekOfMonth;
+
+        @Override
+        public int compareTo(WeekOfMonthYear other) {
+            if (this.year != other.year) {
+                return Integer.compare(this.year, other.year);
+            } else if (this.month != other.month) {
+                return Integer.compare(this.month, other.month);
+            } else {
+                return Integer.compare(this.weekOfMonth, other.weekOfMonth);
+            }
+        }
+
+        @Override
+        public String toString() {
+            return year+"."+month+" "+weekOfMonth+"주차";
+        }
+    }
     public List<LogResponse.GetTotalKpiOutDTO> countCustomerLogsByMonth(List<CustomerLog> customerLogs) {
-        // TreeMap을 사용하여 순서유지
-        Map<Integer, Map<CustomerLog.Type, Integer>> countMap = new TreeMap<>();
+        // TreeMap을 사용하여 순서정렬
+        Map<WeekOfMonthYear, Map<CustomerLog.Type, Integer>> countMap = new TreeMap<>();
 
         for (CustomerLog log : customerLogs) {
             ZonedDateTime createdAt = log.getCreatedAt();
 
-            // 주차 계산을 위해 로컬 날짜로 변환
-            LocalDate localDate = createdAt.toLocalDate();
+            Calendar calendar = GregorianCalendar.from(createdAt);
+            calendar.setTimeZone(TimeZone.getTimeZone(createdAt.getZone()));
+            calendar.setFirstDayOfWeek(Calendar.SUNDAY);
+            calendar.setMinimalDaysInFirstWeek(1);
 
-            // 주차 계산을 위해 로컬 날짜를 조정
-            LocalDate weekStartDate = localDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-            int weekOfYear = weekStartDate.get(WeekFields.of(DayOfWeek.MONDAY, 1).weekOfYear());
+            int weekOfMonth = calendar.get(Calendar.WEEK_OF_MONTH);
+            int month = calendar.get(Calendar.MONTH) + 1;
+            int year = calendar.get(Calendar.YEAR);
+
+            WeekOfMonthYear weekOfMonthYear = new WeekOfMonthYear(year, month, weekOfMonth);
 
             // 날짜별로 내부 맵을 생성하고 해당 타입의 수를 1씩 증가
-            countMap.computeIfAbsent(weekOfYear, k -> new HashMap<>())
+            countMap.computeIfAbsent(weekOfMonthYear, k -> new HashMap<>())
                     .compute(log.getType(), (k, v) -> (v == null) ? 1 : v + 1);
         }
 
         List<LogResponse.GetTotalKpiOutDTO> getTotalKpiOutDTOList = new ArrayList<>();
-        for (Map.Entry<Integer, Map<CustomerLog.Type, Integer>> entry : countMap.entrySet()) {
+        for (Map.Entry<WeekOfMonthYear, Map<CustomerLog.Type, Integer>> entry : countMap.entrySet()) {
             String week = entry.getKey().toString();
             Map<CustomerLog.Type, Integer> typeCountMap = entry.getValue();
 
@@ -241,7 +268,7 @@ public class KpiLogService {
             int subscripterCount = typeCountMap.getOrDefault(CustomerLog.Type.SUBSCRIPTER, 0);
 
             getTotalKpiOutDTOList.add(LogResponse.GetTotalKpiOutDTO.builder()
-                    .label(year+ "년 "+month+"월")
+                    .label(year+ "."+month)
                     .viewCount(viewerCount)
                     .leaveCount(viewerCount - subscripterCount)
                     .conversionRate((subscripterCount / viewerCount) * 100)
