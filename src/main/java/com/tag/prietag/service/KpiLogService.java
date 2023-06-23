@@ -76,7 +76,7 @@ public class KpiLogService {
         int preConversionCount = 0;
         // 지난버전이 존재할 경우
         if (!publishLogList.isEmpty() && publishLogList.size() > 1) {
-            ZonedDateTime publishStart = publishLogList.get(1).getCreatedAt();
+            ZonedDateTime publishStart = publishLogList.get(1).getCreatedAt().plusNanos(1);
             ZonedDateTime publishEnd = publishLogList.get(0).getCreatedAt();
             long daysBetween = ChronoUnit.DAYS.between(publishStart.toLocalDate(), publishEnd.toLocalDate());
             // 그 버전을 사용했을 때 log데이터를 가져오기

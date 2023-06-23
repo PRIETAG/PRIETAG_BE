@@ -40,11 +40,12 @@ public class CustomerLog {
     }
 
     @Builder
-    public CustomerLog(Long id, Long userId, Type type, TemplateVersion templatevs) {
+    public CustomerLog(Long id, Long userId, Type type, TemplateVersion templatevs, ZonedDateTime createdAt) {
         this.id = id;
         this.type = type;
         this.templatevs = templatevs;
         this.userId = userId;
+        this.createdAt = createdAt;
     }
 
     @Override
