@@ -47,7 +47,9 @@ public class KpiLogService {
     // 대시보드 TodayKpi 조회
     public LogResponse.GetTodayKpiOutDTO getTodayKpi(User user) {
         //오늘 kpi검색
-        List<CustomerLog> customerLogList = customerLogRepository.findByCurrentDateUserId(user.getId()).orElse(Collections.emptyList());
+        ZonedDateTime startDate = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS);
+        ZonedDateTime endDate = startDate.plusDays(1).minusNanos(1);
+        List<CustomerLog> customerLogList = customerLogRepository.findByBetweenDateUserId(user.getId(),startDate, endDate).orElse(Collections.emptyList());
         int viewCount = 0;
         int leaveCount = 0;
         int conversionRate = 0;

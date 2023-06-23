@@ -46,4 +46,15 @@ public class CustomerLog {
         this.templatevs = templatevs;
         this.userId = userId;
     }
+
+    @Override
+    public String toString() {
+        return "CustomerLog{" +
+                "id=" + id +
+                ", userId=" + userId +
+                ", type=" + type +
+                ", templatevs=" + templatevs +
+                ", createdAt=" + createdAt +
+                '}';
+    }
 }

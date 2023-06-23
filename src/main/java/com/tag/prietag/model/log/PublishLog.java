@@ -33,4 +33,14 @@ public class PublishLog {
     protected void onCreate() {
         this.createdAt = ZonedDateTime.now();
     }
+
+    @Override
+    public String toString() {
+        return "PublishLog{" +
+                "id=" + id +
+                ", user=" + user +
+                ", templatevs=" + templatevs +
+                ", createdAt=" + createdAt +
+                '}';
+    }
 }
