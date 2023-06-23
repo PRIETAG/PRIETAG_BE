@@ -17,8 +17,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -171,7 +173,8 @@ public class LogServiceTest {
                     .thenReturn(Optional.of(publishLogList));
 
             LogResponse.GetTodayKpiOutDTO getTodayKpiOutDTO = logService.getTodayKpi(user);
-            System.out.println(getTodayKpiOutDTO.toString());
+            System.out.println(getTodayKpiOutDTO.getViewCount().getToday());
+            System.out.println(getTodayKpiOutDTO.getViewCount().getAvgFromLast());
             verify(customerLogRepository, times(1)).findByBetweenDateUserId(user.getId(), startDate, endDate);
             verify(publishLogRepository, times(1)).findByUserId(user.getId());
 
@@ -179,4 +182,71 @@ public class LogServiceTest {
         }
 
     }
+
+    @Nested
+    @DisplayName("대시보드 TotalKpi 조회")
+    class getTotalKpi {
+
+        @Test
+        @DisplayName("잘못된 period")
+        void fail() {
+
+            Assertions.assertThrows(Exception400.class, () -> logService.getTotalKpi(user, ZonedDateTime.now(), "egeK"));
+        }
+
+        @Test
+        @DisplayName("WEEK 성공")
+        void successWeek() {
+            ZonedDateTime startDate = ZonedDateTime.now().minusDays(6).truncatedTo(ChronoUnit.DAYS);
+            ZonedDateTime endDate = ZonedDateTime.now().with(LocalTime.MAX);
+            lenient().when(customerLogRepository.findByBetweenDateUserId(anyLong(), eq(startDate), eq(endDate)))
+                    .thenReturn(Optional.of(customerLogList));
+
+            List<LogResponse.GetTotalKpiOutDTO> getTotalKpiOutDTOList = logService.getTotalKpi(user, ZonedDateTime.now(), "WEEK");
+            for(LogResponse.GetTotalKpiOutDTO getTotalKpiOutDTO : getTotalKpiOutDTOList) {
+                System.out.println( getTotalKpiOutDTO.getLabel()+" : "+getTotalKpiOutDTO.getViewCount()+
+                        ", " + getTotalKpiOutDTO.getLeaveCount() + ", " + getTotalKpiOutDTO.getConversionRate());
+            }
+            verify(customerLogRepository, times(1)).findByBetweenDateUserId(user.getId(), startDate, endDate);
+
+            Assertions.assertDoesNotThrow(() -> logService.getTotalKpi(user, ZonedDateTime.now(), "WEEK"));
+        }
+
+        @Test
+        @DisplayName("MONTH 성공")
+        void successMonth() {
+            ZonedDateTime startDate = ZonedDateTime.now().minusMonths(1).truncatedTo(ChronoUnit.DAYS);
+            ZonedDateTime endDate = ZonedDateTime.now().with(LocalTime.MAX);
+            lenient().when(customerLogRepository.findByBetweenDateUserId(anyLong(), eq(startDate), eq(endDate)))
+                    .thenReturn(Optional.of(customerLogList));
+
+            List<LogResponse.GetTotalKpiOutDTO> getTotalKpiOutDTOList = logService.getTotalKpi(user, ZonedDateTime.now(), "MONTH");
+            for(LogResponse.GetTotalKpiOutDTO getTotalKpiOutDTO : getTotalKpiOutDTOList) {
+                System.out.println( getTotalKpiOutDTO.getLabel()+" : "+getTotalKpiOutDTO.getViewCount()+
+                        ", " + getTotalKpiOutDTO.getLeaveCount() + ", " + getTotalKpiOutDTO.getConversionRate());
+            }
+            verify(customerLogRepository, times(1)).findByBetweenDateUserId(user.getId(), startDate, endDate);
+
+            Assertions.assertDoesNotThrow(() -> logService.getTotalKpi(user, ZonedDateTime.now(), "MONTH"));
+        }
+
+        @Test
+        @DisplayName("YEAR 성공")
+        void successYear() {
+            ZonedDateTime startDate = ZonedDateTime.now().minusYears(1).plusMonths(1).with(TemporalAdjusters.firstDayOfMonth()).truncatedTo(ChronoUnit.DAYS);
+            ZonedDateTime endDate = ZonedDateTime.now().with(TemporalAdjusters.lastDayOfMonth()).with(LocalTime.MAX);
+            lenient().when(customerLogRepository.findByBetweenDateUserId(anyLong(), eq(startDate), eq(endDate)))
+                    .thenReturn(Optional.of(customerLogList));
+
+            List<LogResponse.GetTotalKpiOutDTO> getTotalKpiOutDTOList = logService.getTotalKpi(user, ZonedDateTime.now(), "YEAR");
+            for(LogResponse.GetTotalKpiOutDTO getTotalKpiOutDTO : getTotalKpiOutDTOList) {
+                System.out.println( getTotalKpiOutDTO.getLabel()+" : "+getTotalKpiOutDTO.getViewCount()+
+                        ", " + getTotalKpiOutDTO.getLeaveCount() + ", " + getTotalKpiOutDTO.getConversionRate());
+            }
+            verify(customerLogRepository, times(1)).findByBetweenDateUserId(user.getId(), startDate, endDate);
+
+            Assertions.assertDoesNotThrow(() -> logService.getTotalKpi(user, ZonedDateTime.now(), "YEAR"));
+        }
+    }
+
 }

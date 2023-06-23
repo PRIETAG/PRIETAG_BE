@@ -64,7 +64,7 @@ public class KpiLogService {
                     conversionCount++;
             }
             leaveCount = viewCount - conversionCount;
-            conversionRate = (conversionCount / viewCount) * 100;
+            conversionRate = (conversionCount * 100) / viewCount;
         }
 
         //지난 버전 검색
@@ -93,7 +93,7 @@ public class KpiLogService {
                 preViewCount /= (int) daysBetween;
                 preConversionCount /= (int) daysBetween;
                 preLeaveCount /= (int) daysBetween;
-                preConversionRate = (preConversionCount / preViewCount) * 100;
+                preConversionRate = (preConversionCount * 100) / preViewCount;
             }
         }
 
@@ -169,7 +169,7 @@ public class KpiLogService {
                     .label(day)
                     .viewCount(viewerCount)
                     .leaveCount(viewerCount - subscripterCount)
-                    .conversionRate((subscripterCount / viewerCount) * 100)
+                    .conversionRate((subscripterCount * 100) / viewerCount)
                     .build());
         }
 
@@ -233,7 +233,7 @@ public class KpiLogService {
                     .label(week)
                     .viewCount(viewerCount)
                     .leaveCount(viewerCount - subscripterCount)
-                    .conversionRate((subscripterCount / viewerCount) * 100)
+                    .conversionRate((subscripterCount * 100) / viewerCount)
                     .build());
         }
 
@@ -271,7 +271,7 @@ public class KpiLogService {
                     .label(year+ "."+month)
                     .viewCount(viewerCount)
                     .leaveCount(viewerCount - subscripterCount)
-                    .conversionRate((subscripterCount / viewerCount) * 100)
+                    .conversionRate((subscripterCount * 100) / viewerCount)
                     .build());
         }
 
@@ -318,7 +318,7 @@ public class KpiLogService {
                     .isDeleted(publishLog.getTemplatevs().isDeleted())
                     .viewCount(viewCount)
                     .leaveCount(conversionCount - viewCount)
-                    .conversionRate((conversionCount / viewCount) * 100)
+                    .conversionRate((conversionCount * 100) / viewCount)
                     .build());
         }
 
