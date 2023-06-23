@@ -14,6 +14,8 @@
 //import java.util.Optional;
 //
 //import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+//import static org.springframework.test.util.AssertionErrors.assertEquals;
+//import static org.springframework.test.util.AssertionErrors.assertTrue;
 //
 //@ActiveProfiles("dev")
 //@DataJpaTest
@@ -57,7 +59,9 @@
 //
 //        //then
 //
-//        assertThat(userPS.getUsername().isEqualTo(userOP.get().getUsername()));
+//        assertTrue(userOP.isPresent()); // 사용자가 존재하는지 확인
+//        assertEquals(userPS.getUsername(), userOP.get().getUsername()); // 저장된 사용자와 검색된 사용자의 username이 일치하는지 확인
+//    }
 //    }
 //
 //
