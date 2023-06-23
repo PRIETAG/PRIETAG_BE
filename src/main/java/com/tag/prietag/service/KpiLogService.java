@@ -50,7 +50,7 @@ public class KpiLogService {
         //오늘 kpi검색
         ZonedDateTime startDate = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS);
         ZonedDateTime endDate = startDate.plusDays(1).minusNanos(1);
-        List<CustomerLog> customerLogList = customerLogRepository.findByBetweenDateUserId(user.getId(),startDate, endDate).orElse(Collections.emptyList());
+        List<CustomerLog> customerLogList = customerLogRepository.findByBetweenDateUserId(user.getId(), startDate, endDate).orElse(Collections.emptyList());
         int viewCount = 0;
         int leaveCount = 0;
         int conversionRate = 0;
@@ -159,7 +159,8 @@ public class KpiLogService {
         // 시작일 부터 7일후로 나눠논 데이터 저장
         List<LogResponse.GetTotalKpiOutDTO> getTotalKpiOutDTOList = new ArrayList<>();
         for (Map.Entry<LocalDate, Map<CustomerLog.Type, Integer>> entry : countMap.entrySet()) {
-            String day = entry.getKey().format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));;
+            String day = entry.getKey().format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
+            ;
             Map<CustomerLog.Type, Integer> typeCountMap = entry.getValue();
 
             int viewerCount = typeCountMap.getOrDefault(CustomerLog.Type.VIEWER, 0);
@@ -195,9 +196,10 @@ public class KpiLogService {
 
         @Override
         public String toString() {
-            return year+"."+month+" "+weekOfMonth+"주차";
+            return year + "." + month + " " + weekOfMonth + "주차";
         }
     }
+
     public List<LogResponse.GetTotalKpiOutDTO> countCustomerLogsByMonth(List<CustomerLog> customerLogs) {
         // TreeMap을 사용하여 순서정렬
         Map<WeekOfMonthYear, Map<CustomerLog.Type, Integer>> countMap = new TreeMap<>();
@@ -268,7 +270,7 @@ public class KpiLogService {
             int subscripterCount = typeCountMap.getOrDefault(CustomerLog.Type.SUBSCRIPTER, 0);
 
             getTotalKpiOutDTOList.add(LogResponse.GetTotalKpiOutDTO.builder()
-                    .label(year+ "."+month)
+                    .label(year + "." + month)
                     .viewCount(viewerCount)
                     .leaveCount(viewerCount - subscripterCount)
                     .conversionRate((subscripterCount * 100) / viewerCount)
@@ -298,16 +300,17 @@ public class KpiLogService {
         List<CustomerLog> betweenCustomerLogList = customerLogRepository.findByBetweenDateUserId(user.getId(), startDate, endDate).orElse(Collections.emptyList());
         for (int i = 0; i < publishLogPage.getSize(); i++) {
             PublishLog publishLog = publishLogPage.getContent().get(i);
+            ZonedDateTime publishStartDate = publishLog.getCreatedAt();
+            ZonedDateTime publishEndDate = i < (publishLogPage.getSize() - 1) ? publishLogPage.getContent().get(i + 1).getCreatedAt() : ZonedDateTime.now();
             int viewCount = 0;
             int conversionCount = 0;
             for (CustomerLog customerLog : betweenCustomerLogList) {
+                // templateVersion의 아이디가 같고 퍼블리시한 날짜에 속하는 customerLog면
                 if ((customerLog.getTemplatevs().getId() == publishLog.getTemplatevs().getId())
-                        && (customerLog.getCreatedAt().compareTo(publishLog.getCreatedAt()) >= 0)) {
-                    if (i != publishLogPage.getSize() - 1 && customerLog.getCreatedAt().compareTo(publishLogPage.getContent().get(i + 1).getCreatedAt()) < 0) {
-                        int a = customerLog.getType().equals(CustomerLog.Type.VIEWER) ? viewCount++ : conversionCount++;
-                    } else {
-                        int a = customerLog.getType().equals(CustomerLog.Type.VIEWER) ? viewCount++ : conversionCount++;
-                    }
+                        && (customerLog.getCreatedAt().compareTo(publishStartDate) >= 0)
+                        && (customerLog.getCreatedAt().compareTo(publishEndDate) < 0)) {
+
+                    int a = customerLog.getType().equals(CustomerLog.Type.VIEWER) ? viewCount++ : conversionCount++;
                 }
             }
 
