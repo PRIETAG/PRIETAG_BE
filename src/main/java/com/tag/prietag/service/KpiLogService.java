@@ -158,7 +158,7 @@ public class KpiLogService {
         // 시작일 부터 7일후로 나눠논 데이터 저장
         List<LogResponse.GetTotalKpiOutDTO> getTotalKpiOutDTOList = new ArrayList<>();
         for (Map.Entry<LocalDate, Map<CustomerLog.Type, Integer>> entry : countMap.entrySet()) {
-            int day = entry.getKey().getDayOfMonth();
+            String day = entry.getKey().format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));;
             Map<CustomerLog.Type, Integer> typeCountMap = entry.getValue();
 
             int viewerCount = typeCountMap.getOrDefault(CustomerLog.Type.VIEWER, 0);
@@ -196,7 +196,7 @@ public class KpiLogService {
 
         List<LogResponse.GetTotalKpiOutDTO> getTotalKpiOutDTOList = new ArrayList<>();
         for (Map.Entry<Integer, Map<CustomerLog.Type, Integer>> entry : countMap.entrySet()) {
-            Integer week = entry.getKey() - 1;
+            String week = entry.getKey().toString();
             Map<CustomerLog.Type, Integer> typeCountMap = entry.getValue();
 
             int viewerCount = typeCountMap.getOrDefault(CustomerLog.Type.VIEWER, 0);
@@ -214,29 +214,34 @@ public class KpiLogService {
     }
 
     public List<LogResponse.GetTotalKpiOutDTO> countCustomerLogsByYear(List<CustomerLog> customerLogs) {
-        Map<Month, Map<CustomerLog.Type, Integer>> countMap = new TreeMap<>(Comparator.comparingInt(Month::getValue));
+//        Map<Month, Map<CustomerLog.Type, Integer>> countMap = new TreeMap<>(Comparator.comparingInt(Month::getValue));
+        Map<YearMonth, Map<CustomerLog.Type, Integer>> countMap = new TreeMap<>(Comparator.comparing(YearMonth::from));
 
         for (CustomerLog log : customerLogs) {
             ZonedDateTime createdAt = log.getCreatedAt();
 
-            // 월 계산을 위해 로컬 날짜로 변환
+            // 월과 년도 계산을 위해 로컬 날짜로 변환
             LocalDate localDate = createdAt.toLocalDate();
 
+            // 월과 년도를 포함하는 YearMonth 객체 생성
+            YearMonth yearMonth = YearMonth.from(localDate);
+
             // 월별로 내부 맵을 생성하고 해당 타입의 수를 1씩 증가
-            countMap.computeIfAbsent(localDate.getMonth(), k -> new HashMap<>())
+            countMap.computeIfAbsent(yearMonth, k -> new HashMap<>())
                     .compute(log.getType(), (k, v) -> (v == null) ? 1 : v + 1);
         }
 
         List<LogResponse.GetTotalKpiOutDTO> getTotalKpiOutDTOList = new ArrayList<>();
-        for (Map.Entry<Month, Map<CustomerLog.Type, Integer>> entry : countMap.entrySet()) {
-            int month = entry.getKey().getValue() - 1;
+        for (Map.Entry<YearMonth, Map<CustomerLog.Type, Integer>> entry : countMap.entrySet()) {
+            int year = entry.getKey().getYear();
+            int month = entry.getKey().getMonthValue();
             Map<CustomerLog.Type, Integer> typeCountMap = entry.getValue();
 
             int viewerCount = typeCountMap.getOrDefault(CustomerLog.Type.VIEWER, 0);
             int subscripterCount = typeCountMap.getOrDefault(CustomerLog.Type.SUBSCRIPTER, 0);
 
             getTotalKpiOutDTOList.add(LogResponse.GetTotalKpiOutDTO.builder()
-                    .label(month)
+                    .label(year+ "년 "+month+"월")
                     .viewCount(viewerCount)
                     .leaveCount(viewerCount - subscripterCount)
                     .conversionRate((subscripterCount / viewerCount) * 100)
