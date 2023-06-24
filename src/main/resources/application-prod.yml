@@ -3,7 +3,6 @@ server:
     encoding:
       charset: utf-8
       force: true
-  port: 8080
 
 spring:
   datasource:
@@ -20,7 +19,7 @@ spring:
       default_batch_fetch_size: 100
 logging:
   level:
-    '[com.tag.prietag]': INFO # DEBUG 레벨부터 에러 확인할 수 있게 설정하기
+    '[site.tag.prietag]': INFO # DEBUG 레벨부터 에러 확인할 수 있게 설정하기
 
 jwt:
   secret: ${SECRET}
