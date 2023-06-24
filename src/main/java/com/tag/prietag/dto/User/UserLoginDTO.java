@@ -1,6 +1,7 @@
 package com.tag.prietag.dto.User;
 
-import com.tag.prietag.model.RoleEnum;
+
+import com.tag.prietag.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,5 +15,5 @@ public class UserLoginDTO {
     private String username; // 수정: nickname -> username
     private String password;
     private String email;
-    private RoleEnum role;
+    private User.RoleEnum role;
 }

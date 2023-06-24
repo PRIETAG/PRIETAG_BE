@@ -9,7 +9,6 @@ import com.tag.prietag.dto.ResponseDTO;
 import com.tag.prietag.dto.User.UserLoginDTO;
 import com.tag.prietag.dto.kakao.KakaoToken;
 import com.tag.prietag.dto.kakao.OAuthProfile;
-import com.tag.prietag.model.RoleEnum;
 import com.tag.prietag.model.User;
 import com.tag.prietag.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -111,7 +110,7 @@ public class UserServiceImpl implements UserService {
                 .password("1234") // 실제로 로그인 하지 않아서 임의의 값 넣음
                 .username("kakao_" + oAuthProfile.getId())
                 .email(oAuthProfile.getKakaoAccount().getEmail())
-                .role(RoleEnum.USER)
+                .role(User.RoleEnum.USER)
                 .build();
 
         userRepository.save(user);

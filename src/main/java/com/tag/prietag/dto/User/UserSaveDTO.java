@@ -1,6 +1,5 @@
 package com.tag.prietag.dto.User;
 
-import com.tag.prietag.model.RoleEnum;
 import com.tag.prietag.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,7 +15,7 @@ public class UserSaveDTO {
     private String username; // kakao_152378934567 방식으로 저장
     private String password;
     private String email;
-    private RoleEnum role;
+    private User.RoleEnum role;
 
     private User toEntity() {
 
@@ -24,7 +23,7 @@ public class UserSaveDTO {
                 .username(username)
                 .password(password)
                 .email(email)
-                .role(RoleEnum.USER)
+                .role(User.RoleEnum.USER)
                 .status(true)
                 .build();
     }

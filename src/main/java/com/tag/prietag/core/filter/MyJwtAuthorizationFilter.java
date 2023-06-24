@@ -8,7 +8,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.tag.prietag.core.auth.jwt.MyJwtProvider;
 import com.tag.prietag.core.auth.session.MyUserDetails;
 import com.tag.prietag.core.exception.token.TokenException;
-import com.tag.prietag.model.RoleEnum;
 import com.tag.prietag.model.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -45,7 +44,7 @@ public class MyJwtAuthorizationFilter extends BasicAuthenticationFilter {
             DecodedJWT decodedJWT = MyJwtProvider.verify(jwt);
             Long id = decodedJWT.getClaim("id").asLong();
             String role = decodedJWT.getClaim("role").asString();
-            RoleEnum roleEnum = RoleEnum.fromString(role);
+            User.RoleEnum roleEnum = User.RoleEnum.fromString(role);
 
             User user = User.builder().id(id).role(roleEnum).build();
             MyUserDetails myUserDetails = new MyUserDetails(user);
