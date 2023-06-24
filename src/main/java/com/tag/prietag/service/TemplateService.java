@@ -220,43 +220,56 @@ public class TemplateService {
         templateVersionRepository.save(newTemplateVersion);
 
         // 새로운 PriceCard, Chart, Faq 엔티티 생성 및 저장
-        List<PriceCard> priceCards = mapAndSetTemplateVersion(priceCardRepository.findAllByTemplateVersionIdOrderByIndex(originTemplateVersion.getId()), newTemplateVersion);
+        List<PriceCard> priceCards = priceCardRepository.findAllByTemplateVersionIdOrderByIndex(originTemplateVersion.getId());
+        List<PriceCard> newPriceCards = new ArrayList<>();
         for (PriceCard priceCard: priceCards){
-            priceCard.setTemplateVersion(newTemplateVersion);
+            PriceCard newPriceCard = priceCard.toEntity(newTemplateVersion);
+            newPriceCards.add(newPriceCard);
         }
-        priceCardRepository.saveAll(priceCards);
+        List<Long> newPriceCardIds = priceCardRepository.saveAll(newPriceCards).stream().map(PriceCard::getId).collect(Collectors.toList());
 
-        List<Chart> charts = mapAndSetTemplateVersion(chartRepository.findAllByTemplateVersionIdOrderByIndex(originTemplateVersion.getId()), newTemplateVersion);
+        List<Chart> charts = chartRepository.findAllByTemplateVersionIdOrderByIndex(originTemplateVersion.getId());
+        List<Chart> newCharts = new ArrayList<>();
         for (Chart chart: charts){
-            chart.setTemplateVersion(newTemplateVersion);
+            Chart newChart = chart.toEntity(newTemplateVersion);
+            newCharts.add(newChart);
         }
-        chartRepository.saveAll(charts);
+        List<Long> newChartds = chartRepository.saveAll(newCharts).stream().map(Chart::getId).collect(Collectors.toList());
 
-        List<Faq> faqs = mapAndSetTemplateVersion(faqRepository.findAllByTemplateVersionIdOrderByIndex(originTemplateVersion.getId()), newTemplateVersion);
+        List<Faq> faqs = faqRepository.findAllByTemplateVersionIdOrderByIndex(originTemplateVersion.getId());
+        List<Faq> newFaqs = new ArrayList<>();
         for (Faq faq: faqs){
-            faq.setTemplateVersion(newTemplateVersion);
+            Faq newFaq = faq.toEntity(newTemplateVersion);
+            newFaqs.add(newFaq);
         }
-        faqRepository.saveAll(faqs);
+        List<Long> newFaqIds = faqRepository.saveAll(newFaqs).stream().map(Faq::getId).collect(Collectors.toList());
 
 
         // 새로운 Card Area, Chart Area, Faq Area 엔티티 생성 및 저장
-        List<Field> cardAreas = mapAndSetTemplateVersion(fieldRepository.findAllByTemplateVersionIdAndAreaNumOrderByIndex(originTemplateVersion.getId(), 1), newTemplateVersion);
+        List<Field> cardAreas = fieldRepository.findAllByTemplateVersionIdAndAreaNumOrderByIndex(originTemplateVersion.getId(), 1);
+        List<Field> newCardAreas = new ArrayList<>();
         for (Field cardArea: cardAreas){
-            cardArea.setTemplateVersion(newTemplateVersion);
+            Field newCardArea = cardArea.toEntity(newTemplateVersion);
+            newCardAreas.add(newCardArea);
         }
-        fieldRepository.saveAll(cardAreas);
+        List<Long> newCardAreaIds = fieldRepository.saveAll(newCardAreas).stream().map(Field::getId).collect(Collectors.toList());
 
-        List<Field> chartAreas = mapAndSetTemplateVersion(fieldRepository.findAllByTemplateVersionIdAndAreaNumOrderByIndex(originTemplateVersion.getId(), 2), newTemplateVersion);
+        List<Field> chartAreas = fieldRepository.findAllByTemplateVersionIdAndAreaNumOrderByIndex(originTemplateVersion.getId(), 2);
+        List<Field> newChartAreas = new ArrayList<>();
         for (Field chartArea: chartAreas){
-            chartArea.setTemplateVersion(newTemplateVersion);
+            Field newChartArea = chartArea.toEntity(newTemplateVersion);
+            newChartAreas.add(newChartArea);
         }
-        fieldRepository.saveAll(chartAreas);
+        List<Long> newChartAreaIds = fieldRepository.saveAll(newChartAreas).stream().map(Field::getId).collect(Collectors.toList());
 
-        List<Field> faqAreas = mapAndSetTemplateVersion(fieldRepository.findAllByTemplateVersionIdAndAreaNumOrderByIndex(originTemplateVersion.getId(), 3), newTemplateVersion);
+        List<Field> faqAreas = fieldRepository.findAllByTemplateVersionIdAndAreaNumOrderByIndex(originTemplateVersion.getId(), 3);
+        List<Field> newFaqAreas = new ArrayList<>();
         for (Field faqArea: faqAreas){
-            faqArea.setTemplateVersion(newTemplateVersion);
+            Field newFaqArea = faqArea.toEntity(newTemplateVersion);
+            newFaqAreas.add(newFaqArea);
         }
-        fieldRepository.saveAll(faqAreas);
+        List<Long> newFaqAreaIds = fieldRepository.saveAll(newFaqAreas).stream().map(Field::getId).collect(Collectors.toList());
+
         return "기존 템플릿 id, 버전 id = " + templateId + ", " + originTemplateVersion.getId() +
                 "기존 카드, 차트, faq, 필드 id = " + priceCards.get(0).getId() + ", " + charts.get(0).getId() + ", " + faqs.get(0).getId() + ", " + cardAreas.get(0).getId() + ", " + chartAreas.get(0).getId() + ", " + faqAreas.get(0).getId() +
                 "복제된 템플릿 id, 버전 id = " + newTemplate.getId() + ", " + newTemplateVersion.getId() +
