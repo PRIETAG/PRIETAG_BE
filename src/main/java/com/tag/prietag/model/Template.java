@@ -26,8 +26,7 @@ public class Template extends TimeStamped {
     private boolean isDeleted;
 
     @Builder
-    public Template(Long id, User user, String mainTitle) {
-        this.id = id;
+    public Template(User user, String mainTitle) {
         this.user = user;
         this.mainTitle = mainTitle;
         this.isDeleted = false;
