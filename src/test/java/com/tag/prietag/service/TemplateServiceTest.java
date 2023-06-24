@@ -3,16 +3,15 @@ package com.tag.prietag.service;
 import com.tag.prietag.core.exception.Exception400;
 import com.tag.prietag.core.util.S3Uploader;
 import com.tag.prietag.dto.template.TemplateRequest;
-import com.tag.prietag.model.PriceCard;
-import com.tag.prietag.model.Template;
-import com.tag.prietag.model.TemplateVersion;
-import com.tag.prietag.model.User;
+import com.tag.prietag.dto.template.TemplateResponse;
+import com.tag.prietag.model.*;
 import com.tag.prietag.repository.*;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -26,8 +25,12 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -80,22 +83,26 @@ public class TemplateServiceTest {
 
         templateVersion = TemplateVersion.builder()
                 .id(1L)
-                .isCardSet(true)
-                .font("dsa")
-                .isCheckPerPerson(true)
-                .logoImageUrl("dafdafa.jpg")
-                .isCheckPerYear(true)
+                .template(template)
+                .version(1)
+                .versionTitle(template.getMainTitle())
                 .mainColor("#3214214")
                 .subColor(new ArrayList<>(List.of("#312f11", "#fdas2f")))
-                .yearDiscountRate(30)
-                .versionTitle(template.getMainTitle())
+                .font("dsa")
+                .logoImageUrl("dafdafa.jpg")
                 .padding(new ArrayList<>(List.of(400, 300)))
+                .isCheckPerPerson(true)
                 .headCount(List.of(5, 8, 10))
                 .headDiscountRate(List.of(10, 20, 30))
+                .isCheckPerYear(true)
+                .yearDiscountRate(30)
+                .isCardSet(true)
+                .priceCardAreaPadding(20)
                 .template(template)
                 .updateAt(ZonedDateTime.now())
                 .priceCardAreaPadding(300)
                 .priceCardDetailMaxHeight(400)
+                .updateAt(ZonedDateTime.now())
                 .build();
 
         lenient().when(s3Uploader.upload(any(), anyString()))
@@ -119,6 +126,19 @@ public class TemplateServiceTest {
                 .detail("공짜!")
                 .feature("시작")
                 .content(List.of("fafda", "fdafaf"))
+                .build());
+        List<TemplateRequest.SaveInDTO.AreaRequest> cardAreaRequests = new ArrayList<>();
+        cardAreaRequests.add(TemplateRequest.SaveInDTO.AreaRequest.builder()
+                .role(Field.Role.TITLE)
+                .content("dafda")
+                .build());
+        cardAreaRequests.add(TemplateRequest.SaveInDTO.AreaRequest.builder()
+                .role(Field.Role.PADDING)
+                .content("19")
+                .build());
+        cardAreaRequests.add(TemplateRequest.SaveInDTO.AreaRequest.builder()
+                .role(Field.Role.SUBTITLE)
+                .content("ddddda")
                 .build());
 
         return TemplateRequest.SaveInDTO.builder()

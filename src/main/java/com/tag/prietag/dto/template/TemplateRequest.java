@@ -86,6 +86,7 @@ public class TemplateRequest {
             }
             return this.priceCard.stream()
                     .map(card -> PriceCard.builder()
+                            .index(this.priceCard.indexOf(card))
                             .cardTitle(card.getTitle())
                             .price(card.getPrice())
                             .discountRate(card.getDiscountRate())
@@ -123,6 +124,7 @@ public class TemplateRequest {
             }
             return faq.stream()
                     .map(faq -> Faq.builder()
+                            .index(this.faq.indexOf(faq))
                             .question(faq.getQuestion())
                             .answer(faq.getDesc())
                             .index(this.faq.indexOf(faq))
@@ -255,6 +257,11 @@ public class TemplateRequest {
             this.priceCardAreaPadding = priceCardAreaPadding;
             this.priceCardDetailMaxHeight = priceCardDetailMaxHeight;
         }
+    }
+
+    @Getter
+    public static class DeleteInDTO {
+        private List<Long> id;
     }
 
 }

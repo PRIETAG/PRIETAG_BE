@@ -4,7 +4,6 @@ import com.tag.prietag.core.util.StringListConverter;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 import java.util.List;
 
@@ -46,6 +45,18 @@ public class Chart {
         this.index = index;
         this.feature = feature;
         this.desc = desc;
+    }
+
+    public Chart toEntity(TemplateVersion templateVersion){
+        return Chart.builder()
+                .templateVersion(templateVersion)
+                .haveHeader(haveHeader)
+                .featureName(featureName)
+                .chartNum(chartNum)
+                .index(index)
+                .feature(feature)
+                .desc(desc)
+                .build();
     }
 
     public void setTemplateVersion(TemplateVersion templateVersion){

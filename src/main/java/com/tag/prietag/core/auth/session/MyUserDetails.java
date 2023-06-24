@@ -28,12 +28,12 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return "dsad";
+        return user.getEmail();
     }
 
     @Override
     public String getUsername() {
-        return "dsaf";
+        return user.getUsername();
     }
 
     @Override

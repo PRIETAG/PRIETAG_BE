@@ -33,6 +33,15 @@ public class Faq {
         this.answer = answer;
     }
 
+    public Faq toEntity(TemplateVersion newTemplateVersion) {
+        return Faq.builder()
+                .templateVersion(newTemplateVersion)
+                .index(index)
+                .question(question)
+                .answer(answer)
+                .build();
+    }
+
     public void setTemplateVersion(TemplateVersion templateVersion){
         this.templateVersion = templateVersion;
     }

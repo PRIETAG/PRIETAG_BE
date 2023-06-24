@@ -6,7 +6,6 @@ import com.tag.prietag.dto.template.TemplateRequest;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -34,6 +33,7 @@ public class TemplateVersion extends TimeStamped {
     private String subColor1;
     @Column(nullable = false)
     private String subColor2;
+
     @Column(nullable = false)
     private String font;
 
@@ -98,6 +98,10 @@ public class TemplateVersion extends TimeStamped {
 
     public void setTemplate(Template template){
         this.template = template;
+    }
+
+    public void setDeleted(boolean isDeleted){
+        this.isDeleted = isDeleted;
     }
 
     public void setHeadDiscount(List<TemplateRequest.SaveInDTO.HeadDiscount> headDiscount){

@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import com.tag.prietag.model.TemplateVersion;
 import com.tag.prietag.model.User;
-
 import javax.persistence.*;
 import java.time.ZonedDateTime;
 
