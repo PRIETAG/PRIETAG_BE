@@ -1,5 +1,4 @@
 package com.tag.prietag.controller;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tag.prietag.core.auth.jwt.MyJwtProvider;
@@ -16,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.Optional;
 
 
@@ -35,7 +33,7 @@ public class UserController {
 
         userService.accessTokenVerify(code);
 
-        // 2. code 값 카카오 전달 -> access token 받기
+        // 2. code 값 카카오 전달 -> access token 받기 --> 인가코드 에러 발생
         ResponseEntity<String> codeEntity = userService.accessTokenReceiving(code);
 
         // 3. access token으로 카카오의 홍길동 resource 접근 가능해짐 -> access token을 파싱하고

@@ -17,7 +17,6 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long kakaoId;
     @Column(name = "nickname",nullable = false)
     private String username;
     @JsonIgnore
@@ -36,9 +35,8 @@ public class User {
 
 
     @Builder
-    public User(Long id, Long kakaoId, String username, String password, String email, RoleEnum role, Boolean status) {
+    public User(Long id, String username, String password, String email, RoleEnum role, Boolean status) {
         this.id = id;
-        this.kakaoId = kakaoId;
         this.username = username;
         this.Password = password;
         this.email = email;

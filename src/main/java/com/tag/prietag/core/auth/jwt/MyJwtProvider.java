@@ -29,6 +29,8 @@ public class MyJwtProvider {
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXP))
                 .withClaim("id", user.getId())
                 .withClaim("role", user.getRole().toString())
+//                .withClaim("username", user.getUsername())  // username 추가시
+//                .withClaim("email", user.getEmail()) // 이메일 추가시
                 .sign(Algorithm.HMAC512(SECRET));
         System.out.println("디버그 : 토큰 생성됨");
         return TOKEN_PREFIX + jwt;
