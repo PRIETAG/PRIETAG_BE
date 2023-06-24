@@ -246,25 +246,33 @@ public class TemplateService {
             faqArea.setTemplateVersion(newTemplateVersion);
         }
         fieldRepository.saveAll(faqAreas);
+        return "기존 템플릿 id, 버전 id = " + templateId + ", " + originTemplateVersion.getId() +
+                "기존 카드, 차트, faq, 필드 id = " + priceCards.get(0).getId() + ", " + charts.get(0).getId() + ", " + faqs.get(0).getId() + ", " + cardAreas.get(0).getId() + ", " + chartAreas.get(0).getId() + ", " + faqAreas.get(0).getId() +
+                "복제된 템플릿 id, 버전 id = " + newTemplate.getId() + ", " + newTemplateVersion.getId() +
+                "복제된 카드, 차트, faq, 필드 id = " + newPriceCardIds.get(0) + ", " + newChartds.get(0) + ", " + newFaqIds.get(0) + ", " + newCardAreaIds.get(0) + ", " + newChartAreaIds.get(0) + ", " + newFaqAreaIds.get(0);
     }
 
 
     // 템플릿 퍼블리싱 (최신)
     @Transactional
-    public void publishTemplate(Long templateId, User user) {
+    public String publishTemplate(Long templateId, User user) {
         // 버전이 가장 높은 templateVersion의 id
         Long maxVersionId = templateVersionRepository.findIdByTemplateIdMaxVersion(templateId);
 
         // 퍼블리싱된 templateVersion의 id 수정
         user.setPublishId(maxVersionId);
+
+        return "퍼블리싱된 버전 id = " + maxVersionId;
     }
 
 
     // 템플릿 퍼블리싱 (버전 선택)
     @Transactional
-    public void publishTemplateVS(Long versionId, User user) {
+    public String publishTemplateVS(Long versionId, User user) {
         // 퍼블리싱된 templateVersion의 id 수정
         user.setPublishId(versionId);
+
+        return "퍼블리싱된 버전 id = " + versionId;
     }
 
 
@@ -312,18 +320,19 @@ public class TemplateService {
 
     // 템플릿 버전(히스토리) 삭제
     @Transactional
-    public void deleteTemplateVS(TemplateRequest.DeleteInDTO deleteInDTO, User user) {
+    public String deleteTemplateVS(TemplateRequest.DeleteInDTO deleteInDTO, User user) {
 
         for (Long id: deleteInDTO.getId()){
             TemplateVersion templateVersion = templateVersionRepository.findById(id).orElseThrow(
                     () -> new Exception400("templateVersion", "존재하지 않는 TemplateVersion입니다"));
             templateVersion.setDeleted(true);
         }
+        return "삭제 버전 id = " + deleteInDTO.getId() + " 삭제 완료";
     }
 
 
     // 템플릿 삭제 (버전 포함 템플릿 자체 삭제)
-    public void deleteTemplate(Long templateId, User user) {
+    public String deleteTemplate(Long templateId, User user) {
         Template template = templateRepository.findById(templateId).orElseThrow(
                 () -> new Exception400("template", "존재하지 않는 Template입니다"));
         template.setDeleted(true);
@@ -332,6 +341,7 @@ public class TemplateService {
         for (TemplateVersion templateVersion: templateVersions){
             templateVersion.setDeleted(true);
         }
+        return "삭제 템플릿 id = " + templateId + " 삭제 완료";
     }
 
 

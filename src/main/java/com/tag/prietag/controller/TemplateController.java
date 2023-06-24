@@ -22,7 +22,8 @@ public class TemplateController {
     private final TemplateService templateService;
 
     @PostMapping("/template")
-    public ResponseEntity<?> createTemplate(@RequestBody @Valid TemplateRequest.SaveInDTO saveInDTO, Error errors, @AuthenticationPrincipal MyUserDetails myUserDetails){
+    public ResponseEntity<?> createTemplate(@RequestBody @Valid TemplateRequest.SaveInDTO saveInDTO, Error errors,
+                                            @AuthenticationPrincipal MyUserDetails myUserDetails){
         String result = templateService.createTemplate( saveInDTO, myUserDetails.getUser());
         return ResponseEntity.ok(new ResponseDTO<>(result));
     }
@@ -61,28 +62,29 @@ public class TemplateController {
     @PostMapping("/template/copy/{templateId}")
     public ResponseEntity<?> copyTemplate(@PathVariable Long templateId,
                                           @AuthenticationPrincipal MyUserDetails myUserDetails){
-        templateService.copyTemplate(templateId, myUserDetails.getUser());
-        return ResponseEntity.ok().body(new ResponseDTO<>());
+        String result = templateService.copyTemplate(templateId, myUserDetails.getUser());
+        return ResponseEntity.ok().body(new ResponseDTO<>(result));
     }
 
 
     // 템플릿 퍼블리싱
     // 템플릿 아이디 -> 최신 버전
     // 버전 아이디 -> 해당 버전
-    @PatchMapping("/template/publish/latest")
-    public ResponseEntity<?> publishTemplate(@RequestParam Long templateId,
-                                             @RequestParam Long versionId, Error errors,
+    @PatchMapping("/template/publish")
+    public ResponseEntity<?> publishTemplate(@RequestParam(required = false, value = "tid") Long templateId,
+                                             @RequestParam(required = false, value = "vid") Long versionId, Error errors,
                                              @AuthenticationPrincipal MyUserDetails myUserDetails){
+        String result;
         if (templateId == null && versionId == null) {
             throw new IllegalArgumentException("templateId 또는 versionId 둘 중 하나는 필수입니다.");
         } else if (templateId != null && versionId != null) {
             throw new IllegalArgumentException("templateId 또는 versionId 둘 중 하나만 입력해주세요.");
         } else if (templateId != null) {
-            templateService.publishTemplate(templateId, myUserDetails.getUser());
+            result = templateService.publishTemplate(templateId, myUserDetails.getUser());
         } else {
-            templateService.publishTemplateVS(versionId, myUserDetails.getUser());
+            result = templateService.publishTemplateVS(versionId, myUserDetails.getUser());
         }
-        return ResponseEntity.ok(new ResponseDTO<>());
+        return ResponseEntity.ok(new ResponseDTO<>(result));
     }
 
 
@@ -90,7 +92,8 @@ public class TemplateController {
     @GetMapping("/template/user/{userId}")
     public ResponseEntity<?> getTemplate(@PathVariable Long userId,
                                          @AuthenticationPrincipal MyUserDetails myUserDetails){
-        return ResponseEntity.ok().body(new ResponseDTO<>(templateService.getPublishedTemplateVS(userId, myUserDetails.getUser())));
+        TemplateResponse.TemplateVSOutDTO result = templateService.getPublishedTemplateVS(userId, myUserDetails.getUser());
+        return ResponseEntity.ok().body(new ResponseDTO<>(result));
     }
 
     // 템플릿 불러오기 (버전 선택)
@@ -98,25 +101,25 @@ public class TemplateController {
     public ResponseEntity<?> getTemplateVS(@PathVariable Long versionId,
                                            @AuthenticationPrincipal MyUserDetails myUserDetails){
         TemplateResponse.TemplateVSOutDTO result = templateService.getTemplateVS(versionId, myUserDetails.getUser());
-        return ResponseEntity.ok().body(result);
+        return ResponseEntity.ok().body(new ResponseDTO<>(result));
     }
 
 
     // 템플릿 히스토리(버전) 삭제 (여러개 선택 가능)
-    @PatchMapping("/api/template/history")
+    @PatchMapping("/template/history")
     public ResponseEntity<?> deleteTemplateVS(@RequestBody @Valid TemplateRequest.DeleteInDTO deleteInDTO,
                                               @AuthenticationPrincipal MyUserDetails myUserDetails){
-        templateService.deleteTemplateVS(deleteInDTO, myUserDetails.getUser());
-        return ResponseEntity.ok(new ResponseDTO<>());
+        String result = templateService.deleteTemplateVS(deleteInDTO, myUserDetails.getUser());
+        return ResponseEntity.ok(new ResponseDTO<>(result));
     }
 
 
     // 템플릿 삭제 (템플릿 및 포함 버전 전부 삭제)
-    @PatchMapping("/api/template/{templateId}")
+    @PatchMapping("/template/{templateId}")
     public ResponseEntity<?> deleteTemplate(@PathVariable Long templateId,
                                             @AuthenticationPrincipal MyUserDetails myUserDetails){
-        templateService.deleteTemplate(templateId, myUserDetails.getUser());
-        return ResponseEntity.ok(new ResponseDTO<>());
+        String result = templateService.deleteTemplate(templateId, myUserDetails.getUser());
+        return ResponseEntity.ok(new ResponseDTO<>(result));
     }
 
 }
