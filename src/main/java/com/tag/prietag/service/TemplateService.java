@@ -169,7 +169,8 @@ public class TemplateService {
 
 
     // 템플릿 복제 -> 최신 버전 1개 생성
-    public void copyTemplate(Long templateId, User user) {
+    @Transactional
+    public String copyTemplate(Long templateId, User user) {
         // TODO: 새로운 템플릿 이름 중복 체크
 //        if(templateRepository.findByTemplateName(새로운템플릿이름).isPresent()){
 //            throw new Exception400("templateName", "이미 존재하는 템플릿 이름이 있습니다");
@@ -179,11 +180,21 @@ public class TemplateService {
         // 가장 높은 버전 템플릿 가져오기
         TemplateVersion originTemplateVersion = templateVersionRepository.findMaxVersionTemplate(templateId);
 
+        StringBuilder mainTitle = new StringBuilder(originTemplate.getMainTitle());
+        // 템플릿 이름을 포함한 템플릿 가져오기
+        List<Template> templateList = templateRepository.findByMainTitleContainingAndIsDeleted(mainTitle.toString(), false);
+        int index = 1;
+        while (templateList.size() != 0) {
+            mainTitle.append("_").append(index);
+            if (templateList.stream().anyMatch(template -> template.getMainTitle().equals(mainTitle.toString()))) {
+                index++;
+            } else {
+                break;
+            }
+        }
+
         // 새로운 Template 엔티티 생성 및 저장
-        Template newTemplate = Template.builder()
-                .mainTitle(originTemplate.getMainTitle())
-                .user(user)
-                .build();
+        Template newTemplate = new Template(user, mainTitle.toString());
         templateRepository.save(newTemplate);
 
         // 새로운 TemplateVersion 엔티티 생성 및 저장
