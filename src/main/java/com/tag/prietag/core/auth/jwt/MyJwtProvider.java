@@ -21,7 +21,7 @@ public class MyJwtProvider {
     private static final int EXP = 1000 * 60 * 60;
     public static final String TOKEN_PREFIX = "Bearer "; // 스페이스 필요함
     public static final String HEADER = "Authorization";
-    private static final String SECRET = "메타코딩";
+    private static final String SECRET = System.getenv("SECRET");
 
     public static String create(User user) {
         String jwt = JWT.create()
@@ -29,6 +29,8 @@ public class MyJwtProvider {
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXP))
                 .withClaim("id", user.getId())
                 .withClaim("role", user.getRole().toString())
+//                .withClaim("username", user.getUsername())  // username 추가시
+//                .withClaim("email", user.getEmail()) // 이메일 추가시
                 .sign(Algorithm.HMAC512(SECRET));
         System.out.println("디버그 : 토큰 생성됨");
         return TOKEN_PREFIX + jwt;

@@ -1,8 +1,7 @@
 package com.tag.prietag.core.auth.session;
 
-import lombok.Getter;
-import lombok.Setter;
 import com.tag.prietag.model.User;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,9 +10,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@Setter
 @Getter
 public class MyUserDetails implements UserDetails {
+
     private User user;
 
     public MyUserDetails(User user) {
@@ -22,13 +21,14 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        String role = "ROLE_"+user.getRole().toString();
-        return List.of(new SimpleGrantedAuthority(role));
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(()-> "ROLE_"+user.getRole());
+        return authorities;
     }
 
     @Override
     public String getPassword() {
-        return user.getEmail();
+        return user.getPassword();
     }
 
     @Override
@@ -53,6 +53,8 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return user.getStatus();
     }
+
+
 }

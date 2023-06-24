@@ -1,9 +1,10 @@
 package com.tag.prietag.core.config;
 
-import com.tag.prietag.core.auth.jwt.MyJwtAuthorizationFilter;
+
 import com.tag.prietag.core.auth.jwt.MyJwtProvider;
 import com.tag.prietag.core.exception.Exception401;
 import com.tag.prietag.core.exception.Exception403;
+import com.tag.prietag.core.filter.MyJwtAuthorizationFilter;
 import com.tag.prietag.core.util.MyFilterResponseUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +30,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class MySecurityConfig {
 
     @Bean
-    BCryptPasswordEncoder passwordEncoder(){
+    BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -39,7 +40,7 @@ public class MySecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    JwtLogoutHandler jwtLogoutHandler(MyJwtProvider myJwtProvider){
+    JwtLogoutHandler jwtLogoutHandler(MyJwtProvider myJwtProvider) {
         return new JwtLogoutHandler(myJwtProvider);
     }
 
@@ -50,7 +51,7 @@ public class MySecurityConfig {
         @Override
         public void configure(HttpSecurity builder) throws Exception {
             AuthenticationManager authenticationManager = builder.getSharedObject(AuthenticationManager.class);
-            builder.addFilter(new MyJwtAuthorizationFilter(authenticationManager, myJwtProvider));
+            builder.addFilter(new MyJwtAuthorizationFilter(authenticationManager));
             // 시큐리티 관련 필터
             super.configure(builder);
         }
@@ -81,25 +82,39 @@ public class MySecurityConfig {
 
         // 8. 인증 실패 처리
         http.exceptionHandling().authenticationEntryPoint((request, response, authException) -> {
-            log.warn("인증되지 않은 사용자가 자원에 접근하려 합니다 : "+authException.getMessage());
+            log.warn("인증되지 않은 사용자가 자원에 접근하려 합니다 : " + authException.getMessage());
             MyFilterResponseUtils.unAuthorized(response, new Exception401("인증되지 않았습니다"));
         });
 
         // 10. 권한 실패 처리
         http.exceptionHandling().accessDeniedHandler((request, response, accessDeniedException) -> {
-            log.warn("권한이 없는 사용자가 자원에 접근하려 합니다 : "+accessDeniedException.getMessage());
+            log.warn("권한이 없는 사용자가 자원에 접근하려 합니다 : " + accessDeniedException.getMessage());
             MyFilterResponseUtils.forbidden(response, new Exception403("권한이 없습니다"));
         });
 
         // 11. 인증, 권한 필터 설정
+//        http.authorizeRequests(
+//                        authorize -> authorize.antMatchers("/api/login", "/api/join", "/api/email/validate", "/api/user/profile", "/h2-console/**").permitAll()
+//                                .antMatchers("/api/admin/**").hasRole("ADMIN")
+//                                .anyRequest()
+//                                .authenticated()
+//                ).logout().logoutUrl("/api/logout")
+//                .logoutSuccessHandler(jwtLogoutHandler(myJwtProvider))
+//                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
         http.authorizeRequests(
-                authorize -> authorize.antMatchers("/api/login","/api/join","/api/email/validate","/api/user/profile","/h2-console/**").permitAll()
-                        .antMatchers("/api/admin/**").hasRole("ADMIN")
-                        .anyRequest()
-                        .authenticated()
-        ).logout().logoutUrl("/api/logout")
-                .logoutSuccessHandler(jwtLogoutHandler(myJwtProvider))
-                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                authorize -> authorize.antMatchers("/users/**").authenticated()
+                        .antMatchers("/admin/**").hasRole("ADMIN")
+                        .anyRequest().permitAll()
+        );
+
+
+        http.oauth2Login()
+//                .defaultSuccessUrl("/login-success")
+//                .successHandler(oAuth2AuthenticationSuccessHandler)
+//                .userInfoEndpoint().userService(userOAuth2Service)
+        ;
+
 
         return http.build();
     }
