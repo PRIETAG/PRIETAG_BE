@@ -1,6 +1,7 @@
 package com.tag.prietag.dto.template;
 
 import com.tag.prietag.model.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.Hibernate;
@@ -51,13 +52,13 @@ public class TemplateResponse {
     @Getter
     public static class TemplateVSOutDTO{
 
-        private List<Field> cardArea;
-        private List<Field> chartArea;
-        private List<Field> faqArea;
+        private List<TemplateResponse.FieldResponse> cardArea;
+        private List<TemplateResponse.FieldResponse> chartArea;
+        private List<TemplateResponse.FieldResponse> faqArea;
 
-        private List<PriceCard> priceCard;
-        private List<Chart> chart;
-        private List<Faq> faq;
+        private List<PriceCardResponse> priceCard;
+        private List<ChartResponse> chart;
+        private List<FaqResponse> faq;
 
         private String mainColor;
         private List<String> subColor;
@@ -76,8 +77,8 @@ public class TemplateResponse {
 
 
         @Builder
-        public TemplateVSOutDTO(List<Field> cardArea, List<Field> chartArea, List<Field> faqArea,
-                                List<PriceCard> priceCard, List<Chart> chart, List<Faq> faq,
+        public TemplateVSOutDTO(List<TemplateResponse.FieldResponse> cardArea, List<TemplateResponse.FieldResponse> chartArea, List<TemplateResponse.FieldResponse> faqArea,
+                                List<PriceCardResponse> priceCard, List<ChartResponse> chart, List<FaqResponse> faq,
                                 TemplateVersion templateVersion) {
             this.cardArea = cardArea;
             this.chartArea = chartArea;
@@ -114,6 +115,105 @@ public class TemplateResponse {
             this.isCardSet = templateVersion.isCardSet();
             this.priceCardAreaPadding = templateVersion.getPriceCardAreaPadding();
             this.priceCardDetailMaxHeight = templateVersion.getPriceCardDetailMaxHeight();
+        }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @Builder
+    public static class FieldResponse {
+        private Long id;
+        Long templateVersionId;
+        private Integer index;
+        private Integer areaNum;
+        private Field.Role role;
+        private String desc;
+        public static FieldResponse of(Field field) {
+            return FieldResponse.builder()
+                    .id(field.getId())
+                    .templateVersionId(field.getTemplateVersion().getId())
+                    .index(field.getIndex())
+                    .areaNum(field.getAreaNum())
+                    .role(field.getRole())
+                    .desc(field.getDesc())
+                    .build();
+        }
+        public enum Role{
+            TITLE,SUBTITLE,TEXT,PADDING
+        }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @Builder
+    public static class PriceCardResponse {
+        private Long id;
+        private Integer index;
+        Long templateVersionId;
+        private String cardTitle;
+        private Integer price;
+        private Integer discountRate;
+        private String detail;
+        private String feature;
+        private List<String> content;
+        public static PriceCardResponse of(PriceCard priceCard) {
+            return PriceCardResponse.builder()
+                    .id(priceCard.getId())
+                    .templateVersionId(priceCard.getTemplateVersion().getId())
+                    .index(priceCard.getIndex())
+                    .cardTitle(priceCard.getCardTitle())
+                    .price(priceCard.getPrice())
+                    .discountRate(priceCard.getDiscountRate())
+                    .detail(priceCard.getDetail())
+                    .feature(priceCard.getFeature())
+                    .content(priceCard.getContent())
+                    .build();
+        }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @Builder
+    public static class ChartResponse {
+        private Long id;
+        Long templateVersionId;
+        private boolean haveHeader;
+        private String featureName;
+        private Integer chartNum;
+        private Integer index;
+        private String feature;
+        private List<String> desc;
+        public static ChartResponse of(Chart chart) {
+            return ChartResponse.builder()
+                    .id(chart.getId())
+                    .templateVersionId(chart.getTemplateVersion().getId())
+                    .haveHeader(chart.isHaveHeader())
+                    .featureName(chart.getFeatureName())
+                    .chartNum(chart.getChartNum())
+                    .index(chart.getIndex())
+                    .feature(chart.getFeature())
+                    .desc(chart.getDesc())
+                    .build();
+        }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @Builder
+    public static class FaqResponse {
+        private Long id;
+        Long templateVersionId;
+        private Integer index;
+        private String question;
+        private String answer;
+        public static FaqResponse of(Faq faq) {
+            return FaqResponse.builder()
+                    .id(faq.getId())
+                    .templateVersionId(faq.getTemplateVersion().getId())
+                    .index(faq.getIndex())
+                    .question(faq.getQuestion())
+                    .answer(faq.getAnswer())
+                    .build();
         }
     }
 }

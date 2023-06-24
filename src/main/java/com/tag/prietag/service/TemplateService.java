@@ -311,15 +311,22 @@ public class TemplateService {
 
         // 카드, 차트, faq area 정보 불러오기
         List<Field> cardArea = fieldRepository.findAllByTemplateVersionIdAndAreaNumOrderByIndex(versionId, 1);
+        List<TemplateResponse.FieldResponse> cardAreaResponse = cardArea.stream().map(TemplateResponse.FieldResponse::of).collect(Collectors.toList());
         List<Field> chartArea = fieldRepository.findAllByTemplateVersionIdAndAreaNumOrderByIndex(versionId, 2);
+        List<TemplateResponse.FieldResponse> chartAreaResponse = chartArea.stream().map(TemplateResponse.FieldResponse::of).collect(Collectors.toList());
         List<Field> faqArea = fieldRepository.findAllByTemplateVersionIdAndAreaNumOrderByIndex(versionId, 3);
+        List<TemplateResponse.FieldResponse> faqAreaResponse = faqArea.stream().map(TemplateResponse.FieldResponse::of).collect(Collectors.toList());
 
         // 카드, 차트, faq 정보 불러오기
         List<PriceCard> priceCard = priceCardRepository.findAllByTemplateVersionIdOrderByIndex(versionId);
+        List<TemplateResponse.PriceCardResponse> priceCardResponse = priceCard.stream().map(TemplateResponse.PriceCardResponse::of).collect(Collectors.toList());
         List<Chart> chart = chartRepository.findAllByTemplateVersionIdOrderByIndex(versionId);
+        List<TemplateResponse.ChartResponse> chartResponse = chart.stream().map(TemplateResponse.ChartResponse::of).collect(Collectors.toList());
         List<Faq> faq = faqRepository.findAllByTemplateVersionIdOrderByIndex(versionId);
+        List<TemplateResponse.FaqResponse> faqResponse = faq.stream().map(TemplateResponse.FaqResponse::of).collect(Collectors.toList());
 
-        return new TemplateResponse.TemplateVSOutDTO(cardArea, chartArea, faqArea, priceCard, chart, faq, templateVersion);
+        return new TemplateResponse.TemplateVSOutDTO(cardAreaResponse, chartAreaResponse, faqAreaResponse,
+                priceCardResponse, chartResponse, faqResponse, templateVersion);
     }
 
 
@@ -330,15 +337,21 @@ public class TemplateService {
 
         // 카드, 차트, faq area 정보 불러오기
         List<Field> cardArea = fieldRepository.findAllByTemplateVersionIdAndAreaNumOrderByIndex(versionId, 1);
+        List<TemplateResponse.FieldResponse> cardAreaResponse = cardArea.stream().map(TemplateResponse.FieldResponse::of).collect(Collectors.toList());
         List<Field> chartArea = fieldRepository.findAllByTemplateVersionIdAndAreaNumOrderByIndex(versionId, 2);
+        List<TemplateResponse.FieldResponse> chartAreaResponse = chartArea.stream().map(TemplateResponse.FieldResponse::of).collect(Collectors.toList());
         List<Field> faqArea = fieldRepository.findAllByTemplateVersionIdAndAreaNumOrderByIndex(versionId, 3);
+        List<TemplateResponse.FieldResponse> faqAreaResponse = faqArea.stream().map(TemplateResponse.FieldResponse::of).collect(Collectors.toList());
 
         // 카드, 차트, faq 정보 불러오기
         List<PriceCard> priceCard = priceCardRepository.findAllByTemplateVersionIdOrderByIndex(versionId);
+        List<TemplateResponse.PriceCardResponse> priceCardResponse = priceCard.stream().map(TemplateResponse.PriceCardResponse::of).collect(Collectors.toList());
         List<Chart> chart = chartRepository.findAllByTemplateVersionIdOrderByIndex(versionId);
+        List<TemplateResponse.ChartResponse> chartResponse = chart.stream().map(TemplateResponse.ChartResponse::of).collect(Collectors.toList());
         List<Faq> faq = faqRepository.findAllByTemplateVersionIdOrderByIndex(versionId);
+        List<TemplateResponse.FaqResponse> faqResponse = faq.stream().map(TemplateResponse.FaqResponse::of).collect(Collectors.toList());
 
-        return new TemplateResponse.TemplateVSOutDTO(cardArea, chartArea, faqArea, priceCard, chart, faq, templateVersion);
+        return new TemplateResponse.TemplateVSOutDTO(cardAreaResponse, chartAreaResponse, faqAreaResponse, priceCardResponse, chartResponse, faqResponse, templateVersion);
     }
 
 
