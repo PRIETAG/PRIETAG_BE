@@ -2,7 +2,8 @@ name: prietag-deploy to EC2
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
 
 env:
   PROJECT_NAME: ezfee_project
