@@ -1,60 +1,50 @@
-name: prietag-deploy CI/CD
+name: prietag-deploy to EC2
 
 on:
   push:
-    branches:
-      - main # (1) 브랜치 이름
-  workflow_dispatch: # (2) 수동 실행
+    branches: [ "main" ]
+
+env:
+  PROJECT_NAME: ezfee_project
+  BUCKET_NAME: ezfee-cicd-bucket
+  CODE_DEPLOY_APP_NAME: ezfee_cicd
+  DEPLOYMENT_GROUP_NAME: ezfee_instance
 
 jobs:
-  build:
-    runs-on: ubuntu-latest # (3) OS환경
-
+  deploy:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2 # (4) 코드 check out : 스프링부트 프로젝트의 소스코드를 내려받는다
+      - uses: actions/checkout@v2
 
       - name: Set up JDK 11
-        uses: actions/setup-java@v1.4.3
+        uses: actions/setup-java@v1
         with:
-          java-version: 11 # (5) 자바 설치
+          java-version: 11
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
-        shell: bash # (6) 권한 부여
+        shell: bash
 
-      - name: Build with Gradle
-        run: ./gradlew clean build
-        shell: bash # (7) build 시작
+      - name: Build and Test
+        run: ./gradlew build test
 
-      - name: Get current time
-        uses: 1466587594/get-current-time@v2
-        id: current-time
+      - name: Make Zip File
+        run: zip -qq -r ./$GITHUB_SHA.zip .
+        shell: bash
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          format: YYYY-MM-DDTHH-mm-ss
-          utcOffset: "+09:00" # (8) build 시점의 시간확보
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_PRIVATE_ACCESS_KEY }}
+          aws-region: ap-northeast-2
 
-      - name: Show Current Time
-        run: echo "CurrentTime=${{steps.current-time.outputs.formattedTime}}"
-        shell: bash # (9) 확보한 시간 보여주기
+      - name: Upload to S3
+        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://$BUCKET_NAME/$PROJECT_NAME/$GITHUB_SHA.zip
 
-      - name: Generate deployment package
-        run: |
-          mkdir -p deploy
-          cp build/libs/*.jar deploy/application.jar
-          cp Procfile deploy/Procfile
-          cp -r .ebextensions deploy/.ebextensions
-          cp -r .platform deploy/.platform
-          cd deploy && zip -r deploy.zip .
-
-      - name: Deploy to EB
-        uses: einaregilsson/beanstalk-deploy@v21
-        with:
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
-          application_name: prietag
-          environment_name: Prietag-env
-          version_label: github-action-${{steps.current-time.outputs.formattedTime}}
-          region: ap-northeast-2
-          deployment_package: deploy/deploy.zip
-          wait_for_environment_recovery: 180
+      - name: Code Deploy To EC2 instance
+        run: aws deploy create-deployment
+                --application-name $CODE_DEPLOY_APP_NAME
+                --deployment-config-name CodeDeployDefault.AllAtOnce
+                --deployment-group-name $DEPLOYMENT_GROUP_NAME
+                --s3-location bucket=$BUCKET_NAME,bundleType=zip,key=$PROJECT_NAME/$GITHUB_SHA.zip

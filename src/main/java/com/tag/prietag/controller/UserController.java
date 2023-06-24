@@ -1,4 +1,5 @@
 package com.tag.prietag.controller;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tag.prietag.core.auth.jwt.MyJwtProvider;
@@ -20,6 +21,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("/api")
 public class UserController {
 
     private final BCryptPasswordEncoder passwordEncoder; //패스워드 암호화시 필요
@@ -70,5 +72,21 @@ public class UserController {
 
         }
         return ResponseEntity.badRequest().body(new ResponseDTO<>(HttpStatus.BAD_REQUEST, "실패", "실패"));
+    }
+
+    // 회원가입
+    @PostMapping("/join")
+    public ResponseEntity<?> join(@RequestBody UserRequest.SignupInDTO signupInDTO, Errors errors) {
+        String username = userService.join(signupInDTO);
+        ResponseDTO<?> responseDTO = new ResponseDTO<>(username);
+        return ResponseEntity.ok(responseDTO);
+    }
+
+    // 로그인
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody UserRequest.LoginInDTO loginInDTO, Errors errors){
+        String result = userService.login(loginInDTO);
+        ResponseDTO<?> responseDTO = new ResponseDTO<>(result);
+        return ResponseEntity.ok().header(MyJwtProvider.HEADER, result).body(responseDTO);
     }
 }

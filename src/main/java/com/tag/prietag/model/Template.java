@@ -26,20 +26,23 @@ public class Template extends TimeStamped {
     private boolean isDeleted;
 
     @Builder
-    public Template(Long id, User user, String mainTitle) {
-        this.id = id;
+    public Template(User user, String mainTitle) {
         this.user = user;
         this.mainTitle = mainTitle;
         this.isDeleted = false;
     }
 
-    //    @Builder
-//    public Template(Long id, User user, List<TemplateVersion> templateVersions, String mainTitle) {
-//        this.id = id;
-//        this.user = user;
-//        this.templateVersions = templateVersions;
-//        this.mainTitle = mainTitle;
-//    }
-//
-//    public void addTemplateVS(TemplateVersion templateVersion) {templateVersions.add(templateVersion);}
+    public void setDeleted(boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
+    @Override
+    public String toString() {
+        return "Template{" +
+                "id=" + id +
+                ", user=" + user.getId() +
+                ", mainTitle='" + mainTitle + '\'' +
+                ", isDeleted=" + isDeleted +
+                '}';
+    }
 }

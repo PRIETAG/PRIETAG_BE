@@ -20,7 +20,7 @@ public class User {
     @Column(name = "nickname",nullable = false)
     private String username;
     @JsonIgnore
-    private String Password;
+    private String password;
     private String email;
     private Long publishId;
     @Enumerated(EnumType.STRING)
@@ -32,7 +32,8 @@ public class User {
     public void updateRole(RoleEnum role){
         this.role = role;
     }
-
+  
+    public void setPublishId(Long vid) {this.publishId = vid;}
 
     @Builder
     public User(Long id, String username, String password, String email, RoleEnum role, Boolean status) {
@@ -40,6 +41,7 @@ public class User {
         this.username = username;
         this.Password = password;
         this.email = email;
+        this.publishId = publishId;
         this.role = role;
         this.status = status;
     }
@@ -49,7 +51,7 @@ public class User {
         USER("USER");
 
         private final String value;
-
+}
         RoleEnum(String value) {  // 스트링 타입으로 변환하려고
             this.value = value;
         }
