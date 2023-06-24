@@ -35,7 +35,7 @@ public class JwtTest {
     public void verifyJwt_test(){
         // given
 
-        String myVar = "adfsafddsf";
+        String myVar = "${jwt.secret}";
 
 
         String jwt = JWT.create()
