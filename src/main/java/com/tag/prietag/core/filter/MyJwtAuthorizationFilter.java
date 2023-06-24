@@ -1,10 +1,13 @@
 package com.tag.prietag.core.filter;
 
+import com.auth0.jwt.exceptions.InvalidClaimException;
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.tag.prietag.core.auth.jwt.MyJwtProvider;
 import com.tag.prietag.core.auth.session.MyUserDetails;
+import com.tag.prietag.core.exception.token.TokenException;
 import com.tag.prietag.model.RoleEnum;
 import com.tag.prietag.model.User;
 import lombok.extern.slf4j.Slf4j;
@@ -54,10 +57,19 @@ public class MyJwtAuthorizationFilter extends BasicAuthenticationFilter {
                     );
             SecurityContextHolder.getContext().setAuthentication(authentication);
             System.out.println("디버그 : 인증 객체 만들어짐");
+
         } catch (SignatureVerificationException sve) {
             log.error("토큰 검증 실패");
-        } catch (TokenExpiredException tee) {
+            throw new TokenException(TokenException.TOKEN_ERROR.EXPIRED, response);
+        } catch (TokenExpiredException tee) { // 예외 처리 TokenException에서 대신 처리함
             log.error("토큰 만료됨");
+            throw new TokenException(TokenException.TOKEN_ERROR.BADSIGN, response);
+        } catch (InvalidClaimException ie) {
+            log.error("유효하지 않은 토큰");
+            throw new TokenException(TokenException.TOKEN_ERROR.MALFORM, response);
+        } catch (JWTDecodeException jde){
+            log.error("잘못된 형식의 토큰");
+            throw new TokenException(TokenException.TOKEN_ERROR.MALFORM, response);
         } finally {
             chain.doFilter(request, response);
         }

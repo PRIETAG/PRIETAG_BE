@@ -1,6 +1,7 @@
 package com.tag.prietag.core.exception.token;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tag.prietag.dto.ResponseDTO;
 import lombok.Getter;
 import org.springframework.http.MediaType;
 
@@ -20,17 +21,19 @@ public class TokenException extends RuntimeException{
         BADSIGN(403,"BadSignatured Token"), //누군가 위조
         EXPIRED(403,"Expired Token"); // 만료
 
-        private int status;
-        private String msg;
+        private int status; // 상태 코드
+        private String msg; // 메세지
 
-        TOKEN_ERROR(int status,String msg){
+        TOKEN_ERROR(int status,String msg){ // 생성자로 상태코드, 메세지 주입
             this.status = status;
             this.msg = msg;
         }
     }
-    public TokenException(TOKEN_ERROR tokenError){
+    //생성자로 상태코드랑 메세지 주입 받음
+    public TokenException(TOKEN_ERROR tokenError, HttpServletResponse response) {
         super(tokenError.msg);
         this.tokenError = tokenError;
+        sendResponseError(response); // 여기서 예외를 json으로 클라이언트에게 전송함
     }
     public void sendResponseError(HttpServletResponse response) {
         response.setStatus(tokenError.getStatus());
@@ -38,12 +41,13 @@ public class TokenException extends RuntimeException{
 
         ObjectMapper objectMapper = new ObjectMapper();
 
-        CommonResponse<?> responseDto = new CommonResponse<>()
-                .tokenError(tokenError)
-                .data(false);
+        ResponseDTO<?> responseDto = new ResponseDTO<>();
+        responseDto.setStatus(tokenError.getStatus());
+        responseDto.setMsg(tokenError.getMsg());
+        responseDto.setData(null);
 
         try {
-            String result = objectMapper.writeValueAsString(ErrorResponseDTO);
+            String result = objectMapper.writeValueAsString(responseDto);
             response.getWriter().println(result);
         } catch (IOException e) {
             throw new RuntimeException(e);
