@@ -4,18 +4,19 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tag.prietag.core.auth.jwt.MyJwtProvider;
 import com.tag.prietag.dto.ResponseDTO;
-import com.tag.prietag.dto.User.UserLoginDTO;
+import com.tag.prietag.dto.user.UserLoginDTO;
 import com.tag.prietag.dto.kakao.KakaoToken;
 import com.tag.prietag.dto.kakao.OAuthProfile;
 import com.tag.prietag.model.User;
-import com.tag.prietag.repository.UserRepository;
-import com.tag.prietag.service.UserServiceImpl;
+import com.tag.prietag.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.Optional;
 
 
@@ -25,9 +26,7 @@ import java.util.Optional;
 public class UserController {
 
     private final BCryptPasswordEncoder passwordEncoder; //패스워드 암호화시 필요
-    private final UserServiceImpl userService;
-    private final UserRepository userRepository;
-
+    private final UserService userService;
 
     @GetMapping("/callback")
     public  ResponseEntity<?> callback(String code) throws JsonProcessingException {
@@ -74,19 +73,19 @@ public class UserController {
         return ResponseEntity.badRequest().body(new ResponseDTO<>(HttpStatus.BAD_REQUEST, "실패", "실패"));
     }
 
-    // 회원가입
-    @PostMapping("/join")
-    public ResponseEntity<?> join(@RequestBody UserRequest.SignupInDTO signupInDTO, Errors errors) {
-        String username = userService.join(signupInDTO);
-        ResponseDTO<?> responseDTO = new ResponseDTO<>(username);
-        return ResponseEntity.ok(responseDTO);
-    }
-
-    // 로그인
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserRequest.LoginInDTO loginInDTO, Errors errors){
-        String result = userService.login(loginInDTO);
-        ResponseDTO<?> responseDTO = new ResponseDTO<>(result);
-        return ResponseEntity.ok().header(MyJwtProvider.HEADER, result).body(responseDTO);
-    }
+//    // 회원가입
+//    @PostMapping("/join")
+//    public ResponseEntity<?> join(@RequestBody com.tag.prietag.dto.user.UserRequest.SignupInDTO signupInDTO, Errors errors) {
+//        String username = userService.join(signupInDTO);
+//        ResponseDTO<?> responseDTO = new ResponseDTO<>(username);
+//        return ResponseEntity.ok(responseDTO);
+//    }
+//
+//    // 로그인
+//    @PostMapping("/login")
+//    public ResponseEntity<?> login(@RequestBody com.tag.prietag.dto.user.UserRequest.LoginInDTO loginInDTO, Errors errors){
+//        String result = userService.login(loginInDTO);
+//        ResponseDTO<?> responseDTO = new ResponseDTO<>(result);
+//        return ResponseEntity.ok().header(MyJwtProvider.HEADER, result).body(responseDTO);
+//    }
 }

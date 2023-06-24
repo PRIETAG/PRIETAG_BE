@@ -6,7 +6,7 @@ public class EnvTest {
 
     @Test
     public void env_test(){
-        String myVar = System.getenv("SECRET");
+        String myVar = "${jwt.secret}";
         System.out.println(myVar);
     }
 }

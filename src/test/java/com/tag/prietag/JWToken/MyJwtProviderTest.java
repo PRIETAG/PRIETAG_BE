@@ -6,7 +6,6 @@ import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.tag.prietag.core.auth.jwt.MyJwtProvider;
-import com.tag.prietag.model.RoleEnum;
 import com.tag.prietag.model.User;
 import com.tag.prietag.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
@@ -16,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
+@ActiveProfiles("dev")
 @Transactional
 public class MyJwtProviderTest {
 
@@ -42,7 +43,7 @@ public class MyJwtProviderTest {
                 .username("kakao_1234567")
                 .password(passwordEncoder.encode("1234"))
                 .email("sss@naver.com")
-                .role(RoleEnum.USER)
+                .role(User.RoleEnum.USER)
                 .build();
 
         userRepository.save(user);
@@ -53,7 +54,7 @@ public class MyJwtProviderTest {
     final int EXP = 1000 * 60 * 60;
     final String TOKEN_PREFIX = "Bearer "; // 스페이스 필요함
     final String HEADER = "Authorization";
-    final String SECRET = System.getenv("SECRET");
+    final String SECRET = "${jwt.secret}";
     final String KEY = "WrongKey";
 
 

@@ -93,27 +93,15 @@ public class MySecurityConfig {
         });
 
         // 11. 인증, 권한 필터 설정
-//        http.authorizeRequests(
-//                        authorize -> authorize.antMatchers("/api/login", "/api/join", "/api/email/validate", "/api/user/profile", "/h2-console/**").permitAll()
-//                                .antMatchers("/api/admin/**").hasRole("ADMIN")
-//                                .anyRequest()
-//                                .authenticated()
-//                ).logout().logoutUrl("/api/logout")
-//                .logoutSuccessHandler(jwtLogoutHandler(myJwtProvider))
-//                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
         http.authorizeRequests(
-                authorize -> authorize.antMatchers("/users/**").authenticated()
+                authorize -> authorize.antMatchers("/healthCheck", "/api/callback", "/template/user/**", "/oauth2/authorization/kakao").permitAll()
                         .antMatchers("/admin/**").hasRole("ADMIN")
-                        .anyRequest().permitAll()
+                        .anyRequest()
+                        .authenticated()
         );
 
 
-        http.oauth2Login()
-//                .defaultSuccessUrl("/login-success")
-//                .successHandler(oAuth2AuthenticationSuccessHandler)
-//                .userInfoEndpoint().userService(userOAuth2Service)
-        ;
+        http.oauth2Login();
 
 
         return http.build();
@@ -128,7 +116,7 @@ public class MySecurityConfig {
         configuration.addAllowedMethod(HttpMethod.DELETE);
         configuration.addAllowedMethod(HttpMethod.PATCH);
         configuration.addAllowedOriginPattern("*");
-//        configuration.addAllowedOriginPattern("https://need-more-task.vercel.app/");
+//        configuration.addAllowedOriginPattern("https://ezfee.vercel.app/");
         configuration.setAllowCredentials(true); // 클라이언트에서 쿠키 요청 허용
         configuration.addExposedHeader("Authorization"); // 옛날에는 디폴트 였다. 지금은 아닙니다.
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

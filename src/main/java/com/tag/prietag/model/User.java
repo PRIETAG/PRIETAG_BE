@@ -17,7 +17,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "nickname",nullable = false)
+    @Column(name = "nickname", nullable = false)
     private String username;
     @JsonIgnore
     private String password;
@@ -29,17 +29,19 @@ public class User {
     private Boolean status;
 
 
-    public void updateRole(RoleEnum role){
+    public void updateRole(RoleEnum role) {
         this.role = role;
     }
-  
-    public void setPublishId(Long vid) {this.publishId = vid;}
+
+    public void setPublishId(Long vid) {
+        this.publishId = vid;
+    }
 
     @Builder
-    public User(Long id, String username, String password, String email, RoleEnum role, Boolean status) {
+    public User(Long id, String username, String password, String email, Long publishId, RoleEnum role, Boolean status) {
         this.id = id;
         this.username = username;
-        this.Password = password;
+        this.password = password;
         this.email = email;
         this.publishId = publishId;
         this.role = role;
@@ -51,7 +53,7 @@ public class User {
         USER("USER");
 
         private final String value;
-}
+
         RoleEnum(String value) {  // 스트링 타입으로 변환하려고
             this.value = value;
         }

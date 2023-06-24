@@ -1,4 +1,4 @@
-package com.tag.prietag.dto.User;
+package com.tag.prietag.dto.user;
 
 
 import com.tag.prietag.model.User;

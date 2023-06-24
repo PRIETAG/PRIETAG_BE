@@ -21,7 +21,7 @@ public class UserRequest {
                     .username(username)
                     .email(email)
                     .publishId(null)
-                    .role(User.Role.USER)
+                    .role(User.RoleEnum.USER)
                     .build();
         }
     }

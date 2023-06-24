@@ -75,8 +75,6 @@ public class TemplateService {
 
         List<Field> faqAreas = mapAndSetTemplateVersion(saveInDTO.toFaqAreaEntity(), templateVersion);
         fieldRepository.saveAll(faqAreas);
-
-        return "template id = " + template.getId() + ", version = " + templateVersion.getVersion() + ", version id = " + templateVersion.getId();
     }
 
     //각 PriceCard, Chart, Faq, Field 들에 templateVersion 넣는 역할
@@ -312,7 +310,7 @@ public class TemplateService {
 
 
     // 템플릿 불러오기 (퍼블리싱)
-    public TemplateResponse.TemplateVSOutDTO getPublishedTemplateVS(Long userId, User user) {
+    public TemplateResponse.TemplateVSOutDTO getPublishedTemplateVS(Long userId) {
         // TODO: 로그인된 유저 정보를 사용할지?
         Long publishId = userId;
 

@@ -19,7 +19,7 @@ public class JwtTest {
     public void createJwt_test(){
         // given
 
-        String myVar = System.getenv("SECRET");
+        String myVar = "${jwt.secret}";
         // when
         String jwt = JWT.create()
                 .withSubject("토큰제목")
@@ -35,7 +35,7 @@ public class JwtTest {
     public void verifyJwt_test(){
         // given
 
-        String myVar = System.getenv("SECRET");
+        String myVar = "adfsafddsf";
 
 
         String jwt = JWT.create()

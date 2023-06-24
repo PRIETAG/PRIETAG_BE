@@ -55,7 +55,7 @@ public class LogServiceTest {
                 .email("dasfd@naver.com")
                 .username("Lee")
                 .publishId(1L)
-                .role(User.Role.USER)
+                .role(User.RoleEnum.USER)
                 .build();
         template = Template.builder()
                 .id(1L)

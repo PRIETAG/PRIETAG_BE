@@ -95,9 +95,8 @@ public class TemplateController {
 
     // 템플릿 불러오기 (퍼블리싱)
     @GetMapping("/template/user/{userId}")
-    public ResponseEntity<?> getTemplate(@PathVariable Long userId,
-                                         @AuthenticationPrincipal MyUserDetails myUserDetails){
-        TemplateResponse.TemplateVSOutDTO result = templateService.getPublishedTemplateVS(userId, myUserDetails.getUser());
+    public ResponseEntity<?> getTemplate(@PathVariable Long userId){
+        TemplateResponse.TemplateVSOutDTO result = templateService.getPublishedTemplateVS(userId);
         return ResponseEntity.ok().body(new ResponseDTO<>(result));
     }
 
