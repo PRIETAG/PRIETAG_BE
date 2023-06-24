@@ -32,6 +32,15 @@ public class Template extends TimeStamped {
         this.mainTitle = mainTitle;
         this.isDeleted = false;
     }
+    public Template(User user, String mainTitle) {
+        this.user = user;
+        this.mainTitle = mainTitle;
+        this.isDeleted = false;
+    }
+
+    public void setDeleted(boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
 
     @Override
     public String toString() {

@@ -43,6 +43,16 @@ public class Field {
         this.desc = desc;
     }
 
+    public Field toEntity(TemplateVersion newTemplateVersion) {
+        return Field.builder()
+                .templateVersion(newTemplateVersion)
+                .index(index)
+                .areaNum(areaNum)
+                .role(role)
+                .desc(desc)
+                .build();
+    }
+
     public void setTemplateVersion(TemplateVersion templateVersion){
         this.templateVersion = templateVersion;
     }

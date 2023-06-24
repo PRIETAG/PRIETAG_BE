@@ -35,5 +35,17 @@ logging:
     '[org.hibernate.type]': TRACE # 콘솔 쿼리에 ? 에 주입된 값 보기
 
 jwt:
-  secret: fdsafdaf
+  secret: adfsafddsf
 
+# S3
+cloud:
+  aws:
+    credentials:
+      access-key: ${S3_ACCESSKEY}
+      secret-key: ${S3_SECRETKEY}
+    region:
+      static: ${S3_REGION}
+    s3:
+      bucket: ${S3_NAME}
+    stack:
+      auto: false

@@ -1,8 +1,11 @@
 package com.tag.prietag.dto;
 
+import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.http.HttpStatus;
 
+@Setter
 @Getter
 public class ResponseDTO<T> {
     private Integer status; // 에러시에 의미 있음.
@@ -20,6 +23,7 @@ public class ResponseDTO<T> {
         this.data = data; // 응답할 데이터 바디
     }
 
+    @Builder
     public ResponseDTO(HttpStatus httpStatus, String msg, T data){
         this.status = httpStatus.value();
         this.msg = msg; // 에러 제목

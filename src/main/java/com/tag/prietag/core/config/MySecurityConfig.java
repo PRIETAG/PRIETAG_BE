@@ -1,9 +1,10 @@
 package com.tag.prietag.core.config;
 
-import com.tag.prietag.core.auth.jwt.MyJwtAuthorizationFilter;
+
 import com.tag.prietag.core.auth.jwt.MyJwtProvider;
 import com.tag.prietag.core.exception.Exception401;
 import com.tag.prietag.core.exception.Exception403;
+import com.tag.prietag.core.filter.MyJwtAuthorizationFilter;
 import com.tag.prietag.core.util.MyFilterResponseUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,8 +12,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,19 +27,20 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class MySecurityConfig{
+public class MySecurityConfig {
 
     @Bean
-    BCryptPasswordEncoder passwordEncoder(){
+    BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
 
+    @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    JwtLogoutHandler jwtLogoutHandler(MyJwtProvider myJwtProvider){
+    JwtLogoutHandler jwtLogoutHandler(MyJwtProvider myJwtProvider) {
         return new JwtLogoutHandler(myJwtProvider);
     }
 
@@ -47,7 +51,7 @@ public class MySecurityConfig{
         @Override
         public void configure(HttpSecurity builder) throws Exception {
             AuthenticationManager authenticationManager = builder.getSharedObject(AuthenticationManager.class);
-            builder.addFilter(new MyJwtAuthorizationFilter(authenticationManager, myJwtProvider));
+            builder.addFilter(new MyJwtAuthorizationFilter(authenticationManager));
             // 시큐리티 관련 필터
             super.configure(builder);
         }
@@ -78,25 +82,27 @@ public class MySecurityConfig{
 
         // 8. 인증 실패 처리
         http.exceptionHandling().authenticationEntryPoint((request, response, authException) -> {
-            log.warn("인증되지 않은 사용자가 자원에 접근하려 합니다 : "+authException.getMessage());
+            log.warn("인증되지 않은 사용자가 자원에 접근하려 합니다 : " + authException.getMessage());
             MyFilterResponseUtils.unAuthorized(response, new Exception401("인증되지 않았습니다"));
         });
 
         // 10. 권한 실패 처리
         http.exceptionHandling().accessDeniedHandler((request, response, accessDeniedException) -> {
-            log.warn("권한이 없는 사용자가 자원에 접근하려 합니다 : "+accessDeniedException.getMessage());
+            log.warn("권한이 없는 사용자가 자원에 접근하려 합니다 : " + accessDeniedException.getMessage());
             MyFilterResponseUtils.forbidden(response, new Exception403("권한이 없습니다"));
         });
 
         // 11. 인증, 권한 필터 설정
         http.authorizeRequests(
-                authorize -> authorize.antMatchers("/api/login","/api/join","/api/email/validate","/api/user/profile","/h2-console/**").permitAll()
-                        .antMatchers("/api/admin/**").hasRole("ADMIN")
+                authorize -> authorize.antMatchers("/healthCheck", "/api/callback", "/template/user/**", "/oauth2/authorization/kakao").permitAll()
+                        .antMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest()
                         .authenticated()
-        ).logout().logoutUrl("/api/logout")
-                .logoutSuccessHandler(jwtLogoutHandler(myJwtProvider))
-                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        );
+
+
+        http.oauth2Login();
+
 
         return http.build();
     }
@@ -108,8 +114,9 @@ public class MySecurityConfig{
         configuration.addAllowedMethod(HttpMethod.POST);
         configuration.addAllowedMethod(HttpMethod.PUT);
         configuration.addAllowedMethod(HttpMethod.DELETE);
+        configuration.addAllowedMethod(HttpMethod.PATCH);
         configuration.addAllowedOriginPattern("*");
-//        configuration.addAllowedOriginPattern("https://need-more-task.vercel.app/");
+//        configuration.addAllowedOriginPattern("https://ezfee.vercel.app/");
         configuration.setAllowCredentials(true); // 클라이언트에서 쿠키 요청 허용
         configuration.addExposedHeader("Authorization"); // 옛날에는 디폴트 였다. 지금은 아닙니다.
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

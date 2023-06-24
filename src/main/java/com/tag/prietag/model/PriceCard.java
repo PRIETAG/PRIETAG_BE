@@ -52,6 +52,19 @@ public class PriceCard {
         this.content = content;
     }
 
+    public PriceCard toEntity(TemplateVersion templateVersion){
+        return PriceCard.builder()
+                .index(index)
+                .templateVersion(templateVersion)
+                .cardTitle(cardTitle)
+                .price(price)
+                .discountRate(discountRate)
+                .detail(detail)
+                .feature(feature)
+                .content(content)
+                .build();
+    }
+
     public void setTemplateVersion(TemplateVersion templateVersion){
         this.templateVersion = templateVersion;
     }

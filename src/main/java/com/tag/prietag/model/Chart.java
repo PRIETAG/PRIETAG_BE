@@ -47,6 +47,18 @@ public class Chart {
         this.desc = desc;
     }
 
+    public Chart toEntity(TemplateVersion templateVersion){
+        return Chart.builder()
+                .templateVersion(templateVersion)
+                .haveHeader(haveHeader)
+                .featureName(featureName)
+                .chartNum(chartNum)
+                .index(index)
+                .feature(feature)
+                .desc(desc)
+                .build();
+    }
+
     public void setTemplateVersion(TemplateVersion templateVersion){
         this.templateVersion = templateVersion;
     }

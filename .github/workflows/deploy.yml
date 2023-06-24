@@ -3,8 +3,12 @@ name: prietag-deploy to EC2
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+
+env:
+  PROJECT_NAME: ezfee_project
+  BUCKET_NAME: ezfee-cicd-bucket
+  CODE_DEPLOY_APP_NAME: ezfee_cicd
+  DEPLOYMENT_GROUP_NAME: ezfee_instance
 
 env:
   PROJECT_NAME: ezfee_project
