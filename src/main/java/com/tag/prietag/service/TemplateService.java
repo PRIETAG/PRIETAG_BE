@@ -1,6 +1,7 @@
 package com.tag.prietag.service;
 
 import com.tag.prietag.core.exception.Exception400;
+import com.tag.prietag.core.util.S3Uploader;
 import com.tag.prietag.dto.template.TemplateRequest;
 import com.tag.prietag.dto.template.TemplateResponse;
 import com.tag.prietag.model.*;
@@ -11,7 +12,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -28,11 +31,11 @@ public class TemplateService {
     private final FaqRepository faqRepository;
     private final TemplateRepository templateRepository;
     private final TemplateVersionRepository templateVersionRepository;
+    private final S3Uploader s3Uploader;
 
     //템플릿 생성
     @Transactional
-    public String createTemplate(TemplateRequest.SaveInDTO saveInDTO, User user) {
-        // 해당 유저의 템플릿 네임만 찾아야 하나
+    public void createTemplate(TemplateRequest.SaveInDTO saveInDTO, User user, MultipartFile logoImg, MultipartFile previewImg) throws IOException {
         if(templateRepository.findByTemplateName(saveInDTO.getTemplateName()).isPresent()){
             throw new Exception400("templateName", "이미 존재하는 템플릿 이름이 있습니다");
         }
@@ -43,6 +46,14 @@ public class TemplateService {
 
         // TemplateVersion 엔티티 생성 및 저장
         TemplateVersion templateVersion = saveInDTO.toTemplateVersionEntity(1);
+        if(logoImg != null && !logoImg.isEmpty()){
+            String storedFileName = s3Uploader.upload(logoImg, "logos");
+            templateVersion.setLogoImageUrl(storedFileName);
+        }
+        if(previewImg != null && !previewImg.isEmpty()){
+            String storedFileName = s3Uploader.upload(previewImg, "preview");
+            templateVersion.setPreviewUrl(storedFileName);
+        }
         templateVersion.setTemplate(template);
         templateVersionRepository.save(templateVersion);
 

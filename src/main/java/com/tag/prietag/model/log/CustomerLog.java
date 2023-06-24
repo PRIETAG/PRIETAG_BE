@@ -39,10 +39,22 @@ public class CustomerLog {
     }
 
     @Builder
-    public CustomerLog(Long id, Long userId, Type type, TemplateVersion templatevs) {
+    public CustomerLog(Long id, Long userId, Type type, TemplateVersion templatevs, ZonedDateTime createdAt) {
         this.id = id;
         this.type = type;
         this.templatevs = templatevs;
         this.userId = userId;
+        this.createdAt = createdAt;
+    }
+
+    @Override
+    public String toString() {
+        return "CustomerLog{" +
+                "id=" + id +
+                ", userId=" + userId +
+                ", type=" + type +
+                ", templatevs=" + templatevs +
+                ", createdAt=" + createdAt +
+                '}';
     }
 }

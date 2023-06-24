@@ -7,12 +7,15 @@ import com.tag.prietag.dto.template.TemplateResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import com.tag.prietag.service.TemplateService;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 @RequestMapping("/api")
@@ -21,11 +24,13 @@ import java.util.List;
 public class TemplateController {
     private final TemplateService templateService;
 
-    @PostMapping("/template")
-    public ResponseEntity<?> createTemplate(@RequestBody @Valid TemplateRequest.SaveInDTO saveInDTO, Error errors,
-                                            @AuthenticationPrincipal MyUserDetails myUserDetails){
-        String result = templateService.createTemplate( saveInDTO, myUserDetails.getUser());
-        return ResponseEntity.ok(new ResponseDTO<>(result));
+    @PostMapping(value = "/template", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> createTemplate(@RequestPart @Valid TemplateRequest.SaveInDTO saveInDTO, Error errors,
+                                            @RequestPart(value = "logoImageUrl") MultipartFile logoImage,
+                                            @RequestPart(value = "previewUrl") MultipartFile previewImage,
+                                            @AuthenticationPrincipal MyUserDetails myUserDetails) throws IOException {
+        templateService.createTemplate( saveInDTO, myUserDetails.getUser(), logoImage, previewImage);
+        return ResponseEntity.ok(new ResponseDTO<>());
     }
 
     @GetMapping("/templates")
