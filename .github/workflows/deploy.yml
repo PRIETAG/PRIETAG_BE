@@ -11,12 +11,6 @@ env:
   CODE_DEPLOY_APP_NAME: ezfee_cicd
   DEPLOYMENT_GROUP_NAME: ezfee_instance
 
-env:
-  PROJECT_NAME: ezfee_project
-  BUCKET_NAME: ezfee-cicd-bucket
-  CODE_DEPLOY_APP_NAME: ezfee_cicd
-  DEPLOYMENT_GROUP_NAME: ezfee_instance
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
