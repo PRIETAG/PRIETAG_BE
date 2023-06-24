@@ -4,8 +4,10 @@ import com.tag.prietag.model.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -31,8 +33,6 @@ public class TemplateRequest {
         private List<String> subColor;
         @NotNull
         private String font;
-
-        private String logoImageUrl;
 
         @NotNull
         private List<Integer> padding;
@@ -68,7 +68,6 @@ public class TemplateRequest {
                     .mainColor(this.mainColor)
                     .subColor(this.subColor)
                     .font(this.font)
-                    .logoImageUrl(this.logoImageUrl)
                     .padding(this.padding)
                     .isCheckPerPerson(this.isCheckPerPerson)
                     .headCount(this.headDiscount.isEmpty()?null:this.headDiscount.stream().map(headCount -> headCount.getHeadCount()).collect(Collectors.toList()))
@@ -87,12 +86,14 @@ public class TemplateRequest {
             }
             return this.priceCard.stream()
                     .map(card -> PriceCard.builder()
+                            .index(this.priceCard.indexOf(card))
                             .cardTitle(card.getTitle())
                             .price(card.getPrice())
                             .discountRate(card.getDiscountRate())
                             .detail(card.getDetail())
                             .feature(card.getFeature())
                             .content(card.getContent())
+                            .index(this.priceCard.indexOf(card))
                             .build())
                     .collect(Collectors.toList());
         }
@@ -123,8 +124,10 @@ public class TemplateRequest {
             }
             return faq.stream()
                     .map(faq -> Faq.builder()
+                            .index(this.faq.indexOf(faq))
                             .question(faq.getQuestion())
                             .answer(faq.getDesc())
+                            .index(this.faq.indexOf(faq))
                             .build())
                     .collect(Collectors.toList());
         }
@@ -133,7 +136,7 @@ public class TemplateRequest {
             if (this.priceCardArea == null || this.priceCardArea.isEmpty()) {
                 return new ArrayList<>();
             }
-            AtomicInteger index = new AtomicInteger(1);
+            AtomicInteger index = new AtomicInteger(0);
             return priceCardArea.stream()
                     .map(area -> Field.builder()
                             .index(index.getAndIncrement())
@@ -148,7 +151,7 @@ public class TemplateRequest {
             if (this.chartArea == null || this.chartArea.isEmpty()) {
                 return new ArrayList<>();
             }
-            AtomicInteger index = new AtomicInteger(1);
+            AtomicInteger index = new AtomicInteger(0);
             return chartArea.stream()
                     .map(area -> Field.builder()
                             .index(index.getAndIncrement())
@@ -163,7 +166,7 @@ public class TemplateRequest {
             if (this.faqArea == null || this.faqArea.isEmpty()) {
                 return new ArrayList<>();
             }
-            AtomicInteger index = new AtomicInteger(1);
+            AtomicInteger index = new AtomicInteger(0);
             return faqArea.stream()
                     .map(area -> Field.builder()
                             .index(index.getAndIncrement())
@@ -234,7 +237,7 @@ public class TemplateRequest {
         }
 
         @Builder
-        public SaveInDTO(List<AreaRequest> priceCardArea, List<AreaRequest> chartArea, List<AreaRequest> faqArea, List<PriceCardRequest> priceCard, List<ChartRequest> chart, List<FaqRequest> faq, String mainColor, List<String> subColor, String font, String logoImageUrl, List<Integer> padding, String templateName, boolean isCheckPerPerson, List<HeadDiscount> headDiscount, boolean isCheckPerYear, Integer yearDiscountRate, boolean isCardSet, Integer priceCardAreaPadding) {
+        public SaveInDTO(List<AreaRequest> priceCardArea, List<AreaRequest> chartArea, List<AreaRequest> faqArea, List<PriceCardRequest> priceCard, List<ChartRequest> chart, List<FaqRequest> faq, String mainColor, List<String> subColor, String font, List<Integer> padding, String templateName, boolean isCheckPerPerson, List<HeadDiscount> headDiscount, boolean isCheckPerYear, Integer yearDiscountRate, boolean isCardSet, Integer priceCardAreaPadding, Integer priceCardDetailMaxHeight) {
             this.priceCardArea = priceCardArea;
             this.chartArea = chartArea;
             this.faqArea = faqArea;
@@ -244,7 +247,6 @@ public class TemplateRequest {
             this.mainColor = mainColor;
             this.subColor = subColor;
             this.font = font;
-            this.logoImageUrl = logoImageUrl;
             this.padding = padding;
             this.templateName = templateName;
             this.isCheckPerPerson = isCheckPerPerson;
@@ -253,7 +255,13 @@ public class TemplateRequest {
             this.yearDiscountRate = yearDiscountRate;
             this.isCardSet = isCardSet;
             this.priceCardAreaPadding = priceCardAreaPadding;
+            this.priceCardDetailMaxHeight = priceCardDetailMaxHeight;
         }
+    }
+
+    @Getter
+    public static class DeleteInDTO {
+        private List<Long> id;
     }
 
 }
