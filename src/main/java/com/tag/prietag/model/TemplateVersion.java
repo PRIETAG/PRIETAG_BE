@@ -21,7 +21,7 @@ public class TemplateVersion extends TimeStamped {
     private Long id;
 
     @Column(nullable = false)
-    private Integer version;
+    private int version;
     private String versionTitle;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -71,7 +71,7 @@ public class TemplateVersion extends TimeStamped {
     private boolean isDeleted;
 
     @Builder
-    public TemplateVersion(Long id, Template template, ZonedDateTime updateAt, Integer version, String versionTitle, String mainColor, List<String> subColor, String font, String logoImageUrl, String previewUrl, List<Integer> padding, boolean isCheckPerPerson, List<Integer> headCount, List<Integer> headDiscountRate, boolean isCheckPerYear, Integer yearDiscountRate, boolean isCardSet, Integer priceCardAreaPadding, Integer priceCardDetailMaxHeight) {
+    public TemplateVersion(Long id, Template template, ZonedDateTime updateAt, int version, String versionTitle, String mainColor, List<String> subColor, String font, String logoImageUrl, String previewUrl, List<Integer> padding, boolean isCheckPerPerson, List<Integer> headCount, List<Integer> headDiscountRate, boolean isCheckPerYear, Integer yearDiscountRate, boolean isCardSet, Integer priceCardAreaPadding, Integer priceCardDetailMaxHeight) {
         this.id = id;
         this.template = template;
         this.version = version;

@@ -14,7 +14,7 @@ spring:
     database: mysql
     open-in-view: false
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     properties:
       default_batch_fetch_size: 100
 logging:

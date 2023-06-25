@@ -15,7 +15,7 @@ public class Faq {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "sequence", nullable = false)
     private Integer index;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -25,7 +25,7 @@ public class Faq {
     private String answer;
 
     @Builder
-    public Faq(Long id, Integer index,TemplateVersion templateVersion, String question, String answer) {
+    public Faq(Long id, Integer index, TemplateVersion templateVersion, String question, String answer) {
         this.id = id;
         this.index = index;
         this.templateVersion = templateVersion;
