@@ -67,11 +67,15 @@ public class TemplateVersion extends TimeStamped {
     @Column(nullable = false)
     private Integer priceCardDetailMaxHeight;
 
+    private Integer highLightIndex;
+    private String pricing;
+    private boolean isCardHighLight;
+
     @Column(nullable = false)
     private boolean isDeleted;
 
     @Builder
-    public TemplateVersion(Long id, Template template, ZonedDateTime updateAt, int version, String versionTitle, String mainColor, List<String> subColor, String font, String logoImageUrl, String previewUrl, List<Integer> padding, boolean isCheckPerPerson, List<Integer> headCount, List<Integer> headDiscountRate, boolean isCheckPerYear, Integer yearDiscountRate, boolean isCardSet, Integer priceCardAreaPadding, Integer priceCardDetailMaxHeight) {
+    public TemplateVersion(Long id, Template template, Integer highLightIndex, String pricing, boolean isCardHighLight, ZonedDateTime updateAt, int version, String versionTitle, String mainColor, List<String> subColor, String font, String logoImageUrl, String previewUrl, List<Integer> padding, boolean isCheckPerPerson, List<Integer> headCount, List<Integer> headDiscountRate, boolean isCheckPerYear, Integer yearDiscountRate, boolean isCardSet, Integer priceCardAreaPadding, Integer priceCardDetailMaxHeight) {
         this.id = id;
         this.template = template;
         this.version = version;
@@ -92,6 +96,10 @@ public class TemplateVersion extends TimeStamped {
         this.isCardSet = isCardSet;
         this.priceCardAreaPadding = priceCardAreaPadding;
         this.priceCardDetailMaxHeight = priceCardDetailMaxHeight;
+        this.highLightIndex = highLightIndex;
+        this.isCardHighLight = isCardHighLight;
+        this.pricing = pricing;
+
         this.isDeleted = false;
         this.setUpdatedAt(updateAt);
     }
