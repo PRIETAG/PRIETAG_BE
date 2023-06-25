@@ -17,7 +17,7 @@ public class PriceCard {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "sequence", nullable = false)
     private Integer index;
 
     @ManyToOne(fetch = FetchType.LAZY)

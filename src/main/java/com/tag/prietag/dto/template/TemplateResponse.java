@@ -135,7 +135,7 @@ public class TemplateResponse {
                     .index(field.getIndex())
                     .areaNum(field.getAreaNum())
                     .role(field.getRole())
-                    .desc(field.getDesc())
+                    .desc(field.getDescription())
                     .build();
         }
         public enum Role{
@@ -192,7 +192,7 @@ public class TemplateResponse {
                     .chartNum(chart.getChartNum())
                     .index(chart.getIndex())
                     .feature(chart.getFeature())
-                    .desc(chart.getDesc())
+                    .desc(chart.getDescription())
                     .build();
         }
     }
