@@ -44,19 +44,24 @@ public class TemplateResponse {
     public static class getTemplatesVSOutDTO{
 
         Long totalCount;
+        boolean havePublish;
         List<TemplateVsReq> template;
 
         @Getter
         public static class TemplateVsReq {
             private Long id;
+            private double version;
             private String title;
             private String updated_at;
+            private boolean is_publishing;
 
             @Builder
-            public TemplateVsReq(Long id, String title, ZonedDateTime updated_at) {
+            public TemplateVsReq(Long id, String title, ZonedDateTime updated_at, boolean is_publishing, double version) {
                 this.id = id;
+                this.version = version;
                 this.title = title;
                 this.updated_at = updated_at.format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"));
+                this.is_publishing = is_publishing;
             }
         }
 

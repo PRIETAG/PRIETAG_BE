@@ -46,11 +46,8 @@ public class KpiLogController {
     @GetMapping("/dashboard/history")
     public ResponseEntity<?> getHistoryKpi(@RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
                                          @RequestParam(value = "period") String period,
-                                           @RequestParam(value = "page") int page,
-                                           @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
                                          @AuthenticationPrincipal MyUserDetails myUserDetails){
-        Pageable pageable = PageRequest.of(page, pageSize);
-        List<LogResponse.GetHistoryKpiOutDTO> getHistoryKpiOutDTOList = kpiLogService.getHistoryKpi(myUserDetails.getUser(),date.atStartOfDay(ZoneId.systemDefault()),period,pageable);
+        List<LogResponse.GetHistoryKpiOutDTO> getHistoryKpiOutDTOList = kpiLogService.getHistoryKpi(myUserDetails.getUser(),date.atStartOfDay(ZoneId.systemDefault()),period);
         return ResponseEntity.ok().body(new ResponseDTO<>(getHistoryKpiOutDTOList));
     }
 }

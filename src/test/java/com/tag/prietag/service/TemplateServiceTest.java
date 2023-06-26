@@ -253,7 +253,7 @@ public class TemplateServiceTest {
             Pageable pageable = PageRequest.of(0, 10);
             getTemplatesVSSetting(pageable);
             //when then
-            Assertions.assertThrows(Exception400.class, () -> templateService.getTemplatesVS(2L, pageable));
+            Assertions.assertThrows(Exception400.class, () -> templateService.getTemplatesVS(2L, pageable, "", user));
         }
 
         @Test
@@ -264,13 +264,13 @@ public class TemplateServiceTest {
             getTemplatesVSSetting(pageable);
 
             //when
-            templateService.getTemplatesVS(template.getId(), pageable);
+            templateService.getTemplatesVS(template.getId(), pageable, "", user);
 
             //then
             verify(templateRepository, times(1)).findById(template.getId());
             verify(templateVersionRepository, times(1)).findByTemplateId(template.getId(), pageable);
 
-            Assertions.assertDoesNotThrow(() -> templateService.getTemplatesVS(template.getId(), pageable));
+            Assertions.assertDoesNotThrow(() -> templateService.getTemplatesVS(template.getId(), pageable, "", user));
         }
 
         void getTemplatesVSSetting(Pageable pageable){
@@ -284,6 +284,10 @@ public class TemplateServiceTest {
             lenient().when(templateVersionRepository.findByTemplateId(anyLong() ,eq(pageable)))
                     .thenReturn( new PageImpl<>(List.of(templateVersion), pageable,1));
 
+            lenient().when(userRepository.findById(anyLong()))
+                    .thenReturn( Optional.of(user));
+            lenient().when(templateVersionRepository.findByTemplateIdPublishId(anyLong(), anyLong()))
+                    .thenReturn(Optional.empty());
         }
     }
 
