@@ -13,15 +13,19 @@ public class UserRequest {
         @NotEmpty
         private String username;
         @NotEmpty
+        private String password;
+        @NotEmpty
         private String email;
 
 
         public User toEntity() {
             return User.builder()
                     .username(username)
+                    .password(password)
                     .email(email)
                     .publishId(null)
                     .role(User.RoleEnum.USER)
+                    .status(true)
                     .build();
         }
     }
@@ -32,6 +36,6 @@ public class UserRequest {
         @NotEmpty
         private String username;
         @NotEmpty
-        private String email;
+        private String password;
     }
 }

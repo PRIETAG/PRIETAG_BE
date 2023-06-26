@@ -13,9 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -73,19 +72,19 @@ public class UserController {
         return ResponseEntity.badRequest().body(new ResponseDTO<>(HttpStatus.BAD_REQUEST, "실패", "실패"));
     }
 
-//    // 회원가입
-//    @PostMapping("/join")
-//    public ResponseEntity<?> join(@RequestBody com.tag.prietag.dto.user.UserRequest.SignupInDTO signupInDTO, Errors errors) {
-//        String username = userService.join(signupInDTO);
-//        ResponseDTO<?> responseDTO = new ResponseDTO<>(username);
-//        return ResponseEntity.ok(responseDTO);
-//    }
-//
-//    // 로그인
-//    @PostMapping("/login")
-//    public ResponseEntity<?> login(@RequestBody com.tag.prietag.dto.user.UserRequest.LoginInDTO loginInDTO, Errors errors){
-//        String result = userService.login(loginInDTO);
-//        ResponseDTO<?> responseDTO = new ResponseDTO<>(result);
-//        return ResponseEntity.ok().header(MyJwtProvider.HEADER, result).body(responseDTO);
-//    }
+    // 회원가입
+    @PostMapping("/test/join")
+    public ResponseEntity<?> join(@RequestBody com.tag.prietag.dto.user.UserRequest.SignupInDTO signupInDTO, Errors errors) {
+        String username = userService.joinTest(signupInDTO);
+        ResponseDTO<?> responseDTO = new ResponseDTO<>(username);
+        return ResponseEntity.ok(responseDTO);
+    }
+
+    // 로그인
+    @PostMapping("/test/login")
+    public ResponseEntity<?> login(@RequestBody com.tag.prietag.dto.user.UserRequest.LoginInDTO loginInDTO, Errors errors){
+        String result = userService.loginTest(loginInDTO);
+        ResponseDTO<?> responseDTO = new ResponseDTO<>(result);
+        return ResponseEntity.ok().header(MyJwtProvider.HEADER, result).body(responseDTO);
+    }
 }
