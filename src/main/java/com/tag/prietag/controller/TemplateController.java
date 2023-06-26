@@ -38,7 +38,7 @@ public class TemplateController {
                                            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
                                            @AuthenticationPrincipal MyUserDetails myUserDetails){
         Pageable pageable = PageRequest.of(page, pageSize);
-        List<TemplateResponse.getTemplatesOutDTO> getTemplatesOutDTOList = templateService.getTemplates(myUserDetails.getUser(), pageable);
+        TemplateResponse.getTemplatesOutDTO getTemplatesOutDTOList = templateService.getTemplates(myUserDetails.getUser(), pageable);
         return ResponseEntity.ok().body(new ResponseDTO<>(getTemplatesOutDTOList));
     }
 
@@ -48,7 +48,7 @@ public class TemplateController {
                                             @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
                                             @AuthenticationPrincipal MyUserDetails myUserDetails){
         Pageable pageable = PageRequest.of(page, pageSize);
-        List<TemplateResponse.getTemplatesVSOutDTO> getTemplatesVSOutDTOList = templateService.getTemplatesVS(id, pageable);
+        TemplateResponse.getTemplatesVSOutDTO getTemplatesVSOutDTOList = templateService.getTemplatesVS(id, pageable);
         return ResponseEntity.ok().body(new ResponseDTO<>(getTemplatesVSOutDTOList));
     }
 
