@@ -281,7 +281,7 @@ public class KpiLogService {
     }
 
     // 대시보드 HistoryKpi 조회
-    public List<LogResponse.GetHistoryKpiOutDTO> getHistoryKpi(User user, ZonedDateTime date, String period, Pageable pageable) {
+    public List<LogResponse.GetHistoryKpiOutDTO> getHistoryKpi(User user, ZonedDateTime date, String period) {
         ZonedDateTime startDate;
         ZonedDateTime endDate = date.with(LocalTime.MAX);
         if (period.equals("WEEK")) {
@@ -296,12 +296,12 @@ public class KpiLogService {
 
         List<LogResponse.GetHistoryKpiOutDTO> getHistoryKpiOutDTOList = new ArrayList<>();
 
-        Page<PublishLog> publishLogPage = publishLogRepository.findByBetweenDateUserId(user.getId(), startDate, endDate, pageable);
+        List<PublishLog> publishLogPage = publishLogRepository.findByBetweenDateUserId(user.getId(), startDate, endDate).orElse(Collections.emptyList());
         List<CustomerLog> betweenCustomerLogList = customerLogRepository.findByBetweenDateUserId(user.getId(), startDate, endDate).orElse(Collections.emptyList());
-        for (int i = 0; i < publishLogPage.getSize(); i++) {
-            PublishLog publishLog = publishLogPage.getContent().get(i);
+        for (int i = 0; i < publishLogPage.size(); i++) {
+            PublishLog publishLog = publishLogPage.get(i);
             ZonedDateTime publishStartDate = publishLog.getCreatedAt();
-            ZonedDateTime publishEndDate = i < (publishLogPage.getSize() - 1) ? publishLogPage.getContent().get(i + 1).getCreatedAt() : ZonedDateTime.now();
+            ZonedDateTime publishEndDate = i < (publishLogPage.size() - 1) ? publishLogPage.get(i + 1).getCreatedAt() : ZonedDateTime.now();
             int viewCount = 0;
             int conversionCount = 0;
             for (CustomerLog customerLog : betweenCustomerLogList) {
