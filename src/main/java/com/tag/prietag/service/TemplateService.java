@@ -92,10 +92,10 @@ public class TemplateService {
     }
 
     //템플릿 목록 조회
-    public List<TemplateResponse.getTemplatesOutDTO> getTemplates(User user, Pageable pageable){
+    public TemplateResponse.getTemplatesOutDTO getTemplates(User user, Pageable pageable){
         Page<Template> templatesPS = templateRepository.findByUserId(user.getId(), pageable);
 
-        List<TemplateResponse.getTemplatesOutDTO> getTemplatesOutDTOList = new ArrayList<>();
+        List<TemplateResponse.getTemplatesOutDTO.TemplateReq> templateReqList = new ArrayList<>();
         for (Template template: templatesPS){
 
             // 최신 버전 가져온 후 UpdateAt을 String yyyy.MM.dd HH.mm형식 으로 변경
@@ -109,7 +109,7 @@ public class TemplateService {
             // 퍼블리싱된 templateVersion 있는지 확인
             boolean isMatching = templateVersionRepository.findByPublishTemplateId(user.getPublishId(), template.getId()).isPresent();
 
-            getTemplatesOutDTOList.add(TemplateResponse.getTemplatesOutDTO.builder()
+            templateReqList.add(TemplateResponse.getTemplatesOutDTO.TemplateReq.builder()
                     .id(template.getId())
                     .title(template.getMainTitle())
                     .updated_at(templateVersion.getUpdatedAt())
@@ -118,24 +118,30 @@ public class TemplateService {
                     .build());
         }
 
-        return getTemplatesOutDTOList;
+        return TemplateResponse.getTemplatesOutDTO.builder()
+                .totalCount(templatesPS.getTotalElements())
+                .template(templateReqList)
+                .build();
     }
 
-    public List<TemplateResponse.getTemplatesVSOutDTO> getTemplatesVS(Long id, Pageable pageable){
+    public TemplateResponse.getTemplatesVSOutDTO getTemplatesVS(Long id, Pageable pageable){
         Template template = templateRepository.findById(id).orElseThrow(
                 () -> new Exception400("template", "존재하지 않는 Template입니다"));
 
-        List<TemplateResponse.getTemplatesVSOutDTO> getTemplatesVSOutDTOList = new ArrayList<>();
+        List<TemplateResponse.getTemplatesVSOutDTO.TemplateVsReq> templateVsReqList = new ArrayList<>();
         Page<TemplateVersion> templateVersionPage = templateVersionRepository.findByTemplateId(id, pageable);
         for(TemplateVersion templateVersion: templateVersionPage){
-            getTemplatesVSOutDTOList.add(TemplateResponse.getTemplatesVSOutDTO.builder()
+            templateVsReqList.add(TemplateResponse.getTemplatesVSOutDTO.TemplateVsReq.builder()
                             .id(templateVersion.getId())
                             .title(templateVersion.getVersionTitle()+"v_"+templateVersion.getVersion())
                             .updated_at(templateVersion.getUpdatedAt())
                     .build());
         }
 
-        return getTemplatesVSOutDTOList;
+        return TemplateResponse.getTemplatesVSOutDTO.builder()
+                .totalCount(templateVersionPage.getTotalElements())
+                .template(templateVsReqList)
+                .build();
     }
 
 

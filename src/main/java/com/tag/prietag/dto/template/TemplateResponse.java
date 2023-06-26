@@ -15,37 +15,51 @@ public class TemplateResponse {
 
     //Templates 조회
     @Getter
+    @AllArgsConstructor @Builder
     public static class getTemplatesOutDTO{
 
-        private Long id;
-        private String title;
-        private String updated_at;
-        private String image;
-        private boolean isPublished;
+        Long totalCount;
+        List<TemplateReq> template;
+        @Getter
+        public static class TemplateReq {
+            private Long id;
+            private String title;
+            private String updated_at;
+            private String image;
+            private boolean isPublished;
 
-        @Builder
-        public getTemplatesOutDTO(Long id, String title, ZonedDateTime updated_at, String image, boolean isPublished) {
-            this.id = id;
-            this.title = title;
-            this.updated_at = updated_at.format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"));
-            this.image = image;
-            this.isPublished = isPublished;
+            @Builder
+            public TemplateReq(Long id, String title, ZonedDateTime updated_at, String image, boolean isPublished) {
+                this.id = id;
+                this.title = title;
+                this.updated_at = updated_at.format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"));
+                this.image = image;
+                this.isPublished = isPublished;
+            }
         }
     }
 
     @Getter
+    @AllArgsConstructor @Builder
     public static class getTemplatesVSOutDTO{
 
-        private Long id;
-        private String title;
-        private String updated_at;
+        Long totalCount;
+        List<TemplateVsReq> template;
 
-        @Builder
-        public getTemplatesVSOutDTO(Long id, String title, ZonedDateTime updated_at) {
-            this.id = id;
-            this.title = title;
-            this.updated_at = updated_at.format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"));
+        @Getter
+        public static class TemplateVsReq {
+            private Long id;
+            private String title;
+            private String updated_at;
+
+            @Builder
+            public TemplateVsReq(Long id, String title, ZonedDateTime updated_at) {
+                this.id = id;
+                this.title = title;
+                this.updated_at = updated_at.format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"));
+            }
         }
+
     }
 
     // 템플릿 버전 (카드, 차트, faq 등 포함)
