@@ -24,7 +24,14 @@ public interface TemplateVersionRepository extends JpaRepository<TemplateVersion
     @Query("select t from TemplateVersion t where t.template.id=:id and t.isDeleted=false order by t.updatedAt desc")
     Page<TemplateVersion> findByTemplateId(@Param("id") Long id, Pageable pageable);
 
+    // 검색 조회
+    @Query(value = "select t from TemplateVersion t where t.template.id=:id and t.isDeleted=false and t.versionTitle like %:search% order by t.updatedAt desc"
+            , countQuery = "select count(t) from TemplateVersion t where t.template.id=:id and t.isDeleted=false and t.versionTitle like %:search%")
+    Page<TemplateVersion> findByTemplateIdSearch(@Param("id") Long id, @Param("search") String search, Pageable pageable);
 
+    //해당 template에 publish한 version있는지 조회
+    @Query("select t from TemplateVersion t where t.template.id=:tId and t.id=:pId and t.isDeleted=false")
+    Optional<TemplateVersion> findByTemplateIdPublishId(@Param("tId") Long tId, @Param("pId") Long pId);
 
     // 버전이 가장 높은 템플릿 조회
     @Query("select t from TemplateVersion t where t.template.id = :id and t.version = (select max (t2.version) from TemplateVersion t2 where t2.template.id = :id and t2.isDeleted = false)")
