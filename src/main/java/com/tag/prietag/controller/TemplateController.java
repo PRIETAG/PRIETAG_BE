@@ -56,9 +56,11 @@ public class TemplateController {
     // 템플릿 저장 -> 히스토리(버전) 생성 (모든 카드, 차트, FAQ 새로 생성)
     @PostMapping("/template/{templateId}")
     public ResponseEntity<?> createTemplateVS(@PathVariable Long templateId,
-                                              @RequestBody @Valid TemplateRequest.SaveInDTO saveInDTO,
-                                              @AuthenticationPrincipal MyUserDetails myUserDetails){
-        String result = templateService.createTemplateVS(templateId, saveInDTO, myUserDetails.getUser());
+                                              @RequestPart @Valid TemplateRequest.SaveInDTO saveInDTO, Error errors,
+                                              @RequestPart(value = "logoImageUrl") MultipartFile logoImage,
+                                              @RequestPart(value = "previewUrl") MultipartFile previewImage,
+                                              @AuthenticationPrincipal MyUserDetails myUserDetails) throws IOException {
+        String result = templateService.createTemplateVS(templateId, saveInDTO, myUserDetails.getUser(), logoImage, previewImage);
         return ResponseEntity.ok().body(new ResponseDTO<>(result));
     }
 

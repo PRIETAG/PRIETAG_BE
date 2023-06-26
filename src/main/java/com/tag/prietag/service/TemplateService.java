@@ -140,7 +140,7 @@ public class TemplateService {
 
 
     // 템플릿 버전 생성
-    public String createTemplateVS(Long templateId, TemplateRequest.SaveInDTO saveInDTO, User user) {
+    public String createTemplateVS(Long templateId, TemplateRequest.SaveInDTO saveInDTO, User user, MultipartFile logoImg, MultipartFile previewImg) throws IOException {
         Template template = templateRepository.findById(templateId).orElseThrow(
                 () -> new Exception400("template", "존재하지 않는 Template입니다"));
 
@@ -152,6 +152,16 @@ public class TemplateService {
         int versionId = templateVersionRepository.findMaxVersionByTemplateId(templateId) + 1;
         TemplateVersion templateVersion = saveInDTO.toTemplateVersionEntity(versionId);
         templateVersion.setTemplate(template);
+
+        if(logoImg != null && !logoImg.isEmpty()){
+            String storedFileName = s3Uploader.upload(logoImg, "logos");
+            templateVersion.setLogoImageUrl(storedFileName);
+        }
+        if(previewImg != null && !previewImg.isEmpty()){
+            String storedFileName = s3Uploader.upload(previewImg, "preview");
+            templateVersion.setPreviewUrl(storedFileName);
+        }
+
         templateVersionRepository.save(templateVersion);
 
         List<PriceCard> priceCards = mapAndSetTemplateVersion(saveInDTO.toPriceCardEntity(), templateVersion);
