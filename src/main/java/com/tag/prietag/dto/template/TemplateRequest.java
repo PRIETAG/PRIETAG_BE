@@ -54,6 +54,13 @@ public class TemplateRequest {
         @NotNull
         private Integer priceCardDetailMaxHeight;
 
+
+        private Integer highLightIndex;
+        private String pricing;
+
+        private boolean isCardHighLight = false;
+        private Integer cardMaxHeight;
+
         public Template toEntity(User user) {
             return Template.builder()
                     .user(user)
@@ -77,6 +84,10 @@ public class TemplateRequest {
                     .isCardSet(this.isCardSet)
                     .priceCardAreaPadding(this.priceCardAreaPadding)
                     .priceCardDetailMaxHeight(this.priceCardDetailMaxHeight)
+                    .highLightIndex(this.highLightIndex)
+                    .isCardHighLight(this.isCardHighLight)
+                    .pricing(this.pricing)
+                    .cardMaxHeight(this.cardMaxHeight)
                     .build();
         }
 

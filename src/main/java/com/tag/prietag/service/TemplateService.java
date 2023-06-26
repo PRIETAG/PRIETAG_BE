@@ -44,7 +44,7 @@ public class TemplateService {
         Template template = saveInDTO.toEntity(user);
         templateRepository.save(template);
 
-        // TemplateVersion 엔티티 생성 및 저장
+        // TemplateVersion version 1로 엔티티 생성 및 저장
         TemplateVersion templateVersion = saveInDTO.toTemplateVersionEntity(1);
         if(logoImg != null && !logoImg.isEmpty()){
             String storedFileName = s3Uploader.upload(logoImg, "logos");
@@ -92,10 +92,10 @@ public class TemplateService {
     }
 
     //템플릿 목록 조회
-    public List<TemplateResponse.getTemplatesOutDTO> getTemplates(User user, Pageable pageable){
+    public TemplateResponse.getTemplatesOutDTO getTemplates(User user, Pageable pageable){
         Page<Template> templatesPS = templateRepository.findByUserId(user.getId(), pageable);
 
-        List<TemplateResponse.getTemplatesOutDTO> getTemplatesOutDTOList = new ArrayList<>();
+        List<TemplateResponse.getTemplatesOutDTO.TemplateReq> templateReqList = new ArrayList<>();
         for (Template template: templatesPS){
 
             // 최신 버전 가져온 후 UpdateAt을 String yyyy.MM.dd HH.mm형식 으로 변경
@@ -109,7 +109,7 @@ public class TemplateService {
             // 퍼블리싱된 templateVersion 있는지 확인
             boolean isMatching = templateVersionRepository.findByPublishTemplateId(user.getPublishId(), template.getId()).isPresent();
 
-            getTemplatesOutDTOList.add(TemplateResponse.getTemplatesOutDTO.builder()
+            templateReqList.add(TemplateResponse.getTemplatesOutDTO.TemplateReq.builder()
                     .id(template.getId())
                     .title(template.getMainTitle())
                     .updated_at(templateVersion.getUpdatedAt())
@@ -118,29 +118,35 @@ public class TemplateService {
                     .build());
         }
 
-        return getTemplatesOutDTOList;
+        return TemplateResponse.getTemplatesOutDTO.builder()
+                .totalCount(templatesPS.getTotalElements())
+                .template(templateReqList)
+                .build();
     }
 
-    public List<TemplateResponse.getTemplatesVSOutDTO> getTemplatesVS(Long id, Pageable pageable){
+    public TemplateResponse.getTemplatesVSOutDTO getTemplatesVS(Long id, Pageable pageable){
         Template template = templateRepository.findById(id).orElseThrow(
                 () -> new Exception400("template", "존재하지 않는 Template입니다"));
 
-        List<TemplateResponse.getTemplatesVSOutDTO> getTemplatesVSOutDTOList = new ArrayList<>();
+        List<TemplateResponse.getTemplatesVSOutDTO.TemplateVsReq> templateVsReqList = new ArrayList<>();
         Page<TemplateVersion> templateVersionPage = templateVersionRepository.findByTemplateId(id, pageable);
         for(TemplateVersion templateVersion: templateVersionPage){
-            getTemplatesVSOutDTOList.add(TemplateResponse.getTemplatesVSOutDTO.builder()
+            templateVsReqList.add(TemplateResponse.getTemplatesVSOutDTO.TemplateVsReq.builder()
                             .id(templateVersion.getId())
                             .title(templateVersion.getVersionTitle()+"v_"+templateVersion.getVersion())
                             .updated_at(templateVersion.getUpdatedAt())
                     .build());
         }
 
-        return getTemplatesVSOutDTOList;
+        return TemplateResponse.getTemplatesVSOutDTO.builder()
+                .totalCount(templateVersionPage.getTotalElements())
+                .template(templateVsReqList)
+                .build();
     }
 
 
     // 템플릿 버전 생성
-    public String createTemplateVS(Long templateId, TemplateRequest.SaveInDTO saveInDTO, User user) {
+    public String createTemplateVS(Long templateId, TemplateRequest.SaveInDTO saveInDTO, User user, MultipartFile logoImg, MultipartFile previewImg) throws IOException {
         Template template = templateRepository.findById(templateId).orElseThrow(
                 () -> new Exception400("template", "존재하지 않는 Template입니다"));
 
@@ -152,6 +158,16 @@ public class TemplateService {
         int versionId = templateVersionRepository.findMaxVersionByTemplateId(templateId) + 1;
         TemplateVersion templateVersion = saveInDTO.toTemplateVersionEntity(versionId);
         templateVersion.setTemplate(template);
+
+        if(logoImg != null && !logoImg.isEmpty()){
+            String storedFileName = s3Uploader.upload(logoImg, "logos");
+            templateVersion.setLogoImageUrl(storedFileName);
+        }
+        if(previewImg != null && !previewImg.isEmpty()){
+            String storedFileName = s3Uploader.upload(previewImg, "preview");
+            templateVersion.setPreviewUrl(storedFileName);
+        }
+
         templateVersionRepository.save(templateVersion);
 
         List<PriceCard> priceCards = mapAndSetTemplateVersion(saveInDTO.toPriceCardEntity(), templateVersion);
@@ -225,6 +241,10 @@ public class TemplateService {
                 .isCardSet(originTemplateVersion.isCardSet())
                 .priceCardAreaPadding(originTemplateVersion.getPriceCardAreaPadding())
                 .priceCardDetailMaxHeight(originTemplateVersion.getPriceCardDetailMaxHeight())
+                .cardMaxHeight(originTemplateVersion.getCardMaxHeight())
+                .highLightIndex(originTemplateVersion.getHighLightIndex())
+                .isCardHighLight(originTemplateVersion.isCardHighLight())
+                .pricing(originTemplateVersion.getPricing())
                 .build();
         templateVersionRepository.save(newTemplateVersion);
 
@@ -378,6 +398,7 @@ public class TemplateService {
 
 
     // 템플릿 삭제 (버전 포함 템플릿 자체 삭제)
+    @Transactional
     public String deleteTemplate(Long templateId, User user) {
         Template template = templateRepository.findById(templateId).orElseThrow(
                 () -> new Exception400("template", "존재하지 않는 Template입니다"));
