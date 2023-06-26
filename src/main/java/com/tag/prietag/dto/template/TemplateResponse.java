@@ -66,7 +66,7 @@ public class TemplateResponse {
         private String logoImageUrl;
         private String previewUrl;
         private List<Integer> padding;
-        private String templateName;
+        private String versionTitle;
         private boolean isCheckPerPerson;
         private List<TemplateRequest.SaveInDTO.HeadDiscount> headDiscount;
         private boolean isCheckPerYear;
@@ -93,7 +93,7 @@ public class TemplateResponse {
             this.previewUrl = templateVersion.getPreviewUrl();
             this.padding = List.of(templateVersion.getPadding1(), templateVersion.getPadding2());
             // 버전 타이틀이 이름 맞나?
-            this.templateName = templateVersion.getVersionTitle();
+            this.versionTitle = templateVersion.getVersionTitle();
             this.isCheckPerPerson = templateVersion.isCheckPerPerson();
 
             // Lazy loading 해제

@@ -114,6 +114,10 @@ public class TemplateVersion extends TimeStamped {
         this.isDeleted = isDeleted;
     }
 
+    public void setVersionTitle(String versionTitle){
+        this.versionTitle = versionTitle;
+    }
+
     public void setHeadDiscount(List<TemplateRequest.SaveInDTO.HeadDiscount> headDiscount){
         this.headCount = headDiscount.stream().map(headCount -> headCount.getHeadCount()).collect(Collectors.toList());
         this.headDiscountRate = headDiscount.stream().map(discount -> discount.getDiscountRate()).collect(Collectors.toList());
