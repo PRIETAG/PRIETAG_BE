@@ -235,6 +235,10 @@ public class TemplateService {
                 .isCardSet(originTemplateVersion.isCardSet())
                 .priceCardAreaPadding(originTemplateVersion.getPriceCardAreaPadding())
                 .priceCardDetailMaxHeight(originTemplateVersion.getPriceCardDetailMaxHeight())
+                .cardMaxHeight(originTemplateVersion.getCardMaxHeight())
+                .highLightIndex(originTemplateVersion.getHighLightIndex())
+                .isCardHighLight(originTemplateVersion.isCardHighLight())
+                .pricing(originTemplateVersion.getPricing())
                 .build();
         templateVersionRepository.save(newTemplateVersion);
 

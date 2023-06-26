@@ -75,6 +75,11 @@ public class TemplateResponse {
         private Integer priceCardAreaPadding;
         private Integer priceCardDetailMaxHeight;
 
+        private Integer highLightIndex;
+        private String pricing;
+        private boolean isCardHighLight;
+        private Integer cardMaxHeight;
+
 
         @Builder
         public TemplateVSOutDTO(List<TemplateResponse.FieldResponse> cardArea, List<TemplateResponse.FieldResponse> chartArea, List<TemplateResponse.FieldResponse> faqArea,
@@ -115,6 +120,10 @@ public class TemplateResponse {
             this.isCardSet = templateVersion.isCardSet();
             this.priceCardAreaPadding = templateVersion.getPriceCardAreaPadding();
             this.priceCardDetailMaxHeight = templateVersion.getPriceCardDetailMaxHeight();
+            this.highLightIndex = templateVersion.getHighLightIndex();
+            this.isCardHighLight = templateVersion.isCardHighLight();
+            this.pricing = templateVersion.getPricing();
+            this.cardMaxHeight = templateVersion.getCardMaxHeight();
         }
     }
 
