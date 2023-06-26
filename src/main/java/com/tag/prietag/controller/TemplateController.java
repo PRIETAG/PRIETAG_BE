@@ -38,7 +38,7 @@ public class TemplateController {
                                            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
                                            @AuthenticationPrincipal MyUserDetails myUserDetails){
         Pageable pageable = PageRequest.of(page, pageSize);
-        List<TemplateResponse.getTemplatesOutDTO> getTemplatesOutDTOList = templateService.getTemplates(myUserDetails.getUser(), pageable);
+        TemplateResponse.getTemplatesOutDTO getTemplatesOutDTOList = templateService.getTemplates(myUserDetails.getUser(), pageable);
         return ResponseEntity.ok().body(new ResponseDTO<>(getTemplatesOutDTOList));
     }
 
@@ -48,7 +48,7 @@ public class TemplateController {
                                             @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
                                             @AuthenticationPrincipal MyUserDetails myUserDetails){
         Pageable pageable = PageRequest.of(page, pageSize);
-        List<TemplateResponse.getTemplatesVSOutDTO> getTemplatesVSOutDTOList = templateService.getTemplatesVS(id, pageable);
+        TemplateResponse.getTemplatesVSOutDTO getTemplatesVSOutDTOList = templateService.getTemplatesVS(id, pageable);
         return ResponseEntity.ok().body(new ResponseDTO<>(getTemplatesVSOutDTOList));
     }
 
@@ -56,9 +56,11 @@ public class TemplateController {
     // 템플릿 저장 -> 히스토리(버전) 생성 (모든 카드, 차트, FAQ 새로 생성)
     @PostMapping("/template/{templateId}")
     public ResponseEntity<?> createTemplateVS(@PathVariable Long templateId,
-                                              @RequestBody @Valid TemplateRequest.SaveInDTO saveInDTO,
-                                              @AuthenticationPrincipal MyUserDetails myUserDetails){
-        String result = templateService.createTemplateVS(templateId, saveInDTO, myUserDetails.getUser());
+                                              @RequestPart @Valid TemplateRequest.SaveInDTO saveInDTO, Error errors,
+                                              @RequestPart(value = "logoImageUrl") MultipartFile logoImage,
+                                              @RequestPart(value = "previewUrl") MultipartFile previewImage,
+                                              @AuthenticationPrincipal MyUserDetails myUserDetails) throws IOException {
+        String result = templateService.createTemplateVS(templateId, saveInDTO, myUserDetails.getUser(), logoImage, previewImage);
         return ResponseEntity.ok().body(new ResponseDTO<>(result));
     }
 

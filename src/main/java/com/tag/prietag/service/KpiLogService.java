@@ -196,7 +196,7 @@ public class KpiLogService {
 
         @Override
         public String toString() {
-            return year + "." + month + " " + weekOfMonth + "주차";
+            return year + "." + month + "." + weekOfMonth + "주차";
         }
     }
 

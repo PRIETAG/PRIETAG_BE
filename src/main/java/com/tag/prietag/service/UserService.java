@@ -4,17 +4,24 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.tag.prietag.core.auth.jwt.MyJwtProvider;
+import com.tag.prietag.core.auth.session.MyUserDetails;
+import com.tag.prietag.core.exception.Exception401;
+import com.tag.prietag.core.exception.Exception500;
 import com.tag.prietag.core.util.Fetch;
 import com.tag.prietag.dto.ResponseDTO;
 import com.tag.prietag.dto.user.UserLoginDTO;
 import com.tag.prietag.dto.kakao.KakaoToken;
 import com.tag.prietag.dto.kakao.OAuthProfile;
+import com.tag.prietag.dto.user.UserRequest;
 import com.tag.prietag.model.User;
 import com.tag.prietag.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -30,6 +37,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -46,7 +54,7 @@ public class UserService {
 
 
     // code 값으로 AccessToken 받음
-    public  ResponseEntity<String> accessTokenReceiving(String code) {
+    public ResponseEntity<String> accessTokenReceiving(String code) {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", "87bf3594adc40498df2b327e3e60f784");
@@ -67,7 +75,6 @@ public class UserService {
 
         return kakaoToken;
     }
-
 
 
     // 받은 정보로 DB에서 조회함
@@ -96,7 +103,7 @@ public class UserService {
     // 자동 로그인 로직
     public String login(UserLoginDTO userLoginDTO, OAuthProfile oAuthProfile) {
         userLoginDTO.setEmail(oAuthProfile.getKakaoAccount().getEmail());
-        userLoginDTO.setUsername("kakao_"+oAuthProfile.getId());
+        userLoginDTO.setUsername("kakao_" + oAuthProfile.getId());
         String jwt = 로그인(userLoginDTO);
         return jwt;
     }
@@ -121,12 +128,43 @@ public class UserService {
 
     public String 로그인(UserLoginDTO userLoginDTO) {
         Optional<User> userOP = userRepository.findByUsername(userLoginDTO.getUsername());
-        if(userOP.isPresent()){
+        if (userOP.isPresent()) {
             User userPS = userOP.get();
 
             String jwt = MyJwtProvider.create(userPS);
             return jwt;
         }
         throw new RuntimeException("패스워드 다시 입력하세요");
+    }
+
+    public String joinTest(UserRequest.SignupInDTO signupInDTO) {
+
+        String encPassword = passwordEncoder.encode(signupInDTO.getPassword()); // 60Byte
+        signupInDTO.setPassword(encPassword);
+        System.out.println("encPassword : " + encPassword);
+
+        // 디비 save 되는 쪽만 try catch로 처리하자.
+        try {
+            User userPS = userRepository.save(signupInDTO.toEntity());
+            return userPS.getUsername();
+        } catch (Exception e) {
+            throw new Exception500("회원가입 실패 : " + e.getMessage());
+        }
+    }
+
+
+    public String loginTest(UserRequest.LoginInDTO loginInDTO) {
+
+        try {
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
+                    = new UsernamePasswordAuthenticationToken(loginInDTO.getUsername(), loginInDTO.getPassword());
+            Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+            MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+
+            return MyJwtProvider.create(myUserDetails.getUser());
+
+        } catch (Exception e) {
+            throw new Exception401("인증되지 않았습니다");
+        }
     }
 }
