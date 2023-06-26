@@ -44,7 +44,7 @@ public class TemplateService {
         Template template = saveInDTO.toEntity(user);
         templateRepository.save(template);
 
-        // TemplateVersion 엔티티 생성 및 저장
+        // TemplateVersion version 1로 엔티티 생성 및 저장
         TemplateVersion templateVersion = saveInDTO.toTemplateVersionEntity(1);
         if(logoImg != null && !logoImg.isEmpty()){
             String storedFileName = s3Uploader.upload(logoImg, "logos");

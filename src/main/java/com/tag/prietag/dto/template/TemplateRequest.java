@@ -59,6 +59,7 @@ public class TemplateRequest {
         private String pricing;
 
         private boolean isCardHighLight = false;
+        private Integer cardMaxHeight;
 
         public Template toEntity(User user) {
             return Template.builder()
@@ -86,6 +87,7 @@ public class TemplateRequest {
                     .highLightIndex(this.highLightIndex)
                     .isCardHighLight(this.isCardHighLight)
                     .pricing(this.pricing)
+                    .cardMaxHeight(this.cardMaxHeight)
                     .build();
         }
 
