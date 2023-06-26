@@ -31,12 +31,13 @@ public class TemplateService {
     private final FaqRepository faqRepository;
     private final TemplateRepository templateRepository;
     private final TemplateVersionRepository templateVersionRepository;
+    private final UserRepository userRepository;
     private final S3Uploader s3Uploader;
 
     //템플릿 생성
     @Transactional
     public void createTemplate(TemplateRequest.SaveInDTO saveInDTO, User user, MultipartFile logoImg, MultipartFile previewImg) throws IOException {
-        if(templateRepository.findByTemplateName(saveInDTO.getTemplateName()).isPresent()){
+        if (templateRepository.findByTemplateName(saveInDTO.getTemplateName()).isPresent()) {
             throw new Exception400("templateName", "이미 존재하는 템플릿 이름이 있습니다");
         }
 
@@ -46,11 +47,11 @@ public class TemplateService {
 
         // TemplateVersion version 1로 엔티티 생성 및 저장
         TemplateVersion templateVersion = saveInDTO.toTemplateVersionEntity(1);
-        if(logoImg != null && !logoImg.isEmpty()){
+        if (logoImg != null && !logoImg.isEmpty()) {
             String storedFileName = s3Uploader.upload(logoImg, "logos");
             templateVersion.setLogoImageUrl(storedFileName);
         }
-        if(previewImg != null && !previewImg.isEmpty()){
+        if (previewImg != null && !previewImg.isEmpty()) {
             String storedFileName = s3Uploader.upload(previewImg, "preview");
             templateVersion.setPreviewUrl(storedFileName);
         }
@@ -92,16 +93,16 @@ public class TemplateService {
     }
 
     //템플릿 목록 조회
-    public TemplateResponse.getTemplatesOutDTO getTemplates(User user, Pageable pageable){
+    public TemplateResponse.getTemplatesOutDTO getTemplates(User user, Pageable pageable) {
         Page<Template> templatesPS = templateRepository.findByUserId(user.getId(), pageable);
 
         List<TemplateResponse.getTemplatesOutDTO.TemplateReq> templateReqList = new ArrayList<>();
-        for (Template template: templatesPS){
+        for (Template template : templatesPS) {
 
             // 최신 버전 가져온 후 UpdateAt을 String yyyy.MM.dd HH.mm형식 으로 변경
             Pageable pageableLimitOne = PageRequest.of(0, 1);
             Page<TemplateVersion> templateVersions = templateVersionRepository.findByTemplateIdLimitOne(template.getId(), pageableLimitOne);
-            if(!templateVersions.hasContent()){
+            if (!templateVersions.hasContent()) {
                 throw new Exception400("templateVersion", "version이 존재하지 않습니다");
             }
             TemplateVersion templateVersion = templateVersions.getContent().get(0);
@@ -124,22 +125,49 @@ public class TemplateService {
                 .build();
     }
 
-    public TemplateResponse.getTemplatesVSOutDTO getTemplatesVS(Long id, Pageable pageable){
+    public TemplateResponse.getTemplatesVSOutDTO getTemplatesVS(Long id, Pageable pageable, String search, User user) {
         Template template = templateRepository.findById(id).orElseThrow(
                 () -> new Exception400("template", "존재하지 않는 Template입니다"));
 
+        User userPS = userRepository.findById(user.getId()).orElseThrow(
+                () -> new Exception400("user", "존재하지 않는 User입니다"));
+
+
         List<TemplateResponse.getTemplatesVSOutDTO.TemplateVsReq> templateVsReqList = new ArrayList<>();
-        Page<TemplateVersion> templateVersionPage = templateVersionRepository.findByTemplateId(id, pageable);
-        for(TemplateVersion templateVersion: templateVersionPage){
+        TemplateVersion templateVersionPS = templateVersionRepository.findByTemplateIdPublishId(id, userPS.getPublishId()).orElse(null);
+        boolean havePublish = false;
+        if(templateVersionPS != null){
             templateVsReqList.add(TemplateResponse.getTemplatesVSOutDTO.TemplateVsReq.builder()
-                            .id(templateVersion.getId())
-                            .title(templateVersion.getVersionTitle()+"v_"+templateVersion.getVersion())
-                            .updated_at(templateVersion.getUpdatedAt())
+                    .id(templateVersionPS.getId())
+                    .version(templateVersionPS.getVersion())
+                    .title(templateVersionPS.getVersionTitle())
+                    .updated_at(templateVersionPS.getUpdatedAt())
+                    .is_publishing(true)
+                    .build());
+            havePublish = true;
+            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()-1);
+        }
+
+        Page<TemplateVersion> templateVersionPage;
+        if (search == null || search.isEmpty())
+            templateVersionPage = templateVersionRepository.findByTemplateId(id, pageable);
+        else
+            templateVersionPage = templateVersionRepository.findByTemplateIdSearch(id, search, pageable);
+
+        for (TemplateVersion templateVersion : templateVersionPage) {
+            boolean is_publishing = templateVersion.getId().equals(userPS.getPublishId());
+            templateVsReqList.add(TemplateResponse.getTemplatesVSOutDTO.TemplateVsReq.builder()
+                    .id(templateVersion.getId())
+                    .version(templateVersion.getVersion())
+                    .title(templateVersion.getVersionTitle())
+                    .updated_at(templateVersion.getUpdatedAt())
+                    .is_publishing(is_publishing)
                     .build());
         }
 
         return TemplateResponse.getTemplatesVSOutDTO.builder()
                 .totalCount(templateVersionPage.getTotalElements())
+                .havePublish(havePublish)
                 .template(templateVsReqList)
                 .build();
     }
@@ -150,7 +178,7 @@ public class TemplateService {
         Template template = templateRepository.findById(templateId).orElseThrow(
                 () -> new Exception400("template", "존재하지 않는 Template입니다"));
 
-        if(!template.getUser().getId().equals(user.getId())){
+        if (!template.getUser().getId().equals(user.getId())) {
             throw new Exception400("template", "해당 Template에 대한 권한이 없습니다");
         }
 
@@ -159,11 +187,11 @@ public class TemplateService {
         TemplateVersion templateVersion = saveInDTO.toTemplateVersionEntity(versionId);
         templateVersion.setTemplate(template);
 
-        if(logoImg != null && !logoImg.isEmpty()){
+        if (logoImg != null && !logoImg.isEmpty()) {
             String storedFileName = s3Uploader.upload(logoImg, "logos");
             templateVersion.setLogoImageUrl(storedFileName);
         }
-        if(previewImg != null && !previewImg.isEmpty()){
+        if (previewImg != null && !previewImg.isEmpty()) {
             String storedFileName = s3Uploader.upload(previewImg, "preview");
             templateVersion.setPreviewUrl(storedFileName);
         }
@@ -251,7 +279,7 @@ public class TemplateService {
         // 새로운 PriceCard, Chart, Faq 엔티티 생성 및 저장
         List<PriceCard> priceCards = priceCardRepository.findAllByTemplateVersionIdOrderByIndex(originTemplateVersion.getId());
         List<PriceCard> newPriceCards = new ArrayList<>();
-        for (PriceCard priceCard: priceCards){
+        for (PriceCard priceCard : priceCards) {
             PriceCard newPriceCard = priceCard.toEntity(newTemplateVersion);
             newPriceCards.add(newPriceCard);
         }
@@ -259,7 +287,7 @@ public class TemplateService {
 
         List<Chart> charts = chartRepository.findAllByTemplateVersionIdOrderByIndex(originTemplateVersion.getId());
         List<Chart> newCharts = new ArrayList<>();
-        for (Chart chart: charts){
+        for (Chart chart : charts) {
             Chart newChart = chart.toEntity(newTemplateVersion);
             newCharts.add(newChart);
         }
@@ -267,7 +295,7 @@ public class TemplateService {
 
         List<Faq> faqs = faqRepository.findAllByTemplateVersionIdOrderByIndex(originTemplateVersion.getId());
         List<Faq> newFaqs = new ArrayList<>();
-        for (Faq faq: faqs){
+        for (Faq faq : faqs) {
             Faq newFaq = faq.toEntity(newTemplateVersion);
             newFaqs.add(newFaq);
         }
@@ -277,7 +305,7 @@ public class TemplateService {
         // 새로운 Card Area, Chart Area, Faq Area 엔티티 생성 및 저장
         List<Field> cardAreas = fieldRepository.findAllByTemplateVersionIdAndAreaNumOrderByIndex(originTemplateVersion.getId(), 1);
         List<Field> newCardAreas = new ArrayList<>();
-        for (Field cardArea: cardAreas){
+        for (Field cardArea : cardAreas) {
             Field newCardArea = cardArea.toEntity(newTemplateVersion);
             newCardAreas.add(newCardArea);
         }
@@ -285,7 +313,7 @@ public class TemplateService {
 
         List<Field> chartAreas = fieldRepository.findAllByTemplateVersionIdAndAreaNumOrderByIndex(originTemplateVersion.getId(), 2);
         List<Field> newChartAreas = new ArrayList<>();
-        for (Field chartArea: chartAreas){
+        for (Field chartArea : chartAreas) {
             Field newChartArea = chartArea.toEntity(newTemplateVersion);
             newChartAreas.add(newChartArea);
         }
@@ -293,7 +321,7 @@ public class TemplateService {
 
         List<Field> faqAreas = fieldRepository.findAllByTemplateVersionIdAndAreaNumOrderByIndex(originTemplateVersion.getId(), 3);
         List<Field> newFaqAreas = new ArrayList<>();
-        for (Field faqArea: faqAreas){
+        for (Field faqArea : faqAreas) {
             Field newFaqArea = faqArea.toEntity(newTemplateVersion);
             newFaqAreas.add(newFaqArea);
         }
@@ -388,7 +416,7 @@ public class TemplateService {
     @Transactional
     public String deleteTemplateVS(TemplateRequest.DeleteInDTO deleteInDTO, User user) {
 
-        for (Long id: deleteInDTO.getId()){
+        for (Long id : deleteInDTO.getId()) {
             TemplateVersion templateVersion = templateVersionRepository.findById(id).orElseThrow(
                     () -> new Exception400("templateVersion", "존재하지 않는 TemplateVersion입니다"));
             templateVersion.setDeleted(true);
@@ -405,7 +433,7 @@ public class TemplateService {
         template.setDeleted(true);
 
         List<TemplateVersion> templateVersions = templateVersionRepository.findAllByTemplateId(templateId);
-        for (TemplateVersion templateVersion: templateVersions){
+        for (TemplateVersion templateVersion : templateVersions) {
             templateVersion.setDeleted(true);
         }
         return "삭제 템플릿 id = " + templateId + " 삭제 완료";

@@ -46,9 +46,10 @@ public class TemplateController {
     public ResponseEntity<?> getTemplatesVS(@PathVariable Long id,
                                             @RequestParam(value = "page") int page,
                                             @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+                                            @RequestParam(value = "search", defaultValue = "") String search,
                                             @AuthenticationPrincipal MyUserDetails myUserDetails){
         Pageable pageable = PageRequest.of(page, pageSize);
-        TemplateResponse.getTemplatesVSOutDTO getTemplatesVSOutDTOList = templateService.getTemplatesVS(id, pageable);
+        TemplateResponse.getTemplatesVSOutDTO getTemplatesVSOutDTOList = templateService.getTemplatesVS(id, pageable, search, myUserDetails.getUser());
         return ResponseEntity.ok().body(new ResponseDTO<>(getTemplatesVSOutDTOList));
     }
 
