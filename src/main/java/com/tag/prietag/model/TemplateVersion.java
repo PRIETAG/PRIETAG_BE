@@ -38,7 +38,6 @@ public class TemplateVersion extends TimeStamped {
     private String font;
 
     private String logoImageUrl;
-    @Column(nullable = false)
     private String previewUrl;
 
     @Column(nullable = false)
