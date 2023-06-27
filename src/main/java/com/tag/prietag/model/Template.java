@@ -42,6 +42,10 @@ public class Template extends TimeStamped {
         this.isDeleted = isDeleted;
     }
 
+    public void setMainTitle(String mainTitle) {
+        this.mainTitle = mainTitle;
+    }
+
     @Override
     public String toString() {
         return "Template{" +

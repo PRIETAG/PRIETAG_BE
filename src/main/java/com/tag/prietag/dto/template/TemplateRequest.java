@@ -275,4 +275,9 @@ public class TemplateRequest {
         private List<Long> id;
     }
 
+    @Getter
+    public static class UpdateInDTO {
+        private String mainTitle;
+    }
+
 }

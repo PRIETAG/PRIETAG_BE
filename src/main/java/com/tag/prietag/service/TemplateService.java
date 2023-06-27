@@ -125,6 +125,8 @@ public class TemplateService {
                 .build();
     }
 
+
+    // 템플릿 버전 목록 조회
     public TemplateResponse.getTemplatesVSOutDTO getTemplatesVS(Long id, Pageable pageable, String search, User user) {
         Template template = templateRepository.findById(id).orElseThrow(
                 () -> new Exception400("template", "존재하지 않는 Template입니다"));
@@ -182,6 +184,9 @@ public class TemplateService {
             throw new Exception400("template", "해당 Template에 대한 권한이 없습니다");
         }
 
+//        String mainTitle = saveInDTO.getTemplateName();
+//        int versionId = templateVersionRepository.findMaxVersionByTemplateId(templateId, mainTitle) == null ? 1 : templateVersionRepository.findMaxVersionByTemplateId(templateId, mainTitle) + 1;
+
         // TemplateVersion 엔티티 생성 및 저장
         int versionId = templateVersionRepository.findMaxVersionByTemplateId(templateId) + 1;
         TemplateVersion templateVersion = saveInDTO.toTemplateVersionEntity(versionId);
@@ -219,6 +224,23 @@ public class TemplateService {
 
         return "template id = " + templateId + ", version = " + templateVersion.getVersion() + ", version id = " + versionId;
     }
+
+
+    // 템플릿 타이틀 수정
+    @Transactional
+    public String updateTemplateName(Long templateId, TemplateRequest.UpdateInDTO updateInDTO, User user) {
+        Template template = templateRepository.findById(templateId).orElseThrow(
+                () -> new Exception400("template", "존재하지 않는 Template입니다"));
+
+        if(!template.getUser().getId().equals(user.getId())){
+            throw new Exception400("template", "해당 Template에 대한 권한이 없습니다");
+        }
+
+        template.setMainTitle(updateInDTO.getMainTitle());
+
+        return "template id = " + templateId + ", template name = " + updateInDTO.getMainTitle();
+    }
+
 
 
     // 템플릿 복제 -> 최신 버전 1개 생성
@@ -360,7 +382,11 @@ public class TemplateService {
     // 템플릿 불러오기 (퍼블리싱)
     public TemplateResponse.TemplateVSOutDTO getPublishedTemplateVS(Long userId) {
         // TODO: 로그인된 유저 정보를 사용할지?
-        Long publishId = userId;
+        Long publishId = userRepository.findById(userId).orElseThrow(
+                () -> new Exception400("user", "존재하지 않는 User입니다")).getPublishId();
+        if (publishId == null) {
+            throw new Exception400("publishId", "퍼블리싱된 템플릿이 없습니다");
+        }
 
         TemplateVersion templateVersion = templateVersionRepository.findById(publishId).orElseThrow(
                 () -> new Exception400("templateVersion", "존재하지 않는 TemplateVersion입니다"));
@@ -438,6 +464,4 @@ public class TemplateService {
         }
         return "삭제 템플릿 id = " + templateId + " 삭제 완료";
     }
-
-
 }
