@@ -18,6 +18,6 @@ public interface PublishLogRepository extends JpaRepository<PublishLog, Long> {
     Optional<List<PublishLog>> findByUserId(@Param("userId") Long userId);
 
     @Query("select l from PublishLog l where l.user.id=:userId and l.createdAt between :startDate AND :endDate order by l.createdAt asc")
-    Page<PublishLog> findByBetweenDateUserId(@Param("userId") Long userId
-            , @Param("startDate") ZonedDateTime startDate, @Param("endDate") ZonedDateTime endDate, Pageable pageable);
+    Optional<List<PublishLog>> findByBetweenDateUserId(@Param("userId") Long userId
+            , @Param("startDate") ZonedDateTime startDate, @Param("endDate") ZonedDateTime endDate);
 }

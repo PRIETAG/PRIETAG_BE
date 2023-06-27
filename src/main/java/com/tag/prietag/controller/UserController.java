@@ -28,7 +28,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/callback")
-    public  ResponseEntity<?> callback(String code) throws JsonProcessingException {
+    public  ResponseEntity<?> callback(@RequestParam(value = "code") String code) throws JsonProcessingException {
         // 1. code 값 존재 유무 확인
 
         userService.accessTokenVerify(code);
@@ -55,7 +55,7 @@ public class UserController {
             UserLoginDTO userLoginDTO = new UserLoginDTO();
             String jwt = userService.login(userLoginDTO, oAuthProfile);
 
-            return ResponseEntity.ok().header(MyJwtProvider.HEADER, jwt).body("로그인완료 : "+jwt);
+            return ResponseEntity.ok().header(MyJwtProvider.HEADER, jwt).body(new ResponseDTO<>());
         }
 
         // 7. 없으면 강제 회원가입 시키고, 그 정보로 자동로그인하고 JWT토큰 전달
@@ -66,7 +66,7 @@ public class UserController {
             UserLoginDTO userLoginDTO = new UserLoginDTO();
             String jwt = userService.login(userLoginDTO, oAuthProfile);
 
-            return ResponseEntity.ok().header(MyJwtProvider.HEADER, jwt).body("회원가입 및 로그인완료 : "+jwt);
+            return ResponseEntity.ok().header(MyJwtProvider.HEADER, jwt).body(new ResponseDTO<>());
 
         }
         return ResponseEntity.badRequest().body(new ResponseDTO<>(HttpStatus.BAD_REQUEST, "실패", "실패"));

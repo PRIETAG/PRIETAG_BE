@@ -110,15 +110,13 @@ public class PublishLogRepositoryTest {
     @DisplayName("user의 일정 기간의 publishLog조회")
     @DirtiesContext
     public void findByBetweenDateUserId_test(){
-        Pageable pageable = PageRequest.of(0, 3);
         ZonedDateTime startDate = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS);
         ZonedDateTime endDate = startDate.plusDays(1);
-        Page<PublishLog> templatePG = publishLogRepository.findByBetweenDateUserId(userId, startDate, endDate, pageable);
+        List<PublishLog> templatePG = publishLogRepository.findByBetweenDateUserId(userId, startDate, endDate).orElse(Collections.emptyList());
 
         for (PublishLog publishLog: templatePG) {
             System.out.println(publishLog.toString());
         }
-        assertThat(templatePG.getSize()).isEqualTo(3);
-        assertThat(templatePG.getTotalElements()).isEqualTo(5);
+        assertThat(templatePG.size()).isEqualTo(5);
     }
 }

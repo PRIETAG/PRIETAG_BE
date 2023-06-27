@@ -26,8 +26,8 @@ public class TemplateController {
 
     @PostMapping(value = "/template", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> createTemplate(@RequestPart @Valid TemplateRequest.SaveInDTO saveInDTO, Error errors,
-                                            @RequestPart(value = "logoImageUrl") MultipartFile logoImage,
-                                            @RequestPart(value = "previewUrl") MultipartFile previewImage,
+                                            @RequestPart(value = "logoImageUrl", required = false) MultipartFile logoImage,
+                                            @RequestPart(value = "previewUrl", required = false) MultipartFile previewImage,
                                             @AuthenticationPrincipal MyUserDetails myUserDetails) throws IOException {
         templateService.createTemplate( saveInDTO, myUserDetails.getUser(), logoImage, previewImage);
         return ResponseEntity.ok(new ResponseDTO<>());
@@ -35,7 +35,7 @@ public class TemplateController {
 
     @GetMapping("/templates")
     public ResponseEntity<?> getTemplates( @RequestParam(value = "page") int page,
-                                           @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+                                           @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize,
                                            @AuthenticationPrincipal MyUserDetails myUserDetails){
         Pageable pageable = PageRequest.of(page, pageSize);
         TemplateResponse.getTemplatesOutDTO getTemplatesOutDTOList = templateService.getTemplates(myUserDetails.getUser(), pageable);
@@ -46,7 +46,7 @@ public class TemplateController {
     public ResponseEntity<?> getTemplatesVS(@PathVariable Long id,
                                             @RequestParam(value = "page") int page,
                                             @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
-                                            @RequestParam(value = "search", defaultValue = "") String search,
+                                            @RequestParam(value = "search", required = false, defaultValue = "") String search,
                                             @AuthenticationPrincipal MyUserDetails myUserDetails){
         Pageable pageable = PageRequest.of(page, pageSize);
         TemplateResponse.getTemplatesVSOutDTO getTemplatesVSOutDTOList = templateService.getTemplatesVS(id, pageable, search, myUserDetails.getUser());
@@ -58,8 +58,8 @@ public class TemplateController {
     @PostMapping("/template/{templateId}")
     public ResponseEntity<?> createTemplateVS(@PathVariable Long templateId,
                                               @RequestPart @Valid TemplateRequest.SaveInDTO saveInDTO, Error errors,
-                                              @RequestPart(value = "logoImageUrl") MultipartFile logoImage,
-                                              @RequestPart(value = "previewUrl") MultipartFile previewImage,
+                                              @RequestPart(value = "logoImageUrl", required = false) MultipartFile logoImage,
+                                              @RequestPart(value = "previewUrl", required = false) MultipartFile previewImage,
                                               @AuthenticationPrincipal MyUserDetails myUserDetails) throws IOException {
         String result = templateService.createTemplateVS(templateId, saveInDTO, myUserDetails.getUser(), logoImage, previewImage);
         return ResponseEntity.ok().body(new ResponseDTO<>(result));
