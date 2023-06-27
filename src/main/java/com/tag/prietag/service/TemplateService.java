@@ -382,7 +382,11 @@ public class TemplateService {
     // 템플릿 불러오기 (퍼블리싱)
     public TemplateResponse.TemplateVSOutDTO getPublishedTemplateVS(Long userId) {
         // TODO: 로그인된 유저 정보를 사용할지?
-        Long publishId = userId;
+        Long publishId = userRepository.findById(userId).orElseThrow(
+                () -> new Exception400("user", "존재하지 않는 User입니다")).getPublishId();
+        if (publishId == null) {
+            throw new Exception400("publishId", "퍼블리싱된 템플릿이 없습니다");
+        }
 
         TemplateVersion templateVersion = templateVersionRepository.findById(publishId).orElseThrow(
                 () -> new Exception400("templateVersion", "존재하지 않는 TemplateVersion입니다"));
