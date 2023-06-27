@@ -65,6 +65,18 @@ public class TemplateController {
         return ResponseEntity.ok().body(new ResponseDTO<>(result));
     }
 
+
+    // 템플릿 타이틀 수정
+    @PatchMapping("/template/{templateId}/modify")
+    public ResponseEntity<?> updateTemplateName(@PathVariable Long templateId,
+                                                @RequestBody TemplateRequest.UpdateInDTO updateInDTO, Error errors,
+                                                @AuthenticationPrincipal MyUserDetails myUserDetails){
+        String result = templateService.updateTemplateName(templateId, updateInDTO, myUserDetails.getUser());
+        return ResponseEntity.ok().body(new ResponseDTO<>(result));
+    }
+
+
+
     // 템플릿 복제 -> 최신 버전 1개만 복사
     // TODO: 새로운 템플릿 이름 받아야 함
     @PostMapping("/template/copy/{templateId}")

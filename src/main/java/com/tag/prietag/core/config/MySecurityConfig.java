@@ -95,7 +95,7 @@ public class MySecurityConfig {
         // 11. 인증, 권한 필터 설정
         http.authorizeRequests(
                 authorize -> authorize.antMatchers("/healthCheck", "/api/callback", "/template/user/**", "/oauth2/authorization/kakao",
-                                "/api/test/join", "/api/test/login", "/h2-console/**").permitAll()
+                                "/api/test/join", "/api/test/login", "/h2-console/**", "/swagger-ui/**", "/swagger-resources/**", "/v2/api-docs/**").permitAll()
                         .antMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest()
                         .authenticated()

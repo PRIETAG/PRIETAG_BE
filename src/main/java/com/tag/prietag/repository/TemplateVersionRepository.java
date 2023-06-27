@@ -50,6 +50,10 @@ public interface TemplateVersionRepository extends JpaRepository<TemplateVersion
     @Query("select max(t.version) from TemplateVersion t where t.template.id=:id and t.isDeleted=false")
     Integer findMaxVersionByTemplateId(@Param("id") Long id);
 
+    // 같은 버전 타이틀을 가진 것들 중 가장 높은 버전
+//    @Query("select max(t.version) from TemplateVersion t where t.template.id=:id and t.versionTitle=:mainTitle and t.isDeleted=false")
+//    Integer findMaxVersionByTemplateId(@Param("id") Long id, @Param("mainTitle") String mainTitle);
+
     // 버전이 가장 높은 템플릿
     @Query("select t from TemplateVersion t where t.template.id=:id and t.version=(select max(t.version) from TemplateVersion t where t.template.id=:id and t.isDeleted=false) and t.isDeleted=false")
     TemplateVersion findMaxVersionTemplate(@Param("id") Long id);
