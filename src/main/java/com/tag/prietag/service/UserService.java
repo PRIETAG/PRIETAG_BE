@@ -9,7 +9,6 @@ import com.tag.prietag.core.exception.Exception401;
 import com.tag.prietag.core.exception.Exception500;
 import com.tag.prietag.core.util.Fetch;
 import com.tag.prietag.dto.ResponseDTO;
-import com.tag.prietag.dto.user.UserLoginDTO;
 import com.tag.prietag.dto.kakao.KakaoToken;
 import com.tag.prietag.dto.kakao.OAuthProfile;
 import com.tag.prietag.dto.user.UserRequest;
@@ -101,7 +100,7 @@ public class UserService {
 
 
     // 자동 로그인 로직
-    public String login(UserLoginDTO userLoginDTO, OAuthProfile oAuthProfile) {
+    public String login(UserRequest.UserLoginDTO userLoginDTO, OAuthProfile oAuthProfile) {
         userLoginDTO.setEmail(oAuthProfile.getKakaoAccount().getEmail());
         userLoginDTO.setUsername("kakao_" + oAuthProfile.getId());
         String jwt = 로그인(userLoginDTO);
@@ -130,7 +129,7 @@ public class UserService {
 
     //로그인시 jwt 토큰 생성해서 전달
 
-    public String 로그인(UserLoginDTO userLoginDTO) {
+    public String 로그인(UserRequest.UserLoginDTO userLoginDTO) {
         Optional<User> userOP = userRepository.findByUsername(userLoginDTO.getUsername());
         if (userOP.isPresent()) {
             User userPS = userOP.get();

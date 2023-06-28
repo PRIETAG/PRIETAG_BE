@@ -4,10 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tag.prietag.core.auth.jwt.MyJwtProvider;
 import com.tag.prietag.dto.ResponseDTO;
-import com.tag.prietag.dto.user.UserJwtOutDTO;
-import com.tag.prietag.dto.user.UserLoginDTO;
 import com.tag.prietag.dto.kakao.KakaoToken;
 import com.tag.prietag.dto.kakao.OAuthProfile;
+import com.tag.prietag.dto.user.UserRequest;
+import com.tag.prietag.dto.user.UserResponse;
 import com.tag.prietag.model.User;
 import com.tag.prietag.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -57,15 +57,16 @@ public class UserController {
         if(userOP.isPresent()){
             System.out.println("디버그 : 회원정보가 있어서 로그인을 바로 진행합니다");
 
-            UserLoginDTO userLoginDTO = new UserLoginDTO();
+            UserRequest userRequest = new UserRequest();
+            UserRequest.UserLoginDTO userLoginDTO = userRequest.new UserLoginDTO();
+
             String jwt = userService.login(userLoginDTO, oAuthProfile);
 
-            UserJwtOutDTO userJwtOutDTO = new UserJwtOutDTO().builder()
-                    .id(userOP.get().getId())
-//                    .username(userOP.get().getUsername())
-//                    .role(userOP.get().getRole())
-                    .email(userOP.get().getEmail())
-                    .build();
+            UserResponse userResponse = new UserResponse();
+            UserResponse.UserJwtOutDTO userJwtOutDTO = userResponse.new UserJwtOutDTO();
+            userJwtOutDTO.setId(userOP.get().getId());
+            userJwtOutDTO.setEmail(userOP.get().getEmail());
+            userJwtOutDTO.setRole(userOP.get().getRole());
 
 
             return ResponseEntity.ok().header(MyJwtProvider.HEADER, jwt).body(new ResponseDTO<>(userJwtOutDTO));
@@ -76,15 +77,17 @@ public class UserController {
             System.out.println("디버그 : 회원정보가 없어서 회원가입 후 로그인을 바로 진행합니다");
             User userPS = userService.userSave(oAuthProfile);
 
-            UserLoginDTO userLoginDTO = new UserLoginDTO();
+            UserRequest userRequest = new UserRequest();
+            UserRequest.UserLoginDTO userLoginDTO = userRequest.new UserLoginDTO();
+            userLoginDTO.setUsername("your-username");
+            userLoginDTO.setPassword("your-password");
             String jwt = userService.login(userLoginDTO, oAuthProfile);
 
-            UserJwtOutDTO userJwtOutDTO = new UserJwtOutDTO().builder()
-                    .id(userPS.getId())
-//                    .username(userPS.getUsername())
-//                    .role(userPS.getRole())
-                    .email(userPS.getEmail())
-                    .build();
+            UserResponse userResponse = new UserResponse();
+            UserResponse.UserJwtOutDTO userJwtOutDTO = userResponse.new UserJwtOutDTO();
+            userJwtOutDTO.setId(userOP.get().getId());
+            userJwtOutDTO.setEmail(userOP.get().getEmail());
+            userJwtOutDTO.setRole(userOP.get().getRole());
 
             return ResponseEntity.ok().header(MyJwtProvider.HEADER, jwt).body(new ResponseDTO<>(userJwtOutDTO));
 
