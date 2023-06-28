@@ -25,7 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "DashBoard", description = "대시보드 API Document")
 public class KpiLogController {
-    KpiLogService kpiLogService;
+    private final KpiLogService kpiLogService;
     @PostMapping("/log/kpi")
     @Operation(summary = "고객 방문 로그 저장", description = "고객이 방문 또는 결재 했을때의 로그를 저장합니다")
     public ResponseEntity<?> saveCustomerKpi(@RequestBody @Valid LogRequest.CustomerLogInDTO customerLogInDTO, Error errors){
