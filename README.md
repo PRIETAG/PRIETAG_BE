@@ -36,7 +36,7 @@
 
  <img src="https://github.com/PRIETAG/PRIETAG_BE/assets/57251982/1dd855cc-f8fb-4fcd-9665-c070537a0945.png" width="806" height="608"/>
  
-- 상세보기
+- 배포 프로세스
 ![image](https://github.com/PRIETAG/PRIETAG_BE/assets/57251982/fb5cafda-404c-407f-9804-0db09cb91722)
 
 ## ERD
