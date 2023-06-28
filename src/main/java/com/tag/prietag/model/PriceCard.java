@@ -17,7 +17,7 @@ public class PriceCard {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "sequence", nullable = false)
     private Integer index;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -50,6 +50,19 @@ public class PriceCard {
         this.detail = detail;
         this.feature = feature;
         this.content = content;
+    }
+
+    public PriceCard toEntity(TemplateVersion templateVersion){
+        return PriceCard.builder()
+                .index(index)
+                .templateVersion(templateVersion)
+                .cardTitle(cardTitle)
+                .price(price)
+                .discountRate(discountRate)
+                .detail(detail)
+                .feature(feature)
+                .content(content)
+                .build();
     }
 
     public void setTemplateVersion(TemplateVersion templateVersion){

@@ -34,7 +34,7 @@ public class TemplateRepositoryTest {
         User user = User.builder()
                 .email("dbs@naver.com")
                 .username("Lee")
-                .role(User.Role.USER)
+                .role(User.RoleEnum.USER)
                 .build();
         userRepository.save(user);
         userid = user.getId();

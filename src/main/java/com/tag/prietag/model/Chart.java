@@ -27,13 +27,13 @@ public class Chart {
     @Column(nullable = false)
     private Integer chartNum;
     //순서 저장
-    @Column(nullable = false)
+    @Column(name = "sequence", nullable = false)
     private Integer index;
 
     private String feature;
 
     @Convert(converter = StringListConverter.class)
-    private List<String> desc;
+    private List<String> description;
 
     @Builder
     public Chart(Long id, TemplateVersion templateVersion, boolean haveHeader, String featureName, Integer chartNum, Integer index, String feature, List<String> desc) {
@@ -44,7 +44,19 @@ public class Chart {
         this.chartNum = chartNum;
         this.index = index;
         this.feature = feature;
-        this.desc = desc;
+        this.description  = desc;
+    }
+
+    public Chart toEntity(TemplateVersion templateVersion){
+        return Chart.builder()
+                .templateVersion(templateVersion)
+                .haveHeader(haveHeader)
+                .featureName(featureName)
+                .chartNum(chartNum)
+                .index(index)
+                .feature(feature)
+                .desc(description)
+                .build();
     }
 
     public void setTemplateVersion(TemplateVersion templateVersion){

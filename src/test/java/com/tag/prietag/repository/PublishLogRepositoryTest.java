@@ -3,15 +3,24 @@ package com.tag.prietag.repository;
 import com.tag.prietag.model.Template;
 import com.tag.prietag.model.TemplateVersion;
 import com.tag.prietag.model.User;
+import com.tag.prietag.model.log.PublishLog;
 import com.tag.prietag.repository.log.PublishLogRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("dev")
 @DataJpaTest
@@ -32,7 +41,7 @@ public class PublishLogRepositoryTest {
         User user = User.builder()
                 .email("dbs@naver.com")
                 .username("Lee")
-                .role(User.Role.USER)
+                .role(User.RoleEnum.USER)
                 .publishId(6L)
                 .build();
         userRepository.save(user);
@@ -66,12 +75,48 @@ public class PublishLogRepositoryTest {
                     .padding(new ArrayList<>(Arrays.asList(524, 423)))
                     .previewUrl("fadsfsaf.png")
                     .priceCardAreaPadding(250)
+                    .priceCardDetailMaxHeight(500)
                     .build();
             templateVersion.setTemplate(templatePS);
             templateVersionList.add(templateVersion);
         }
         templateVersionRepository.saveAll(templateVersionList);
 
+        TemplateVersion templateVersionPS = templateVersionRepository.findById(1L).orElse(null);
 
+        List<PublishLog> publishLogList = new ArrayList<>();
+        for (int i = 0; i <5 ; i++) {
+            publishLogList.add(PublishLog.builder()
+                    .user(userPS)
+                    .templatevs(templateVersionPS)
+                    .build());
+        }
+        publishLogRepository.saveAll(publishLogList);
+    }
+
+    @Test
+    @DisplayName("user의 publishLog조회")
+    @DirtiesContext
+    public void findByUserId_test(){
+        List<PublishLog> templateList = publishLogRepository.findByUserId(userId).orElse(Collections.emptyList());
+
+        for (PublishLog publishLog: templateList) {
+            System.out.println(publishLog.toString());
+        }
+        assertThat(templateList.size()).isEqualTo(5);
+    }
+
+    @Test
+    @DisplayName("user의 일정 기간의 publishLog조회")
+    @DirtiesContext
+    public void findByBetweenDateUserId_test(){
+        ZonedDateTime startDate = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS);
+        ZonedDateTime endDate = startDate.plusDays(1);
+        List<PublishLog> templatePG = publishLogRepository.findByBetweenDateUserId(userId, startDate, endDate).orElse(Collections.emptyList());
+
+        for (PublishLog publishLog: templatePG) {
+            System.out.println(publishLog.toString());
+        }
+        assertThat(templatePG.size()).isEqualTo(5);
     }
 }

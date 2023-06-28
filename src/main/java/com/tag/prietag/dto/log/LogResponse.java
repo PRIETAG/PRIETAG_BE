@@ -28,7 +28,7 @@ public class LogResponse {
     @AllArgsConstructor @Builder
     public static class GetTotalKpiOutDTO{
 
-        private Integer label;
+        private String label;
         private Integer viewCount;
         private Integer leaveCount;
         private Integer conversionRate;

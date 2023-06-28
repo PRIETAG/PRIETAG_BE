@@ -18,7 +18,7 @@ public class Field {
     @ManyToOne(fetch = FetchType.LAZY)
     TemplateVersion templateVersion;
 
-    @Column(nullable = false)
+    @Column(name = "sequence", nullable = false)
     private Integer index;
     @Column(nullable = false)
     private Integer areaNum;
@@ -28,19 +28,29 @@ public class Field {
     private Role role;
 
     @Column(nullable = false)
-    private String desc;
+    private String description;
     public enum Role{
         TITLE,SUBTITLE,TEXT,PADDING
     }
 
     @Builder
-    public Field(Long id, TemplateVersion templateVersion, Integer index,Integer areaNum, Role role, String desc) {
+    public Field(Long id, TemplateVersion templateVersion, Integer index, Integer areaNum, Role role, String desc) {
         this.id = id;
         this.templateVersion = templateVersion;
         this.index = index;
         this.areaNum = areaNum;
         this.role = role;
-        this.desc = desc;
+        this.description  = desc;
+    }
+
+    public Field toEntity(TemplateVersion newTemplateVersion) {
+        return Field.builder()
+                .templateVersion(newTemplateVersion)
+                .index(index)
+                .areaNum(areaNum)
+                .role(role)
+                .desc(description)
+                .build();
     }
 
     public void setTemplateVersion(TemplateVersion templateVersion){

@@ -1,5 +1,6 @@
 package com.tag.prietag.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,35 +17,58 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
+    @Column(name = "nickname", nullable = false)
     private String username;
-
+    @JsonIgnore
+    private String password;
     private String email;
-
     private Long publishId;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role;
+    private RoleEnum role;
+    private Boolean status;
 
-    public void updateRole(Role role){
+
+    public void updateRole(RoleEnum role) {
         this.role = role;
     }
 
-    public void setPublishId(Long vid) {this.publishId = vid;}
+    public void setPublishId(Long vid) {
+        this.publishId = vid;
+    }
+
     @Builder
-    public User(Long id, String username, String email, Long publishId, Role role) {
+    public User(Long id, String username, String password, String email, Long publishId, RoleEnum role, Boolean status) {
         this.id = id;
         this.username = username;
+        this.password = password;
         this.email = email;
         this.publishId = publishId;
         this.role = role;
+        this.status = status;
     }
 
-    public enum Role {
-        USER,
-        ADMIN,
-    }
+    public enum RoleEnum {
+        ADMIN("ADMIN"),
+        USER("USER");
 
+        private final String value;
+
+        RoleEnum(String value) {  // 스트링 타입으로 변환하려고
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public static RoleEnum fromString(String value) {
+            for (RoleEnum roleEnum : RoleEnum.values()) {
+                if (roleEnum.value.equalsIgnoreCase(value)) {
+                    return roleEnum;
+                }
+            }
+            throw new IllegalArgumentException("Invalid role: " + value);
+        }
+    }
 }

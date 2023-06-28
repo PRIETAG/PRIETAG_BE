@@ -15,7 +15,7 @@ public class Faq {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "sequence", nullable = false)
     private Integer index;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -25,12 +25,21 @@ public class Faq {
     private String answer;
 
     @Builder
-    public Faq(Long id, Integer index,TemplateVersion templateVersion, String question, String answer) {
+    public Faq(Long id, Integer index, TemplateVersion templateVersion, String question, String answer) {
         this.id = id;
         this.index = index;
         this.templateVersion = templateVersion;
         this.question = question;
         this.answer = answer;
+    }
+
+    public Faq toEntity(TemplateVersion newTemplateVersion) {
+        return Faq.builder()
+                .templateVersion(newTemplateVersion)
+                .index(index)
+                .question(question)
+                .answer(answer)
+                .build();
     }
 
     public void setTemplateVersion(TemplateVersion templateVersion){

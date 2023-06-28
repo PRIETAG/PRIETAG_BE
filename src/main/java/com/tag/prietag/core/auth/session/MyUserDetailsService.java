@@ -1,26 +1,32 @@
 package com.tag.prietag.core.auth.session;
 
-import lombok.RequiredArgsConstructor;
+import com.tag.prietag.core.auth.session.MyUserDetails;
 import com.tag.prietag.model.User;
+import com.tag.prietag.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import com.tag.prietag.repository.UserRepository;
 
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
 public class MyUserDetailsService implements UserDetailsService {
+
     private final UserRepository userRepository;
 
-    // UsernameNotFoundException이 발동되면 AuthenticationException 이 발동된다.
+    // /login + POST + FormUrlEncoded + username, password
+    // Authentication 객체 만들어짐
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
-        User userPS = userRepository.findByUsername(username)
-                .orElseThrow(
-                        ()->new UsernameNotFoundException("유저네임을 찾을 수 없습니다")
-                );
-        return new MyUserDetails(userPS);
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        System.out.println("UserDetailsService loadUserByUsername 실행됨");
+        Optional<User> userOP = userRepository.findByUsername(username);
+        if(userOP.isPresent()){
+            return new MyUserDetails(userOP.get());
+        }else{
+            return null;
+        }
     }
 }
