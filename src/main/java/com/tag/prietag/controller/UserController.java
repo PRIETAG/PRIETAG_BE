@@ -4,9 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tag.prietag.core.auth.jwt.MyJwtProvider;
 import com.tag.prietag.dto.ResponseDTO;
-import com.tag.prietag.dto.user.UserLoginDTO;
 import com.tag.prietag.dto.kakao.KakaoToken;
 import com.tag.prietag.dto.kakao.OAuthProfile;
+import com.tag.prietag.dto.user.UserRequest;
+import com.tag.prietag.dto.user.UserResponse;
 import com.tag.prietag.model.User;
 import com.tag.prietag.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -56,21 +57,41 @@ public class UserController {
         if(userOP.isPresent()){
             System.out.println("디버그 : 회원정보가 있어서 로그인을 바로 진행합니다");
 
-            UserLoginDTO userLoginDTO = new UserLoginDTO();
+            UserRequest userRequest = new UserRequest();
+            UserRequest.UserLoginDTO userLoginDTO = userRequest.new UserLoginDTO();
+            userLoginDTO.setUsername("your-username");
+            userLoginDTO.setPassword("your-password");
             String jwt = userService.login(userLoginDTO, oAuthProfile);
 
-            return ResponseEntity.ok().header(MyJwtProvider.HEADER, jwt).body(new ResponseDTO<>());
+            UserResponse userResponse = new UserResponse();
+            UserResponse.UserJwtOutDTO userJwtOutDTO = userResponse.new UserJwtOutDTO();
+            userJwtOutDTO.setId(userOP.get().getId());
+            userJwtOutDTO.setEmail(userOP.get().getEmail());
+            userJwtOutDTO.setRole(userOP.get().getRole());
+
+
+            return ResponseEntity.ok().header(MyJwtProvider.HEADER, jwt).body(new ResponseDTO<>(userJwtOutDTO));
         }
 
         // 7. 없으면 강제 회원가입 시키고, 그 정보로 자동로그인하고 JWT토큰 전달
         if(userOP.isEmpty()){
             System.out.println("디버그 : 회원정보가 없어서 회원가입 후 로그인을 바로 진행합니다");
-            userService.userSave(oAuthProfile);
+            User userPS = userService.userSave(oAuthProfile);
 
-            UserLoginDTO userLoginDTO = new UserLoginDTO();
+            UserRequest userRequest = new UserRequest();
+            UserRequest.UserLoginDTO userLoginDTO = userRequest.new UserLoginDTO();
+            userLoginDTO.setUsername("your-username");
+            userLoginDTO.setPassword("your-password");
             String jwt = userService.login(userLoginDTO, oAuthProfile);
 
-            return ResponseEntity.ok().header(MyJwtProvider.HEADER, jwt).body(new ResponseDTO<>());
+            UserResponse userResponse = new UserResponse();
+            UserResponse.UserJwtOutDTO userJwtOutDTO = userResponse.new UserJwtOutDTO();
+            userJwtOutDTO.setId(userPS.getId());
+            userJwtOutDTO.setEmail(userPS.getEmail());
+            userJwtOutDTO.setRole(userPS.getRole());
+
+            return ResponseEntity.ok().header(MyJwtProvider.HEADER, jwt).body(new ResponseDTO<>(userJwtOutDTO));
+
 
         }
         return ResponseEntity.badRequest().body(new ResponseDTO<>(HttpStatus.BAD_REQUEST, "실패", "실패"));

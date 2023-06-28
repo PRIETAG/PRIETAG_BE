@@ -9,7 +9,6 @@ import com.tag.prietag.core.exception.Exception401;
 import com.tag.prietag.core.exception.Exception500;
 import com.tag.prietag.core.util.Fetch;
 import com.tag.prietag.dto.ResponseDTO;
-import com.tag.prietag.dto.user.UserLoginDTO;
 import com.tag.prietag.dto.kakao.KakaoToken;
 import com.tag.prietag.dto.kakao.OAuthProfile;
 import com.tag.prietag.dto.user.UserRequest;
@@ -101,7 +100,7 @@ public class UserService {
 
 
     // 자동 로그인 로직
-    public String login(UserLoginDTO userLoginDTO, OAuthProfile oAuthProfile) {
+    public String login(UserRequest.UserLoginDTO userLoginDTO, OAuthProfile oAuthProfile) {
         userLoginDTO.setEmail(oAuthProfile.getKakaoAccount().getEmail());
         userLoginDTO.setUsername("kakao_" + oAuthProfile.getId());
         String jwt = 로그인(userLoginDTO);
@@ -110,7 +109,7 @@ public class UserService {
 
 
     // 강제 회원 가입 로직
-    public void userSave(OAuthProfile oAuthProfile) {
+    public User userSave(OAuthProfile oAuthProfile) {
 
         User user = User.builder()
                 .password("1234") // 실제로 로그인 하지 않아서 임의의 값 넣음
@@ -119,14 +118,18 @@ public class UserService {
                 .role(User.RoleEnum.USER)
                 .build();
 
-        userRepository.save(user);
-
+        try {
+            User userPS = userRepository.save(user);
+            return userPS;
+        } catch (Exception e) {
+            throw new Exception500("로그인 실패 : " + e.getMessage());
+        }
     }
 
 
     //로그인시 jwt 토큰 생성해서 전달
 
-    public String 로그인(UserLoginDTO userLoginDTO) {
+    public String 로그인(UserRequest.UserLoginDTO userLoginDTO) {
         Optional<User> userOP = userRepository.findByUsername(userLoginDTO.getUsername());
         if (userOP.isPresent()) {
             User userPS = userOP.get();
@@ -134,7 +137,7 @@ public class UserService {
             String jwt = MyJwtProvider.create(userPS);
             return jwt;
         }
-        throw new RuntimeException("패스워드 다시 입력하세요");
+        throw new Exception500("토큰 생성 실패");
     }
 
     public String joinTest(UserRequest.SignupInDTO signupInDTO) {
