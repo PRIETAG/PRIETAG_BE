@@ -118,7 +118,7 @@ public class MySecurityConfig {
         configuration.addAllowedMethod(HttpMethod.DELETE);
         configuration.addAllowedMethod(HttpMethod.PATCH);
         configuration.addAllowedOriginPattern("http://localhost:3000/");
-//        configuration.addAllowedOriginPattern("https://ezfee.vercel.app/");
+        configuration.addAllowedOriginPattern("https://ezfee.site");
         configuration.setAllowCredentials(true); // 클라이언트에서 쿠키 요청 허용
         configuration.addExposedHeader("Authorization"); // 옛날에는 디폴트 였다. 지금은 아닙니다.
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

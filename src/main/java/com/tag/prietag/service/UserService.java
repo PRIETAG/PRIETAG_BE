@@ -57,7 +57,7 @@ public class UserService {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", "87bf3594adc40498df2b327e3e60f784");
-        body.add("redirect_uri", "http://localhost:3000"); // 2차 검증
+        body.add("redirect_uri", "https://ezfee.site"); // 2차 검증
         body.add("code", code); // 핵심
 
         ResponseEntity<String> codeEntity = Fetch.kakao("https://kauth.kakao.com/oauth/token", HttpMethod.POST, body);
