@@ -5,7 +5,9 @@ import com.tag.prietag.core.util.S3Uploader;
 import com.tag.prietag.dto.template.TemplateRequest;
 import com.tag.prietag.dto.template.TemplateResponse;
 import com.tag.prietag.model.*;
+import com.tag.prietag.model.log.PublishLog;
 import com.tag.prietag.repository.*;
+import com.tag.prietag.repository.log.PublishLogRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +33,7 @@ public class TemplateService {
     private final FaqRepository faqRepository;
     private final TemplateRepository templateRepository;
     private final TemplateVersionRepository templateVersionRepository;
+    private final PublishLogRepository publishLogRepository;
     private final UserRepository userRepository;
     private final S3Uploader s3Uploader;
 
@@ -370,8 +373,20 @@ public class TemplateService {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new IllegalArgumentException("해당 유저가 없습니다.")
         );
+
+        TemplateVersion templateVersion = templateVersionRepository.findById(maxVersionId).orElseThrow(
+                () -> new IllegalArgumentException("해당 템플릿 버전이 없습니다.")
+        );
+
         // 퍼블리싱된 templateVersion의 id 수정
         user.setPublishId(maxVersionId);
+
+        // 퍼블리시 로그 테이블에 저장
+        PublishLog publishLog = PublishLog.builder()
+                .user(user)
+                .templatevs(templateVersion)
+                .build();
+        publishLogRepository.save(publishLog);
 
         return "퍼블리싱된 버전 id = " + maxVersionId;
     }
@@ -384,8 +399,20 @@ public class TemplateService {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new IllegalArgumentException("해당 유저가 없습니다.")
         );
+
+        TemplateVersion templateVersion = templateVersionRepository.findById(versionId).orElseThrow(
+                () -> new IllegalArgumentException("해당 템플릿 버전이 없습니다.")
+        );
+
         // 퍼블리싱된 templateVersion의 id 수정
         user.setPublishId(versionId);
+
+        // 퍼블리시 로그 테이블에 저장
+        PublishLog publishLog = PublishLog.builder()
+                .user(user)
+                .templatevs(templateVersion)
+                .build();
+        publishLogRepository.save(publishLog);
 
         return "퍼블리싱된 버전 id = " + versionId;
     }
