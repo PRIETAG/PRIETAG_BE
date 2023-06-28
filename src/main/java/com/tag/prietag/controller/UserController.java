@@ -9,6 +9,8 @@ import com.tag.prietag.dto.kakao.KakaoToken;
 import com.tag.prietag.dto.kakao.OAuthProfile;
 import com.tag.prietag.model.User;
 import com.tag.prietag.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,12 +24,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
+@Tag(name = "User", description = "유저 API Document")
 public class UserController {
 
     private final BCryptPasswordEncoder passwordEncoder; //패스워드 암호화시 필요
     private final UserService userService;
 
     @GetMapping("/callback")
+    @Operation(summary = "로그인 및 회원가입", description = "카카오 코드를 이용해 회원가입 및 로그인을 합니다")
     public  ResponseEntity<?> callback(@RequestParam(value = "code") String code) throws JsonProcessingException {
         // 1. code 값 존재 유무 확인
 
