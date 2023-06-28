@@ -57,23 +57,24 @@
   - 2개의 템플릿 kpi 비교 
 
 ## 트러블 슈팅
-- "cp: target 'deploy/application.jar' is not a directory" 에러
+- **"cp: target 'deploy/application.jar' is not a directory" 에러**
   - 원인 : SpringBoot 2.5.0 이상버전에서 따로 설정 변경 없이 사용하면 Gradle을 통한 빌드시, BootJar와 Jar task가 모두 실행되어 jar파일이 2개가 생성됨
   - 해결 : build.gradle에 
-          jar {
+          ```
+    jar {
                 enabled = false
-              }
-          를 추가해 Jar task를 스킵
+              } ```
+   를 추가해 Jar task를 스킵
 
-- HQL(Hibernate Query Language)에서는 "limit" 키워드를 지원하지 않음
+- **HQL(Hibernate Query Language)에서는 "limit" 키워드를 지원하지 않음**
   - 해결 : pageable을 이용해 0페이지에 1개만 나오게 해서 해결
-- 쿼리문에서 pageable과 함께 Join fetch사용시 오류가 발생
+- **쿼리문에서 pageable과 함께 Join fetch사용시 오류가 발생**
   - 원인 : pageable을 Count쿼리를 자동으로 생성해주는데 그런 Query를 만들기 어려워 나온 문제
   - 해결 : CountQuery를 뒤에 직접 작성
-- 서버를 다 띄우고 나서 나중에 사이트 들어가보니 갑자기 502에러 발생, 확인 해보니 ALB에서 health Check가 unhealthy
+- **서버를 다 띄우고 나서 나중에 사이트 들어가보니 갑자기 502에러 발생, 확인 해보니 ALB에서 health Check가 unhealthy**
   - 원인 : 서버가 백엔드 서버라 바로 200을 날리는 api가 없고, health Check가 / api로 설정 되어있어 404 Not Found 에러가 발생
   - 해결 : 200을 날려주는 api를 만들고 health check 주소를 해당api로 변경
-- 실행시 원인모를 SQL서버 에러 발생
+- **실행시 원인모를 SQL서버 에러 발생**
   - 원인 : 사용하는 컬럼중에 예약어가 있어서 발생
   - 해결 : 예약어가 아닌 이름으로 변경
 
