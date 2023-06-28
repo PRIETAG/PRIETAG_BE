@@ -110,9 +110,9 @@ public class TemplateController {
         } else if (templateId != null && versionId != null) {
             throw new IllegalArgumentException("templateId 또는 versionId 둘 중 하나만 입력해주세요.");
         } else if (templateId != null) {
-            result = templateService.publishTemplate(templateId, myUserDetails.getUser());
+            result = templateService.publishTemplate(templateId, myUserDetails.getUser().getId());
         } else {
-            result = templateService.publishTemplateVS(versionId, myUserDetails.getUser());
+            result = templateService.publishTemplateVS(versionId, myUserDetails.getUser().getId());
         }
         return ResponseEntity.ok(new ResponseDTO<>(result));
     }

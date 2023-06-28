@@ -28,9 +28,9 @@ import java.util.*;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class KpiLogService {
-    TemplateVersionRepository templateVersionRepository;
-    CustomerLogRepository customerLogRepository;
-    PublishLogRepository publishLogRepository;
+    private final TemplateVersionRepository templateVersionRepository;
+    private final CustomerLogRepository customerLogRepository;
+    private final PublishLogRepository publishLogRepository;
 
     @Transactional
     public void saveCustomerKpi(LogRequest.CustomerLogInDTO customerLogInDTO) {
