@@ -59,7 +59,8 @@ public class UserController {
 
             UserRequest userRequest = new UserRequest();
             UserRequest.UserLoginDTO userLoginDTO = userRequest.new UserLoginDTO();
-
+            userLoginDTO.setUsername("your-username");
+            userLoginDTO.setPassword("your-password");
             String jwt = userService.login(userLoginDTO, oAuthProfile);
 
             UserResponse userResponse = new UserResponse();
@@ -85,9 +86,9 @@ public class UserController {
 
             UserResponse userResponse = new UserResponse();
             UserResponse.UserJwtOutDTO userJwtOutDTO = userResponse.new UserJwtOutDTO();
-            userJwtOutDTO.setId(userOP.get().getId());
-            userJwtOutDTO.setEmail(userOP.get().getEmail());
-            userJwtOutDTO.setRole(userOP.get().getRole());
+            userJwtOutDTO.setId(userPS.getId());
+            userJwtOutDTO.setEmail(userPS.getEmail());
+            userJwtOutDTO.setRole(userPS.getRole());
 
             return ResponseEntity.ok().header(MyJwtProvider.HEADER, jwt).body(new ResponseDTO<>(userJwtOutDTO));
 
