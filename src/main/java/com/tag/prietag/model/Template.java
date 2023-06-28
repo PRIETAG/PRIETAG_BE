@@ -19,7 +19,7 @@ public class Template extends TimeStamped {
     @ManyToOne(fetch = FetchType.LAZY)
     User user;
 
-    @Column(nullable = false, length = 20, unique = true)
+    @Column(nullable = false, length = 50, unique = true)
     String mainTitle;
 
     @Column(nullable = false)

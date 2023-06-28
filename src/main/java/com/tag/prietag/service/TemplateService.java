@@ -5,7 +5,9 @@ import com.tag.prietag.core.util.S3Uploader;
 import com.tag.prietag.dto.template.TemplateRequest;
 import com.tag.prietag.dto.template.TemplateResponse;
 import com.tag.prietag.model.*;
+import com.tag.prietag.model.log.PublishLog;
 import com.tag.prietag.repository.*;
+import com.tag.prietag.repository.log.PublishLogRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +33,7 @@ public class TemplateService {
     private final FaqRepository faqRepository;
     private final TemplateRepository templateRepository;
     private final TemplateVersionRepository templateVersionRepository;
+    private final PublishLogRepository publishLogRepository;
     private final UserRepository userRepository;
     private final S3Uploader s3Uploader;
 
@@ -255,21 +258,26 @@ public class TemplateService {
         // 가장 높은 버전 템플릿 가져오기
         TemplateVersion originTemplateVersion = templateVersionRepository.findMaxVersionTemplate(templateId);
 
-        StringBuilder mainTitle = new StringBuilder(originTemplate.getMainTitle());
+        String mainTitle = originTemplate.getMainTitle();
         // 템플릿 이름을 포함한 템플릿 가져오기
-        List<Template> templateList = templateRepository.findByMainTitleContainingAndIsDeleted(mainTitle.toString(), false);
-        int index = 1;
-        while (templateList.size() != 0) {
-            mainTitle.append("_").append(index);
-            if (templateList.stream().anyMatch(template -> template.getMainTitle().equals(mainTitle.toString()))) {
-                index++;
-            } else {
-                break;
+        List<Template> templateList = templateRepository.findByMainTitleContainingAndIsDeleted(mainTitle, false);
+        if (templateList.size() == 1) {
+            mainTitle = mainTitle + " (복제됨)";
+        } else {
+            int index = 2;
+            while (true) {
+                String finalMainTitle = mainTitle + " (복제됨_" + index + ")";
+                if (templateList.stream().anyMatch(template -> template.getMainTitle().equals(finalMainTitle))) {
+                    index++;
+                } else {
+                    break;
+                }
             }
+            mainTitle = mainTitle + " (복제됨_" + index + ")";
         }
 
         // 새로운 Template 엔티티 생성 및 저장
-        Template newTemplate = new Template(user, mainTitle.toString());
+        Template newTemplate = new Template(user, mainTitle);
         templateRepository.save(newTemplate);
 
         // 새로운 TemplateVersion 엔티티 생성 및 저장
@@ -358,12 +366,27 @@ public class TemplateService {
 
     // 템플릿 퍼블리싱 (최신)
     @Transactional
-    public String publishTemplate(Long templateId, User user) {
+    public String publishTemplate(Long templateId, Long userId) {
         // 버전이 가장 높은 templateVersion의 id
         Long maxVersionId = templateVersionRepository.findIdByTemplateIdMaxVersion(templateId);
 
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new IllegalArgumentException("해당 유저가 없습니다.")
+        );
+
+        TemplateVersion templateVersion = templateVersionRepository.findById(maxVersionId).orElseThrow(
+                () -> new IllegalArgumentException("해당 템플릿 버전이 없습니다.")
+        );
+
         // 퍼블리싱된 templateVersion의 id 수정
         user.setPublishId(maxVersionId);
+
+        // 퍼블리시 로그 테이블에 저장
+        PublishLog publishLog = PublishLog.builder()
+                .user(user)
+                .templatevs(templateVersion)
+                .build();
+        publishLogRepository.save(publishLog);
 
         return "퍼블리싱된 버전 id = " + maxVersionId;
     }
@@ -371,9 +394,25 @@ public class TemplateService {
 
     // 템플릿 퍼블리싱 (버전 선택)
     @Transactional
-    public String publishTemplateVS(Long versionId, User user) {
+    public String publishTemplateVS(Long versionId, Long userId) {
+
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new IllegalArgumentException("해당 유저가 없습니다.")
+        );
+
+        TemplateVersion templateVersion = templateVersionRepository.findById(versionId).orElseThrow(
+                () -> new IllegalArgumentException("해당 템플릿 버전이 없습니다.")
+        );
+
         // 퍼블리싱된 templateVersion의 id 수정
         user.setPublishId(versionId);
+
+        // 퍼블리시 로그 테이블에 저장
+        PublishLog publishLog = PublishLog.builder()
+                .user(user)
+                .templatevs(templateVersion)
+                .build();
+        publishLogRepository.save(publishLog);
 
         return "퍼블리싱된 버전 id = " + versionId;
     }
