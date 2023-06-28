@@ -255,21 +255,26 @@ public class TemplateService {
         // 가장 높은 버전 템플릿 가져오기
         TemplateVersion originTemplateVersion = templateVersionRepository.findMaxVersionTemplate(templateId);
 
-        StringBuilder mainTitle = new StringBuilder(originTemplate.getMainTitle());
+        String mainTitle = originTemplate.getMainTitle();
         // 템플릿 이름을 포함한 템플릿 가져오기
-        List<Template> templateList = templateRepository.findByMainTitleContainingAndIsDeleted(mainTitle.toString(), false);
-        int index = 1;
-        while (templateList.size() != 0) {
-            mainTitle.append("_").append(index);
-            if (templateList.stream().anyMatch(template -> template.getMainTitle().equals(mainTitle.toString()))) {
-                index++;
-            } else {
-                break;
+        List<Template> templateList = templateRepository.findByMainTitleContainingAndIsDeleted(mainTitle, false);
+        if (templateList.size() == 1) {
+            mainTitle = mainTitle + " (복제됨)";
+        } else {
+            int index = 2;
+            while (true) {
+                String finalMainTitle = mainTitle + " (복제됨_" + index + ")";
+                if (templateList.stream().anyMatch(template -> template.getMainTitle().equals(finalMainTitle))) {
+                    index++;
+                } else {
+                    break;
+                }
             }
+            mainTitle = mainTitle + " (복제됨_" + index + ")";
         }
 
         // 새로운 Template 엔티티 생성 및 저장
-        Template newTemplate = new Template(user, mainTitle.toString());
+        Template newTemplate = new Template(user, mainTitle);
         templateRepository.save(newTemplate);
 
         // 새로운 TemplateVersion 엔티티 생성 및 저장
