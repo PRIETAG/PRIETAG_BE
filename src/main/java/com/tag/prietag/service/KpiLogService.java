@@ -64,7 +64,7 @@ public class KpiLogService {
                     conversionCount++;
             }
             leaveCount = viewCount - conversionCount;
-            conversionRate = (conversionCount * 100) / viewCount;
+            conversionRate = (viewCount==0)?0:(conversionCount * 100) / viewCount;
         }
 
         //지난 버전 검색
@@ -79,6 +79,7 @@ public class KpiLogService {
             ZonedDateTime publishStart = publishLogList.get(1).getCreatedAt().plusNanos(1);
             ZonedDateTime publishEnd = publishLogList.get(0).getCreatedAt();
             long daysBetween = ChronoUnit.DAYS.between(publishStart.toLocalDate(), publishEnd.toLocalDate());
+            daysBetween = daysBetween==0?1:daysBetween;
             // 그 버전을 사용했을 때 log데이터를 가져오기
             List<CustomerLog> betweenCustomerLogList = customerLogRepository.findByBetweenDateUserId(user.getId(), publishStart, publishEnd).orElse(Collections.emptyList());
             if (!betweenCustomerLogList.isEmpty()) {
@@ -93,7 +94,7 @@ public class KpiLogService {
                 preViewCount /= (int) daysBetween;
                 preConversionCount /= (int) daysBetween;
                 preLeaveCount /= (int) daysBetween;
-                preConversionRate = (preConversionCount * 100) / preViewCount;
+                preConversionRate = (preViewCount==0)?0:(preConversionCount * 100) / preViewCount;
             }
         }
 
@@ -170,7 +171,7 @@ public class KpiLogService {
                     .label(day)
                     .viewCount(viewerCount)
                     .leaveCount(viewerCount - subscripterCount)
-                    .conversionRate((subscripterCount * 100) / viewerCount)
+                    .conversionRate((viewerCount==0)?0:(subscripterCount * 100) / viewerCount)
                     .build());
         }
 
@@ -235,7 +236,7 @@ public class KpiLogService {
                     .label(week)
                     .viewCount(viewerCount)
                     .leaveCount(viewerCount - subscripterCount)
-                    .conversionRate((subscripterCount * 100) / viewerCount)
+                    .conversionRate((viewerCount==0)?0:(subscripterCount * 100) / viewerCount)
                     .build());
         }
 
@@ -273,7 +274,7 @@ public class KpiLogService {
                     .label(year + "." + month)
                     .viewCount(viewerCount)
                     .leaveCount(viewerCount - subscripterCount)
-                    .conversionRate((subscripterCount * 100) / viewerCount)
+                    .conversionRate((viewerCount==0)?0:(subscripterCount * 100) / viewerCount)
                     .build());
         }
 
@@ -321,7 +322,7 @@ public class KpiLogService {
                     .isDeleted(publishLog.getTemplatevs().isDeleted())
                     .viewCount(viewCount)
                     .leaveCount(conversionCount - viewCount)
-                    .conversionRate((conversionCount * 100) / viewCount)
+                    .conversionRate((viewCount==0)?0:(conversionCount * 100) / viewCount)
                     .build());
         }
 
