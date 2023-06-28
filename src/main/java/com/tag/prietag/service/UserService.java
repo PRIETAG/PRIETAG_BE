@@ -110,7 +110,7 @@ public class UserService {
 
 
     // 강제 회원 가입 로직
-    public void userSave(OAuthProfile oAuthProfile) {
+    public User userSave(OAuthProfile oAuthProfile) {
 
         User user = User.builder()
                 .password("1234") // 실제로 로그인 하지 않아서 임의의 값 넣음
@@ -119,8 +119,12 @@ public class UserService {
                 .role(User.RoleEnum.USER)
                 .build();
 
-        userRepository.save(user);
-
+        try {
+            User userPS = userRepository.save(user);
+            return userPS;
+        } catch (Exception e) {
+            throw new Exception500("로그인 실패 : " + e.getMessage());
+        }
     }
 
 
@@ -134,7 +138,7 @@ public class UserService {
             String jwt = MyJwtProvider.create(userPS);
             return jwt;
         }
-        throw new RuntimeException("패스워드 다시 입력하세요");
+        throw new Exception500("토큰 생성 실패");
     }
 
     public String joinTest(UserRequest.SignupInDTO signupInDTO) {

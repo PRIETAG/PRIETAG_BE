@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tag.prietag.core.auth.jwt.MyJwtProvider;
 import com.tag.prietag.dto.ResponseDTO;
+import com.tag.prietag.dto.user.UserJwtOutDTO;
 import com.tag.prietag.dto.user.UserLoginDTO;
 import com.tag.prietag.dto.kakao.KakaoToken;
 import com.tag.prietag.dto.kakao.OAuthProfile;
@@ -59,18 +60,34 @@ public class UserController {
             UserLoginDTO userLoginDTO = new UserLoginDTO();
             String jwt = userService.login(userLoginDTO, oAuthProfile);
 
-            return ResponseEntity.ok().header(MyJwtProvider.HEADER, jwt).body(new ResponseDTO<>());
+            UserJwtOutDTO userJwtOutDTO = new UserJwtOutDTO().builder()
+                    .id(userOP.get().getId())
+//                    .username(userOP.get().getUsername())
+//                    .role(userOP.get().getRole())
+                    .email(userOP.get().getEmail())
+                    .build();
+
+
+            return ResponseEntity.ok().header(MyJwtProvider.HEADER, jwt).body(new ResponseDTO<>(userJwtOutDTO));
         }
 
         // 7. 없으면 강제 회원가입 시키고, 그 정보로 자동로그인하고 JWT토큰 전달
         if(userOP.isEmpty()){
             System.out.println("디버그 : 회원정보가 없어서 회원가입 후 로그인을 바로 진행합니다");
-            userService.userSave(oAuthProfile);
+            User userPS = userService.userSave(oAuthProfile);
 
             UserLoginDTO userLoginDTO = new UserLoginDTO();
             String jwt = userService.login(userLoginDTO, oAuthProfile);
 
-            return ResponseEntity.ok().header(MyJwtProvider.HEADER, jwt).body(new ResponseDTO<>());
+            UserJwtOutDTO userJwtOutDTO = new UserJwtOutDTO().builder()
+                    .id(userPS.getId())
+//                    .username(userPS.getUsername())
+//                    .role(userPS.getRole())
+                    .email(userPS.getEmail())
+                    .build();
+
+            return ResponseEntity.ok().header(MyJwtProvider.HEADER, jwt).body(new ResponseDTO<>(userJwtOutDTO));
+
 
         }
         return ResponseEntity.badRequest().body(new ResponseDTO<>(HttpStatus.BAD_REQUEST, "실패", "실패"));
