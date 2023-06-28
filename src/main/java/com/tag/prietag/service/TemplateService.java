@@ -363,10 +363,13 @@ public class TemplateService {
 
     // 템플릿 퍼블리싱 (최신)
     @Transactional
-    public String publishTemplate(Long templateId, User user) {
+    public String publishTemplate(Long templateId, Long userId) {
         // 버전이 가장 높은 templateVersion의 id
         Long maxVersionId = templateVersionRepository.findIdByTemplateIdMaxVersion(templateId);
 
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new IllegalArgumentException("해당 유저가 없습니다.")
+        );
         // 퍼블리싱된 templateVersion의 id 수정
         user.setPublishId(maxVersionId);
 
@@ -376,7 +379,11 @@ public class TemplateService {
 
     // 템플릿 퍼블리싱 (버전 선택)
     @Transactional
-    public String publishTemplateVS(Long versionId, User user) {
+    public String publishTemplateVS(Long versionId, Long userId) {
+
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new IllegalArgumentException("해당 유저가 없습니다.")
+        );
         // 퍼블리싱된 templateVersion의 id 수정
         user.setPublishId(versionId);
 
